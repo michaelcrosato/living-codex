@@ -90,7 +90,8 @@ export class GameSession {
     this.applyAndLog(events);
   }
 
-  step(inputs: readonly InputEvent[], dt = 1 / 60): void {
+  /** Advance one fixed step; returns the events emitted this tick (so the shell can react). */
+  step(inputs: readonly InputEvent[], dt = 1 / 60): GameEvent[] {
     const ctx = { locations: this.registries.locations, npcs: this.registries.npcs };
     const systems: System[] = [
       movementSystem(inputs),
@@ -104,5 +105,6 @@ export class GameSession {
     this.log.entries.push(...result.entries);
     this.world = result.world;
     this.spawnNpcsAt(this.world.locationId);
+    return result.events;
   }
 }

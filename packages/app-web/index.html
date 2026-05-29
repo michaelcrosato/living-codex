@@ -29,10 +29,31 @@
         border: 1px solid #1b2230;
         border-radius: 4px;
       }
+      #stage {
+        position: relative;
+      }
+      #dialogue {
+        display: none;
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        padding: 14px 16px;
+        background: rgba(8, 11, 18, 0.92);
+        border: 1px solid #2bd1ff;
+        border-radius: 6px;
+        white-space: pre-wrap;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #e6f3ff;
+      }
     </style>
   </head>
   <body>
-    <canvas id="game" width="800" height="600"></canvas>
+    <div id="stage">
+      <canvas id="game" width="800" height="600"></canvas>
+      <div id="dialogue"></div>
+    </div>
     <div id="hud">Loading…</div>
     <script type="module" src="/src/main.ts"></script>
   </body>

@@ -117,6 +117,9 @@ importers:
 
   packages/persistence:
     dependencies:
+      '@codex/content-schema':
+        specifier: workspace:*
+        version: link:../content-schema
       '@codex/engine-core':
         specifier: workspace:*
         version: link:../engine-core

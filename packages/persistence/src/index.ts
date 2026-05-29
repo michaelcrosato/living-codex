@@ -1,2 +1,3 @@
-// IndexedDB save/load + the replay event log. Implemented in T-11.
-export const PERSISTENCE_PENDING = "T-11" as const;
+// persistence — IndexedDB save/load + JSON export/import of the replay envelope (T-11).
+export { saveGame, loadGame, deleteGame, listSlots } from "./store";
+export { exportSave, importSave } from "./json";

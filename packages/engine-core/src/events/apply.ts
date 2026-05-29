@@ -150,6 +150,86 @@ export function applyEvent(world: World, ev: GameEvent): World {
       return { ...world, quests: { ...world.quests, [ev.questId]: fresh } };
     }
 
+    case "ActivateQuest": {
+      const existing = world.quests[ev.questId];
+      if (existing && existing.status !== "unoffered") return world; // idempotent
+      const activated: QuestRuntimeState = {
+        status: "active",
+        activeBranchIds: [...ev.branchIds],
+        objectiveProgress: {},
+        appliedEffectIds: [],
+      };
+      return { ...world, quests: { ...world.quests, [ev.questId]: activated } };
+    }
+
+    case "MarkObjective": {
+      const quest = world.quests[ev.questId];
+      if (!quest) return world;
+      const prev = quest.objectiveProgress[ev.objectiveKey];
+      const updated: ObjectiveRuntimeState = {
+        done: ev.done,
+        failed: ev.failed,
+        attempts: prev?.attempts ?? 0,
+      };
+      return {
+        ...world,
+        quests: {
+          ...world.quests,
+          [ev.questId]: {
+            ...quest,
+            objectiveProgress: { ...quest.objectiveProgress, [ev.objectiveKey]: updated },
+          },
+        },
+      };
+    }
+
+    case "CompleteQuestBranch": {
+      const quest = world.quests[ev.questId];
+      if (!quest || quest.status === "completed") return world; // atomic + idempotent
+      const completed: QuestRuntimeState = {
+        ...quest,
+        status: "completed",
+        completedBranchId: ev.branchId,
+        activeBranchIds: [ev.branchId],
+        appliedEffectIds: [...quest.appliedEffectIds, ...ev.appliedEffectIds],
+      };
+      return { ...world, quests: { ...world.quests, [ev.questId]: completed } };
+    }
+
+    case "ForecloseBranch": {
+      const quest = world.quests[ev.questId];
+      if (!quest || quest.status !== "active") return world;
+      const remaining = quest.activeBranchIds.filter((id) => id !== ev.branchId);
+      return {
+        ...world,
+        quests: {
+          ...world.quests,
+          [ev.questId]: {
+            ...quest,
+            activeBranchIds: remaining,
+            status: remaining.length === 0 ? "failed" : "active",
+          },
+        },
+      };
+    }
+
+    case "ResolveAttack": {
+      const attacker = requireEntity(world, ev.attackerEntityId);
+      const target = requireEntity(world, ev.targetEntityId);
+      const cursor = new RngCursor(deserializeRng(world.rngState));
+      const force = attacker.id === world.player.entityId ? world.player.skills.force : 0;
+      const damage = cursor.int(1, 6) + force;
+      const hp = Math.max(0, (target.hp ?? 0) - damage);
+      return {
+        ...world,
+        rngState: serializeRng(cursor.state),
+        entities: {
+          ...world.entities,
+          [target.id]: { ...target, hp, alive: hp > 0 },
+        },
+      };
+    }
+
     default: {
       const exhaustive: never = ev;
       throw new Error(`applyEvent: unhandled event ${JSON.stringify(exhaustive)}`);

@@ -31,7 +31,14 @@ export type GameEvent =
       skill: SkillId;
       dc: number;
       onFail: Effect[];
-    };
+    }
+  // --- quest runtime (T-08) ---
+  | { type: "ActivateQuest"; questId: QuestId; branchIds: string[] }
+  | { type: "MarkObjective"; questId: QuestId; objectiveKey: string; done: boolean; failed: boolean }
+  | { type: "CompleteQuestBranch"; questId: QuestId; branchId: string; appliedEffectIds: string[] }
+  | { type: "ForecloseBranch"; questId: QuestId; branchId: string }
+  // --- minimal combat (T-09): resolves a `defeat` objective deterministically ---
+  | { type: "ResolveAttack"; attackerEntityId: EntityId; targetEntityId: EntityId };
 
 export type GameEventType = GameEvent["type"];
 
@@ -40,4 +47,5 @@ export type InputEvent =
   | { type: "Move"; dir: { x: number; y: number } }
   | { type: "Interact" }
   | { type: "Choose"; choiceIndex: number }
-  | { type: "UseExit"; exitIndex: number };
+  | { type: "UseExit"; exitIndex: number }
+  | { type: "Attack" };

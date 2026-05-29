@@ -20,6 +20,7 @@
     "content:validate": "tsx tools/scripts/content-validate.ts",
     "content:verify": "tsx tools/scripts/content-verify.ts",
     "replay:verify": "vitest run -t \"replay invariant\"",
+    "e2e": "playwright test -c packages/app-web/playwright.config.ts",
     "verify": "pnpm typecheck && pnpm lint && pnpm deps:check && pnpm test && pnpm content:validate && pnpm content:verify && pnpm replay:verify"
   },
   "devDependencies": {

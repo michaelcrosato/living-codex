@@ -20,6 +20,7 @@ export default tseslint.config(
       "**/node_modules/**",
       "**/*.config.js",
       "**/*.config.ts",
+      "**/e2e/**",
       ".dependency-cruiser.cjs",
     ],
   },

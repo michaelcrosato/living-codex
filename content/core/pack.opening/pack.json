@@ -329,7 +329,68 @@
         ]
       },
       "dialogueId": "dialogue.varga_intro",
-      "reactsTo": []
+      "reactsTo": [
+        {
+          "when": [
+            {
+              "kind": "flag_is",
+              "flag": "flag.entered_peacefully",
+              "equals": true
+            }
+          ],
+          "setsFlags": [],
+          "overrideDialogueId": "dialogue.varga_peace"
+        },
+        {
+          "when": [
+            {
+              "kind": "flag_is",
+              "flag": "flag.entered_unseen",
+              "equals": true
+            }
+          ],
+          "setsFlags": [],
+          "overrideDialogueId": "dialogue.varga_sneak"
+        },
+        {
+          "when": [
+            {
+              "kind": "all",
+              "of": [
+                {
+                  "kind": "flag_is",
+                  "flag": "flag.has_drive",
+                  "equals": true
+                },
+                {
+                  "kind": "not",
+                  "of": {
+                    "kind": "flag_is",
+                    "flag": "flag.entered_peacefully",
+                    "equals": true
+                  }
+                },
+                {
+                  "kind": "not",
+                  "of": {
+                    "kind": "flag_is",
+                    "flag": "flag.entered_unseen",
+                    "equals": true
+                  }
+                }
+              ]
+            }
+          ],
+          "setsFlags": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.syndicate_marked",
+              "to": true
+            }
+          ],
+          "overrideDialogueId": "dialogue.varga_force"
+        }
+      ]
     },
     {
       "id": "npc.warehouse_guard",
@@ -743,6 +804,138 @@
       "declaredVars": [
         "met_stranger"
       ]
+    },
+    {
+      "id": "dialogue.varga_peace",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "0a1602a56778f8",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "^Varga almost smiles. \"Talked your way in? Smoother than you look. The crew could use someone like that.\"",
+            "\n",
+            "ev",
+            "str",
+            "^Right.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          null
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": []
+    },
+    {
+      "id": "dialogue.varga_sneak",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "0327f2f4ebbd30",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "^Varga nods, slow. \"In and out, nobody the wiser. I like a ghost on the payroll. Don't make a habit of haunting me.\"",
+            "\n",
+            "ev",
+            "str",
+            "^Right.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          null
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": []
+    },
+    {
+      "id": "dialogue.varga_force",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "1b9f716703ba31",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "^Varga's jaw tightens. \"You kicked the door. The Syndicate's already asking who did it — and they'll find their way to me. We're both marked now.\"",
+            "\n",
+            "ev",
+            "str",
+            "^Right.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          null
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": []
     }
   ],
   "quests": [

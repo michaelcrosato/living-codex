@@ -43,6 +43,52 @@ module.exports = {
       to: { path: "^tools/" },
     },
     {
+      name: "content-schema-is-leaf",
+      comment:
+        "content-schema is the treaty (ARCHITECTURE.md §2). It imports nothing from other workspace packages — only zod.",
+      severity: "error",
+      from: { path: "^packages/content-schema/src", pathNot: "\\.test\\.ts$" },
+      to: {
+        path: "^packages/(engine-core|content-loader|render-pixi|narrative-ink|persistence|app-web)/",
+      },
+    },
+    {
+      name: "content-loader-only-imports-schema",
+      comment: "content-loader depends on content-schema ONLY (ARCHITECTURE.md §2 graph).",
+      severity: "error",
+      from: { path: "^packages/content-loader/src", pathNot: "\\.test\\.ts$" },
+      to: {
+        path: "^packages/(engine-core|render-pixi|narrative-ink|persistence|app-web)/",
+      },
+    },
+    {
+      name: "render-and-persistence-only-in-app-web",
+      comment:
+        "Only the app-web composition root imports render-pixi and persistence (ARCHITECTURE.md §5). Exempts each package importing its own internals. (narrative-ink is deliberately omitted: the offline Ink-compile tooling in tools/ also imports it — that's how inkjs stays isolated to one package — so it's governed by the inkjs-isolation rule instead.)",
+      severity: "error",
+      from: { pathNot: "^packages/(app-web|render-pixi|persistence)/|\\.test\\.ts$" },
+      to: { path: "^packages/(render-pixi|persistence)/" },
+    },
+    {
+      name: "no-orphans",
+      comment:
+        "Every module should be reachable (dead code / missing wiring). Excludes legit non-import targets: package index surfaces, type decls, configs, CLI entry points, and tests.",
+      severity: "warn",
+      from: {
+        orphan: true,
+        pathNot: [
+          "(^|/)index\\.ts$",
+          "\\.d\\.ts$",
+          "\\.(config|setup)\\.(c|m)?[jt]s$",
+          "^tools/scripts/",
+          "\\.test\\.ts$",
+          "\\.spec\\.ts$",
+          "(^|/)(test|e2e)/",
+        ],
+      },
+      to: {},
+    },
+    {
       name: "no-circular",
       comment: "Cyclic dependencies erode legibility.",
       severity: "error",

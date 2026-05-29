@@ -26,7 +26,7 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 | SPEC-13 | New curated pack (offline) | 2 | Done | main | (see log) | green | pack.kestrel (rival fixer + 3-branch quest + Ink + canon assertions); same-path load+play test; +4 tests; golden untouched |
 | SPEC-11 | Storylet / salience layer | 3 | Done | main | bb10696 | green | minimal additive schema + salience-selected ambient barks system; tie-breaker RNG inside applyEvent fold; +3 tests |
 | SPEC-14 | Retrieval-grounded canon | 3 | Done | main | 816552a | green | subgraph query + cycle prompt grounding + integration spy test |
-| SPEC-15 | Rubric LLM-judge gate | 3 | Todo | — | — | — | hermetic StubProvider |
+| SPEC-15 | Rubric LLM-judge gate | 3 | In progress | spec/SPEC-15-rubric-judge-gate | — | — | hermetic StubProvider |
 | SPEC-16 | Zod 4 + native JSON Schema | 4 | Todo | — | — | — | MED risk; isolate; updates golden hash |
 
 ## Wave gates

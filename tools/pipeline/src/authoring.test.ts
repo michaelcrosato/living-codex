@@ -60,9 +60,14 @@ describe("renderBundleHtml — the static curation review page (S3.4)", () => {
       ...base,
       brief: makeBrief("Intent <script>alert(1)</script>"),
       flagged: ["<b>danger</b>"],
+      scorecard: {
+        ...base.scorecard,
+        canonConsistencyRationale: "<b>bold</b> statement",
+      },
     });
     expect(html).toContain("&lt;script&gt;");
     expect(html).not.toContain("<script>alert(1)</script>");
     expect(html).toContain("&lt;b&gt;danger&lt;/b&gt;");
+    expect(html).toContain("&lt;b&gt;bold&lt;/b&gt; statement");
   });
 });

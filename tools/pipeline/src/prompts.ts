@@ -18,8 +18,10 @@ export const ROLE_SYSTEM_PROMPTS = {
   wildcard:
     "WILDCARD. You inject one surprising but on-theme idea the others would miss. Output JSON only.",
   critic:
-    "CRITIC. You red-team proposals for canon contradictions, flat stakes, and thin agency, and " +
-    "score them 0-10 on each axis. Be specific about contradictions. Output JSON only.",
+    "CRITIC. You evaluate proposals as a role-neutral judge using a strict, fixed rubric. " +
+    "For each criterion, write your short rationale before assigning an integer score from 1 to 5. " +
+    "Locked criteria: canon-consistency, choice-density, emotional-stakes, novelty, integration-cost. " +
+    "Be specific about canon contradictions. Output JSON only.",
 } as const;
 
 export type Role = keyof typeof ROLE_SYSTEM_PROMPTS;

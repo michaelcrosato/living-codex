@@ -86,11 +86,17 @@ const QUEST = {
 };
 
 const SCORECARD = {
-  canonConsistency: 8,
-  choiceDensity: 8,
-  emotionalStakes: 7,
-  novelty: 6,
-  integrationCost: 4,
+  canonConsistency: 4,
+  canonConsistencyRationale: "Grounds cleanly in the Ashfall district.",
+  choiceDensity: 4,
+  choiceDensityRationale: "Solid three-branch structure offers viable paths.",
+  emotionalStakes: 3,
+  emotionalStakesRationale: "Morally grey choices but stakes could be higher.",
+  novelty: 3,
+  noveltyRationale: "Rival fixer theme is well-trodden but fits.",
+  integrationCost: 2,
+  integrationCostRationale: "Stub implementation lacks complex variables.",
+  aggregate: 3,
   contradictions: [],
   notes: "Solid three-branch structure; grounds cleanly in the Ashfall district.",
 };

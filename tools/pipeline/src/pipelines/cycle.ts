@@ -152,12 +152,31 @@ export async function runCycle(args: RunCycleArgs): Promise<CurationBundle> {
     args.registries,
   ).map((c) => `[canon:${c.rule}] ${c.message}`);
 
+  // Advisory threshold flagging: items below 3/5 are flagged "needs attention" for the human.
+  const rubricFlags: string[] = [];
+  const threshold = 3;
+  if (scorecard.canonConsistency < threshold) {
+    rubricFlags.push(`[rubric] canonConsistency needs attention (${scorecard.canonConsistency}/5): ${scorecard.canonConsistencyRationale}`);
+  }
+  if (scorecard.choiceDensity < threshold) {
+    rubricFlags.push(`[rubric] choiceDensity needs attention (${scorecard.choiceDensity}/5): ${scorecard.choiceDensityRationale}`);
+  }
+  if (scorecard.emotionalStakes < threshold) {
+    rubricFlags.push(`[rubric] emotionalStakes needs attention (${scorecard.emotionalStakes}/5): ${scorecard.emotionalStakesRationale}`);
+  }
+  if (scorecard.novelty < threshold) {
+    rubricFlags.push(`[rubric] novelty needs attention (${scorecard.novelty}/5): ${scorecard.noveltyRationale}`);
+  }
+  if (scorecard.integrationCost < threshold) {
+    rubricFlags.push(`[rubric] integrationCost needs attention (${scorecard.integrationCost}/5): ${scorecard.integrationCostRationale}`);
+  }
+
   return {
     brief: args.brief,
     canon,
     proposals: { arc, references, npcs: dramatist, ...(quest ? { quest } : {}) },
     scorecard,
     candidate,
-    flagged: [...scorecard.contradictions, ...canonContradictions],
+    flagged: [...scorecard.contradictions, ...canonContradictions, ...rubricFlags],
   };
 }

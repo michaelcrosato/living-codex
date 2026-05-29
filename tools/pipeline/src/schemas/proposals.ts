@@ -44,11 +44,17 @@ export const DramatistOutput = z.object({ npcs: z.array(GeneratedNpc).min(1).max
 export type DramatistOutput = z.infer<typeof DramatistOutput>;
 
 export const Scorecard = z.object({
-  canonConsistency: z.number().int().min(0).max(10),
-  choiceDensity: z.number().int().min(0).max(10),
-  emotionalStakes: z.number().int().min(0).max(10),
-  novelty: z.number().int().min(0).max(10),
-  integrationCost: z.number().int().min(0).max(10),
+  canonConsistency: z.number().int().min(1).max(5),
+  canonConsistencyRationale: z.string().max(200),
+  choiceDensity: z.number().int().min(1).max(5),
+  choiceDensityRationale: z.string().max(200),
+  emotionalStakes: z.number().int().min(1).max(5),
+  emotionalStakesRationale: z.string().max(200),
+  novelty: z.number().int().min(1).max(5),
+  noveltyRationale: z.string().max(200),
+  integrationCost: z.number().int().min(1).max(5),
+  integrationCostRationale: z.string().max(200),
+  aggregate: z.number().int().min(1).max(5),
   contradictions: z.array(z.string()),
   notes: z.string().max(600),
 });

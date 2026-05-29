@@ -14,9 +14,15 @@ export function renderBundleMarkdown(bundle: CurationBundle): string {
     `**Candidate pack:** \`${bundle.candidate.id}\` (${bundle.candidate.npcs.length} npc, ${bundle.candidate.quests.length} quest, ${bundle.candidate.dialogues.length} dialogue)`,
     "",
     "## Critic scorecard",
-    `| canon | choice | stakes | novelty | integration |`,
-    `|---|---|---|---|---|`,
-    `| ${s.canonConsistency} | ${s.choiceDensity} | ${s.emotionalStakes} | ${s.novelty} | ${s.integrationCost} |`,
+    "",
+    `| Criterion | Score | Rationale |`,
+    `|---|---|---|`,
+    `| canonConsistency | ${s.canonConsistency}/5 | ${s.canonConsistencyRationale} |`,
+    `| choiceDensity | ${s.choiceDensity}/5 | ${s.choiceDensityRationale} |`,
+    `| emotionalStakes | ${s.emotionalStakes}/5 | ${s.emotionalStakesRationale} |`,
+    `| novelty | ${s.novelty}/5 | ${s.noveltyRationale} |`,
+    `| integrationCost | ${s.integrationCost}/5 | ${s.integrationCostRationale} |`,
+    `| **aggregate** | **${s.aggregate}/5** | — |`,
     "",
     s.notes ? `> ${s.notes}` : "",
     "",
@@ -48,8 +54,15 @@ function esc(text: string): string {
  */
 export function renderBundleHtml(bundle: CurationBundle): string {
   const s = bundle.scorecard;
-  const score = (label: string, value: number): string =>
-    `<div class="score"><span>${label}</span><b>${value}/10</b></div>`;
+  const score = (label: string, value: number, rationale: string): string =>
+    `<div class="score">` +
+    `<div style="display:flex; justify-content:space-between; align-items:center;">` +
+    `<strong>${label}</strong>` +
+    `<b style="color:#2bd1ff; font-size:1.2rem;">${value}/5</b>` +
+    `</div>` +
+    `<p style="margin:4px 0 0 0; font-size:0.85rem; color:#a8a9ad;">${esc(rationale)}</p>` +
+    `</div>`;
+  
   const npcRows = bundle.candidate.npcs
     .map((n) => `<li><code>${esc(n.id)}</code> — ${esc(n.name)} <em>${esc(n.bio.role)}</em></li>`)
     .join("");
@@ -79,7 +92,7 @@ export function renderBundleHtml(bundle: CurationBundle): string {
 <style>
   body { font-family: ui-monospace, monospace; max-width: 880px; margin: 40px auto; padding: 0 16px; background:#0b0e14; color:#cfe6f5; line-height:1.5; }
   h1 { color:#2bd1ff; } code { color:#ffd166; } em { color:#8a93a3; }
-  .grid { display:flex; gap:12px; flex-wrap:wrap; margin:12px 0; }
+  .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin:12px 0; }
   .score { background:#161b26; border:1px solid #243; border-radius:6px; padding:8px 12px; }
   .flagged li { color:#ff8a5a; } .ok { color:#7bd88f; }
   .decision { border:1px solid #243; border-radius:6px; margin:8px 0; }
@@ -91,7 +104,18 @@ export function renderBundleHtml(bundle: CurationBundle): string {
   <p><b>Candidate:</b> <code>${esc(bundle.candidate.id)}</code> — ${bundle.candidate.npcs.length} npc, ${bundle.candidate.quests.length} quest, ${bundle.candidate.dialogues.length} dialogue</p>
   <h2>Critic scorecard</h2>
   <div class="grid">
-    ${score("canon", s.canonConsistency)}${score("choice", s.choiceDensity)}${score("stakes", s.emotionalStakes)}${score("novelty", s.novelty)}${score("integration", s.integrationCost)}
+    ${score("canon", s.canonConsistency, s.canonConsistencyRationale)}
+    ${score("choice", s.choiceDensity, s.choiceDensityRationale)}
+    ${score("stakes", s.emotionalStakes, s.emotionalStakesRationale)}
+    ${score("novelty", s.novelty, s.noveltyRationale)}
+    ${score("integration", s.integrationCost, s.integrationCostRationale)}
+    <div class="score" style="border: 1px solid #2bd1ff;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong style="color:#2bd1ff;">aggregate</strong>
+        <b style="color:#2bd1ff; font-size:1.2rem;">${s.aggregate}/5</b>
+      </div>
+      <p style="margin:4px 0 0 0; font-size:0.85rem; color:#8a93a3;">Overall summary</p>
+    </div>
   </div>
   ${s.notes ? `<blockquote>${esc(s.notes)}</blockquote>` : ""}
   <h2>Arc</h2>

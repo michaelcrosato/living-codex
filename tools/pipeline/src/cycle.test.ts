@@ -48,11 +48,20 @@ describe("runCycle — full decomposition + curation bundle (P2)", () => {
 
   it("produces a reviewable curation bundle (scorecard + flagged-for-human)", async () => {
     const bundle = await run();
-    expect(bundle.scorecard.canonConsistency).toBe(8);
+    expect(bundle.scorecard.canonConsistency).toBe(4);
     expect(Array.isArray(bundle.flagged)).toBe(true);
+    
+    // Assert that the low score (integrationCost = 2 < 3) triggers a low score flag
+    expect(bundle.flagged).toContain(
+      "[rubric] integrationCost needs attention (2/5): Stub implementation lacks complex variables."
+    );
+
     const md = renderBundleMarkdown(bundle);
     expect(md).toContain("Curation bundle");
     expect(md).toContain("pack.the_rival_fixer");
+    expect(md).toContain("canonConsistency | 4/5 | Grounds cleanly in the Ashfall district.");
+    expect(md).toContain("integrationCost | 2/5 | Stub implementation lacks complex variables.");
+    expect(md).toContain("**aggregate** | **3/5**");
   });
 
   it("hermetic test: asserts that the grounding subgraph is correctly assembled and passed to the provider", async () => {

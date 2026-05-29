@@ -16,7 +16,15 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm agent:doctor
       - run: pnpm verify
+      # Report-only coverage (no enforced floor yet). pnpm verify above stays the blocking gate.
+      - run: pnpm test:coverage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/lcov.info
+          if-no-files-found: warn
 
   e2e:
     name: browser smoke (non-blocking)

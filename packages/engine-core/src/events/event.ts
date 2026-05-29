@@ -7,6 +7,7 @@ import type {
   DialogueId,
   NpcId,
   Effect,
+  Storylet,
 } from "@codex/content-schema";
 import type { Entity, EntityId, SkillId } from "../state/world";
 
@@ -62,6 +63,8 @@ export type GameEvent =
   | { type: "ResolveAttack"; attackerEntityId: EntityId; targetEntityId: EntityId }
   // bookkeeping: advances the fixed-timestep counter; logged so replay reproduces World.tick
   | { type: "AdvanceTick" }
+  // --- storylet system (SPEC-11) ---
+  | { type: "TriggerStorylet"; candidates: Storylet[] }
   // dialogue advanced one choice: carries the post-choice serialized Ink state (captured, not
   // recomputed — WORLD_STATE.md §4) and the declared story-vars mirrored into World.flags
   | {

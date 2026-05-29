@@ -159,6 +159,21 @@ function collectPackRefs(pack: ContentPack, out: Ref[]): void {
       }),
     );
   }
+
+  for (const storylet of pack.storylets) {
+    const base = storylet.id;
+    storylet.preconditions.forEach((c, i) =>
+      collectConditionRefs(c, `${base}.preconditions[${i}]`, out),
+    );
+    if (storylet.content.dialogueId) {
+      out.push({
+        type: "dialogue",
+        id: storylet.content.dialogueId,
+        where: `${base}.content.dialogueId`,
+      });
+    }
+    storylet.effects.forEach((e, i) => collectEffectRefs(e, `${base}.effects[${i}]`, out));
+  }
 }
 
 function definedIds(packs: ContentPack[]): Record<RefType, Set<string>> {

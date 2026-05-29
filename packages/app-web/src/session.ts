@@ -11,6 +11,7 @@ import {
   movementSystem,
   questSystem,
   reactionsSystem,
+  storyletSystem,
   tick,
   type CreateWorldOptions,
   type Entity,
@@ -102,6 +103,7 @@ export class GameSession {
       reactionsSystem(this.registries.npcs),
       questSystem(this.registries.quests, inputs, this.registries.npcs),
       dialogueSystem(inputs, { narrative: this.narrative, dialogues: this.registries.dialogues }),
+      storyletSystem(this.registries.storylets),
     ];
     const result = tick(this.world, inputs, systems, dt);
     this.log.entries.push(...result.entries);

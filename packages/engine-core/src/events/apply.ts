@@ -1,4 +1,5 @@
 import type { World, Entity, QuestRuntimeState, ObjectiveRuntimeState } from "../state/world";
+import type { Storylet } from "@codex/content-schema";
 import type { GameEvent } from "./event";
 import { RngCursor, deserializeRng, serializeRng } from "../time/rng";
 import { effectsToEvents } from "./effects";
@@ -269,6 +270,30 @@ export function applyEvent(world: World, ev: GameEvent): World {
           [target.id]: { ...target, hp, alive: hp > 0 },
         },
       };
+    }
+
+    case "TriggerStorylet": {
+      if (ev.candidates.length === 0) return world;
+      let selected: Storylet | undefined;
+      let next = world;
+      if (ev.candidates.length === 1) {
+        selected = ev.candidates[0];
+      } else {
+        const cursor = new RngCursor(deserializeRng(world.rngState));
+        const index = cursor.int(0, ev.candidates.length - 1);
+        selected = ev.candidates[index];
+        next = { ...next, rngState: serializeRng(cursor.state) };
+      }
+      if (!selected) return world;
+
+      if (selected.content.ambient) {
+        next = applyEvent(next, { type: "ShowText", text: selected.content.ambient });
+      }
+
+      for (const effectEvent of effectsToEvents(selected.effects)) {
+        next = applyEvent(next, effectEvent);
+      }
+      return next;
     }
 
     default: {

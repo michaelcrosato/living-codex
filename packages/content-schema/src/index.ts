@@ -11,4 +11,5 @@ export * from "./location";
 export * from "./npc";
 export * from "./quest";
 export * from "./pack";
+export * from "./fingerprint";
 export { toJsonSchema } from "./json-schema";

@@ -145,6 +145,9 @@ importers:
       '@codex/content-schema':
         specifier: workspace:*
         version: link:../../packages/content-schema
+      '@codex/engine-core':
+        specifier: workspace:*
+        version: link:../../packages/engine-core
 
   tools/pipeline:
     dependencies:

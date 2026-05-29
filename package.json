@@ -17,6 +17,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "schema:export": "tsx tools/scripts/schema-export.ts",
+    "pipeline:export": "tsx tools/scripts/pipeline-export.ts",
+    "pipeline:cycle": "tsx tools/scripts/pipeline-cycle.ts",
     "content:validate": "tsx tools/scripts/content-validate.ts",
     "content:verify": "tsx tools/scripts/content-verify.ts",
     "replay:verify": "vitest run -t \"replay invariant\"",

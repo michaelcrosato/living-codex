@@ -7,6 +7,9 @@
   "types": "src/index.ts",
   "exports": { ".": "./src/index.ts" },
   "dependencies": {
-    "@codex/content-schema": "workspace:*"
+    "@codex/content-loader": "workspace:*",
+    "@codex/content-schema": "workspace:*",
+    "zod": "^3.24.1",
+    "zod-to-json-schema": "^3.24.1"
   }
 }

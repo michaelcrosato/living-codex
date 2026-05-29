@@ -1,0 +1,73 @@
+{
+  "entities": [
+    {
+      "id": "faction.ashfall_syndicate",
+      "kind": "faction",
+      "name": "Ashfall Syndicate",
+      "summary": "The city runs on what we let it keep."
+    },
+    {
+      "id": "faction.varga_crew",
+      "kind": "faction",
+      "name": "Varga's Crew",
+      "summary": "Loyalty for loyalty. Debt remembered."
+    },
+    {
+      "id": "item.credits",
+      "kind": "item",
+      "name": "Credits",
+      "summary": "Ashfall runs on them."
+    },
+    {
+      "id": "item.encrypted_drive",
+      "kind": "item",
+      "name": "Encrypted Drive",
+      "summary": "Heavy with someone's secrets."
+    },
+    {
+      "id": "location.ashfall_district",
+      "kind": "location",
+      "name": "Ashfall Street",
+      "summary": "Acid rain hisses on neon. The awnings sag. Someone is always watching."
+    },
+    {
+      "id": "location.warehouse_door",
+      "kind": "location",
+      "name": "Warehouse Door",
+      "summary": "A bored guard, a heavy door, and the smell of ozone."
+    },
+    {
+      "id": "location.warehouse_floor",
+      "kind": "location",
+      "name": "Warehouse Floor",
+      "summary": "Crates to the ceiling. On a workbench: the drive."
+    },
+    {
+      "id": "location.warehouse_roof",
+      "kind": "location",
+      "name": "Warehouse Roof",
+      "summary": "Rain on corrugated steel. A skylight, loose on its hinges."
+    },
+    {
+      "id": "npc.varga",
+      "kind": "npc",
+      "name": "Varga",
+      "summary": "dock-side fixer"
+    },
+    {
+      "id": "npc.warehouse_guard",
+      "kind": "npc",
+      "name": "Syndicate Guard",
+      "summary": "warehouse muscle"
+    },
+    {
+      "id": "quest.the_warehouse",
+      "kind": "quest",
+      "name": "What's in the Warehouse",
+      "summary": "Varga says there's something worth taking in the Ashfall warehouse. Getting in is your problem."
+    }
+  ],
+  "packs": [
+    "pack.opening"
+  ]
+}

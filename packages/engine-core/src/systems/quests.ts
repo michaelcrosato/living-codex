@@ -1,4 +1,4 @@
-import type { Quest, QuestId } from "@codex/content-schema";
+import type { Quest, QuestId, Npc, NpcId } from "@codex/content-schema";
 import { ItemId } from "@codex/content-schema";
 import type { System } from "../tick";
 import type { GameEvent, InputEvent } from "../events/event";
@@ -53,6 +53,7 @@ function completionEvents(quest: Quest, branch: Quest["branches"][number]): Game
 export function questSystem(
   quests: ReadonlyMap<QuestId, Quest>,
   inputs: readonly InputEvent[] = [],
+  npcs?: ReadonlyMap<NpcId, Npc>,
 ): System {
   const attempted = (questId: QuestId, branchId: string): boolean =>
     inputs.some((i) => i.type === "Attempt" && i.questId === questId && i.branchId === branchId);
@@ -143,9 +144,21 @@ export function questSystem(
               });
             }
             break;
-          case "talk_to":
-            // Completed via a dialogue flag once narrative (T-07) lands; unused by the slice.
+          case "talk_to": {
+            // Done once the player has engaged this NPC's dialogue (SPEC-02). The signal is World
+            // state: world.dialogue holds an entry per dialogue advanced (DialogueAdvanced, captured
+            // into the log), so it is replay-stable. Needs the npc registry to resolve the NPC's
+            // dialogue id — its base, or a reactsTo/set_npc_dialogue override.
+            const npc = npcs?.get(objective.npcId);
+            if (npc) {
+              const override = world.npcDialogue[objective.npcId];
+              const talked =
+                world.dialogue[npc.dialogueId] !== undefined ||
+                (override !== undefined && world.dialogue[override] !== undefined);
+              if (talked) events.push(mark(quest.id, key, true));
+            }
             break;
+          }
         }
       }
     }

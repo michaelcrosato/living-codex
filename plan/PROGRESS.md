@@ -16,9 +16,9 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 | SPEC-03 | CI coverage + doctor | 0 | Done | main | 47d769d | green | @vitest/coverage-v8 + test:coverage + CI doctor/coverage; report-only; supersedes TICKET005 |
 | SPEC-06 | CI supply-chain hardening | 0 | Done | main | a4a6056 | green | SHA-pinned actions + least-priv permissions + --ignore-scripts |
 | SPEC-07 | depcruise layers + no-orphans | 0 | Done | main | 4f177d8 | green | 3 layer rules + no-orphans; rule fire proven via planted violation |
-| SPEC-02 | Wire `talk_to` objective | 1 | Todo | — | — | — | — |
+| SPEC-02 | Wire `talk_to` objective | 1 | Done | main | (see log) | green | world.dialogue signal (no new World field/migration); questSystem gains optional npcs; +1 test |
 | SPEC-04 | Per-tick state-hash divergence | 1 | Done | main | 12c6f63 | green | replayTrace + firstDivergence (pure, reuse hash()); bisects divergence to a step; +1 test |
-| SPEC-05 | fast-check command fuzz | 1 | Done | main | (see log) | green | session-level input fuzz (60 runs, full systems path); replay-invariant-tagged; no divergence found |
+| SPEC-05 | fast-check command fuzz | 1 | Done | main | 0ffff81 | green | session-level input fuzz (60 runs, full systems path); replay-invariant-tagged; no divergence found |
 | SPEC-12 | Pipeline tolerant pre-parser | 1 | Done | main | d552be1 | green | tolerantParse: fences/CoT/trailing-comma (string-aware); golden-master byte-stable; +7 tests (143→150) |
 | SPEC-08 | Offline observability | 2 | Todo | — | — | — | coord main.ts w/ SPEC-09/10 |
 | SPEC-09 | Accessibility pass | 2 | Todo | — | — | — | run UI, not just tests |
@@ -31,7 +31,7 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 
 ## Wave gates
 - [x] **Wave 0 complete** (2026-05-29) — SPEC-01/07/03/06 shipped; `pnpm verify` green; `pnpm audit` clean. Re-baseline before Wave 1.
-- [ ] **Wave 1 complete** — determinism+correctness locked; replay invariant unchanged.
+- [x] **Wave 1 complete** (2026-05-29) — SPEC-12/04/05/02 shipped; replay invariant intact (now also session-fuzzed); 153 tests. `pnpm verify` green. Re-baseline before Wave 2.
 - [ ] **Wave 2 complete** — experience+durability+ops shipped; UI manually verified.
 - [ ] **Wave 3 complete** — content depth + pipeline intelligence.
 - [ ] **Wave 4 complete** — Zod 4 migration landed in isolation; golden-master updated.
@@ -44,5 +44,6 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 - 2026-05-29 — SPEC-06 CI hardening: pinned all 4 GitHub Actions to commit SHAs (+ tag comments), added top-level least-privilege `permissions: contents: read`, and `--ignore-scripts` on CI installs. Proved locally `pnpm install --frozen-lockfile --ignore-scripts` succeeds (no dep needs a lifecycle script). `pnpm verify` green. **Wave 0 complete.** (YAML validity confirmable on next push.) (a4a6056)
 - 2026-05-29 — SPEC-12 tolerant pre-parser: `generateStructured` now runs a string-aware `tolerantParse` (code fences / prose-wrapped JSON / trailing commas) before counting a repair, so recoverable output costs 0 re-prompts. No new dep. Golden-master byte-stable (StubProvider clean path unchanged). 150 tests (+7). `pnpm verify` green. (d552be1)
 - 2026-05-29 — SPEC-04 per-tick state-hash: added pure `replayTrace`/`firstDivergence` to engine-core (reuse `hash()`), exported via the log barrel; replay.test.ts gains a divergence-bisection test (perturb an event -> pinpoints the step). Caught+fixed a `exactOptionalPropertyTypes` error mid-impl (conditional-spread the optional fields). 151 tests (+1). `pnpm verify` green. (12c6f63)
-- 2026-05-29 — SPEC-05 fast-check command fuzz: new app-web/test/replay-fuzz.spec.ts drives random valid-shaped input sequences (Move/Interact/Attack/UseExit/Attempt/Bribe) through a headless GameSession and asserts hash(replay)==hash(live) — exercising the full systems->events->apply->log path (complements the applyEvent-level fuzz in replay.test.ts). 60 runs, seed-pinned; no divergence surfaced. 152 tests (+1). `pnpm verify` green.
+- 2026-05-29 — SPEC-05 fast-check command fuzz: new app-web/test/replay-fuzz.spec.ts drives random valid-shaped input sequences (Move/Interact/Attack/UseExit/Attempt/Bribe) through a headless GameSession and asserts hash(replay)==hash(live) — exercising the full systems->events->apply->log path (complements the applyEvent-level fuzz in replay.test.ts). 60 runs, seed-pinned; no divergence surfaced. 152 tests (+1). `pnpm verify` green. (0ffff81)
+- 2026-05-29 — SPEC-02 wire talk_to: the `talk_to` objective (previously a runtime stub) now completes once the player has engaged the NPC's dialogue — detected via `world.dialogue` (set by DialogueAdvanced, replay-safe), so NO new World field/migration. `questSystem` takes an optional `npcs` registry to resolve the NPC's (base or overridden) dialogue id; session wires it in. +1 test (153). **Wave 1 complete.** `pnpm verify` green.
 <!-- Append: `YYYY-MM-DD — SPEC-NN <slug>: <what changed> (<commit>); verify <green/red>.` -->

@@ -1,5 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { Quest, QuestId, LocationId, FlagId, FactionId, ItemId } from "@codex/content-schema";
+import {
+  Quest,
+  QuestId,
+  LocationId,
+  FlagId,
+  FactionId,
+  ItemId,
+  Npc,
+  NpcId,
+  DialogueId,
+} from "@codex/content-schema";
 import { createWorld, type World, type Entity, type CreateWorldOptions } from "../state/world";
 import { applyEvent, applyEvents } from "../events/apply";
 import type { InputEvent } from "../events/event";
@@ -167,5 +177,55 @@ describe("quest runtime", () => {
     const final = drive(start, registry, "talk");
     expect(questSystem(registry)(final, 0)).toHaveLength(0);
     expect(final.inventory[CREDITS]).toBe(200);
+  });
+
+  it("completes a talk_to objective once the NPC's dialogue has been engaged (SPEC-02)", () => {
+    const MEETQ = QuestId.parse("quest.meet");
+    const VARGA = NpcId.parse("npc.varga");
+    const DLG = DialogueId.parse("dialogue.varga_intro");
+    const talkQuest = Quest.parse({
+      id: "quest.meet",
+      title: "Meet the Fixer",
+      summary: "Find Varga and talk.",
+      offerWhen: [{ kind: "flag_is", flag: "flag.met_varga", equals: true }],
+      branches: [
+        { id: "talk", label: "Talk", objectives: [{ kind: "talk_to", npcId: "npc.varga" }] },
+      ],
+      rewards: {},
+    });
+    const talkMap = new Map([[MEETQ, talkQuest]]);
+    const varga = Npc.parse({
+      id: "npc.varga",
+      name: "Varga",
+      appearance: { bodyColor: "#ccc", accentColor: "#0ff", silhouette: "cloaked" },
+      bio: {
+        role: "fixer",
+        backstory: "owes the syndicate",
+        wants: "a drive",
+        fears: "exposure",
+        voice: "clipped",
+      },
+      dialogueId: "dialogue.varga_intro",
+    });
+    const npcs = new Map([[VARGA, varga]]);
+
+    // activate, then confirm talk_to does NOT resolve before any conversation
+    let w = applyEvent(world(), { type: "SetFlag", flag: MET, to: true });
+    w = applyEvents(w, questSystem(talkMap, [], npcs)(w, 0));
+    expect(w.quests[MEETQ]?.status).toBe("active");
+    expect(questSystem(talkMap, [], npcs)(w, 0)).toHaveLength(0);
+
+    // engage the dialogue — captured into world.dialogue (replay-safe)
+    w = applyEvent(w, { type: "DialogueAdvanced", dialogueId: DLG, inkState: "{}", flags: {} });
+
+    // defensive: without the npc registry, talk_to can't resolve the dialogue id
+    expect(questSystem(talkMap, [])(w, 0)).toHaveLength(0);
+
+    // with the registry, talk_to marks done, then the single-objective branch completes
+    w = applyEvents(w, questSystem(talkMap, [], npcs)(w, 0));
+    expect(w.quests[MEETQ]?.objectiveProgress["talk#0"]?.done).toBe(true);
+    w = applyEvents(w, questSystem(talkMap, [], npcs)(w, 0));
+    expect(w.quests[MEETQ]?.status).toBe("completed");
+    expect(w.quests[MEETQ]?.completedBranchId).toBe("talk");
   });
 });

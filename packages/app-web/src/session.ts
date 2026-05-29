@@ -100,7 +100,7 @@ export class GameSession {
       combatSystem(inputs),
       bribeSystem(inputs),
       reactionsSystem(this.registries.npcs),
-      questSystem(this.registries.quests, inputs),
+      questSystem(this.registries.quests, inputs, this.registries.npcs),
       dialogueSystem(inputs, { narrative: this.narrative, dialogues: this.registries.dialogues }),
     ];
     const result = tick(this.world, inputs, systems, dt);

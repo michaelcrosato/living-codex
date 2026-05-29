@@ -18,7 +18,8 @@ export interface SynthesisInput {
   arc: ArcSkeleton;
   references: ReferenceSet;
   dramatist: DramatistOutput;
-  quest: Quest;
+  /** Optional — patron-only briefs (budget.quests = 0) produce a pack with no quest. */
+  quest?: Quest;
   models: readonly string[];
   dependsOn?: readonly string[];
 }
@@ -62,7 +63,7 @@ export function synthesize(input: SynthesisInput): Pack {
     items: [],
     locations: [],
     npcs,
-    quests: [input.quest],
+    quests: input.quest ? [input.quest] : [],
     dialogues,
   };
 

@@ -14,11 +14,11 @@ const raw = JSON.parse(
 const { registries, fingerprint } = loadPacks([raw]);
 
 /** The recorded golden hash: fixed brief + the demo ensemble => this exact candidate pack. */
-const GOLDEN_HASH = "06bd6ac6e3b234";
+const GOLDEN_HASH = "15d6d7252d7ccb";
 
 const run = () =>
   runCycle({
-    brief: makeBrief("Introduce a rival fixer"),
+    brief: makeBrief({ intent: "Introduce a rival fixer", budget: { npcs: 1, quests: 1 } }),
     provider: demoProvider(),
     registries,
     packIds: Object.keys(fingerprint.packs),

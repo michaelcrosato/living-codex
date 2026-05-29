@@ -19,6 +19,7 @@
     "schema:export": "tsx tools/scripts/schema-export.ts",
     "pipeline:export": "tsx tools/scripts/pipeline-export.ts",
     "pipeline:cycle": "tsx tools/scripts/pipeline-cycle.ts",
+    "pipeline:bake": "tsx tools/scripts/pipeline-bake-patrons.ts",
     "content:validate": "tsx tools/scripts/content-validate.ts",
     "content:verify": "tsx tools/scripts/content-verify.ts",
     "replay:verify": "vitest run -t \"replay invariant\"",

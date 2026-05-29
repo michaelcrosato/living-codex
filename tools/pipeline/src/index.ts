@@ -11,4 +11,6 @@ export { ROLE_SYSTEM_PROMPTS, buildUserPrompt, EXAMPLE_BRIEF, type Role } from "
 export { synthesize, type SynthesisInput } from "./synthesis";
 export { runCycle, type CurationBundle, type RunCycleArgs } from "./pipelines/cycle";
 export { renderBundleMarkdown } from "./bundle";
+export { finalizeProvenance, type CurationStamp } from "./bake";
 export { DEMO_RESPONSES, demoProvider } from "./demo-fixture";
+export { DRIP_RESPONSES, dripPatronsProvider } from "./drip-patrons-fixture";

@@ -22,7 +22,7 @@ export interface CurationBundle {
     arc: ArcSkeleton;
     references: ReferenceSet;
     npcs: DramatistOutput;
-    quest: z.infer<typeof Quest>;
+    quest?: z.infer<typeof Quest>;
   };
   scorecard: Scorecard;
   candidate: z.infer<typeof ContentPack>;
@@ -74,13 +74,17 @@ export async function runCycle(args: RunCycleArgs): Promise<CurationBundle> {
     DramatistOutput,
     `${base}\n\n# Arc\n${JSON.stringify(arc)}`,
   );
-  const quest = await callRole(
-    args.provider,
-    "architect",
-    "QUEST",
-    Quest,
-    `${base}\n\n# Arc\n${JSON.stringify(arc)}\n# New NPC ids\n${JSON.stringify(dramatist.npcs.map((n) => n.id))}`,
-  );
+  // The quest arrow is budget-driven: a patron-only brief (budget.quests = 0) skips it.
+  const quest =
+    args.brief.budget.quests > 0
+      ? await callRole(
+          args.provider,
+          "architect",
+          "QUEST",
+          Quest,
+          `${base}\n\n# Arc\n${JSON.stringify(arc)}\n# New NPC ids\n${JSON.stringify(dramatist.npcs.map((n) => n.id))}`,
+        )
+      : undefined;
   const scorecard = await callRole(
     args.provider,
     "critic",
@@ -96,15 +100,15 @@ export async function runCycle(args: RunCycleArgs): Promise<CurationBundle> {
     arc,
     references,
     dramatist,
-    quest,
     models: args.models ?? [args.provider.name],
     dependsOn: args.packIds ?? [],
+    ...(quest ? { quest } : {}),
   });
 
   return {
     brief: args.brief,
     canon,
-    proposals: { arc, references, npcs: dramatist, quest },
+    proposals: { arc, references, npcs: dramatist, ...(quest ? { quest } : {}) },
     scorecard,
     candidate,
     flagged: [...scorecard.contradictions],

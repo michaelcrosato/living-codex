@@ -49,6 +49,66 @@
       "summary": "Rain on corrugated steel. A skylight, loose on its hinges."
     },
     {
+      "id": "npc.drip_bartender",
+      "kind": "npc",
+      "name": "Mox",
+      "summary": "the Drip's bartender"
+    },
+    {
+      "id": "npc.drip_bex",
+      "kind": "npc",
+      "name": "Bex",
+      "summary": "off-duty Syndicate muscle"
+    },
+    {
+      "id": "npc.drip_grin",
+      "kind": "npc",
+      "name": "Grin",
+      "summary": "information broker"
+    },
+    {
+      "id": "npc.drip_halo",
+      "kind": "npc",
+      "name": "Halo",
+      "summary": "synth musician"
+    },
+    {
+      "id": "npc.drip_pell",
+      "kind": "npc",
+      "name": "Old Pell",
+      "summary": "washed-up ex-enforcer"
+    },
+    {
+      "id": "npc.drip_rumor",
+      "kind": "npc",
+      "name": "Teesh",
+      "summary": "off-shift dockhand"
+    },
+    {
+      "id": "npc.drip_sull",
+      "kind": "npc",
+      "name": "Doc Sull",
+      "summary": "back-room medic"
+    },
+    {
+      "id": "npc.drip_wren",
+      "kind": "npc",
+      "name": "Wren",
+      "summary": "Varga's courier"
+    },
+    {
+      "id": "npc.drip_yi",
+      "kind": "npc",
+      "name": "Lucky Yi",
+      "summary": "card sharp"
+    },
+    {
+      "id": "npc.the_archivist",
+      "kind": "npc",
+      "name": "The Archivist",
+      "summary": "keeper of dangerous truths"
+    },
+    {
       "id": "npc.varga",
       "kind": "npc",
       "name": "Varga",
@@ -68,6 +128,7 @@
     }
   ],
   "packs": [
-    "pack.opening"
+    "pack.opening",
+    "pack.the_drip_patrons"
   ]
 }

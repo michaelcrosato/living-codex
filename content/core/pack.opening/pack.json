@@ -119,6 +119,7 @@
         "secrets": []
       },
       "dialogueId": "dialogue.guard",
+      "combat": { "hp": 12 },
       "reactsTo": []
     }
   ],

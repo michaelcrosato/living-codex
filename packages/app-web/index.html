@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Living Codex — First Light</title>
+    <style>
+      body {
+        margin: 0;
+        background: #05070c;
+        color: #cfe6f5;
+        font-family: ui-monospace, monospace;
+        display: flex;
+        gap: 16px;
+        padding: 16px;
+        align-items: flex-start;
+      }
+      #hud {
+        white-space: pre;
+        font-size: 14px;
+        line-height: 1.5;
+        min-width: 260px;
+      }
+      #hud::before {
+        content: "THE LIVING CODEX\AAshfall — First Light\A\AWASD move · E talk · F fight · 1/2 exits\A";
+        color: #4a5a6a;
+      }
+      canvas {
+        border: 1px solid #1b2230;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="game" width="800" height="600"></canvas>
+    <div id="hud">Loading…</div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

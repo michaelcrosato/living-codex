@@ -115,7 +115,7 @@ function assertReplayMatches(p: Playthrough): void {
 describe("The Warehouse, Three Ways (agency proven, replayable)", () => {
   const talk = play("talk", { persuade: 20 });
   const sneak = play("sneak", { sneak: 20 });
-  const force = play("force", { force: 4 });
+  const force = play("force", { force: 4, persuade: -10 }); // can't talk -> talk check fails, force wins deterministically
 
   it("all three branches complete the quest", () => {
     expect(talk.world.quests[QID]?.status).toBe("completed");

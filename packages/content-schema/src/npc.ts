@@ -22,6 +22,9 @@ export const Npc = z.object({
     secrets: z.array(z.string().max(240)).max(5).default([]),
   }),
   dialogueId: DialogueId,
+  // Optional combat stats — present only for NPCs that can be the target of a `defeat`
+  // objective. Additive/optional so existing packs and saves stay valid (SCHEMA.md §10).
+  combat: z.object({ hp: z.number().int().positive() }).optional(),
   reactsTo: z
     .array(
       z.object({

@@ -7,7 +7,9 @@
   "types": "src/index.ts",
   "exports": { ".": "./src/index.ts" },
   "scripts": {
-    "dev": "echo \"app-web dev server lands in T-12\" && exit 0"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@codex/content-loader": "workspace:*",
@@ -16,5 +18,8 @@
     "@codex/narrative-ink": "workspace:*",
     "@codex/persistence": "workspace:*",
     "@codex/render-pixi": "workspace:*"
+  },
+  "devDependencies": {
+    "vite": "^7.0.0"
   }
 }

@@ -78,6 +78,10 @@ importers:
       '@codex/render-pixi':
         specifier: workspace:*
         version: link:../render-pixi
+    devDependencies:
+      vite:
+        specifier: ^7.0.0
+        version: 7.3.3(@types/node@22.19.19)(tsx@4.22.3)
 
   packages/content-loader:
     dependencies:

@@ -13,6 +13,8 @@ import type {
   NpcId,
   Quest,
   QuestId,
+  Storylet,
+  StoryletId,
 } from "@codex/content-schema";
 import { hashValue } from "./hash";
 
@@ -29,6 +31,7 @@ export interface Registries {
   factions: ReadonlyMap<FactionId, Faction>;
   items: ReadonlyMap<ItemId, ItemTemplate>;
   dialogues: ReadonlyMap<DialogueId, DialogueAsset>;
+  storylets: ReadonlyMap<StoryletId, Storylet>;
 }
 
 export interface LoadResult {
@@ -61,6 +64,7 @@ export function buildRegistries(packs: ContentPack[]): Registries {
     factions: indexById(packs, (p) => p.factions, "faction"),
     items: indexById(packs, (p) => p.items, "item"),
     dialogues: indexById(packs, (p) => p.dialogues, "dialogue"),
+    storylets: indexById(packs, (p) => p.storylets, "storylet"),
   };
   return Object.freeze(registries);
 }
@@ -83,6 +87,7 @@ export function fingerprintRegistries(
     factions: sortedEntries(registries.factions),
     items: sortedEntries(registries.items),
     dialogues: sortedEntries(registries.dialogues),
+    storylets: sortedEntries(registries.storylets),
   };
   return { packs: packsMap, registriesHash: hashValue(canonical) };
 }

@@ -62,3 +62,35 @@ L (~1 day incl. design note). The riskiest/biggest spec — slice it.
 ## Out of scope (→ BACKLOG)
 Storylets gating Ink knots; storylets driving full quests; the **unified qualities vector** (collapsing
 flags/skills/rep into one numeric space) — that's a separate cross-cutting redesign; drama-manager waypoint steering.
+
+## Design
+
+### 1. Storylet shape
+```typescript
+export const Storylet = z.object({
+  id: StoryletId,
+  preconditions: z.array(Condition).default([]),
+  salience: z.number().int().default(0),
+  tags: z.array(z.string()).default([]),
+  content: z.object({
+    dialogueId: DialogueId.optional(),
+    ambient: z.string().optional(),
+  }),
+  effects: z.array(Effect).default([]),
+});
+```
+Storylets are stored under a new optional field `storylets: Storylet[]` in `ContentPack` (engine-ignored by default unless consumed).
+
+### 2. Selection algorithm
+The selector algorithm works deterministically as follows:
+1. Filter the entire pool of active storylets (from all loaded packs) down to those whose `preconditions` evaluate to `true` given the current `World` state.
+2. Group the remaining candidate storylets by their salience value. Find the maximum salience value.
+3. If no storylets are available, return an empty array.
+4. Otherwise, filter to all candidates sharing the maximum salience value, and package them into a `TriggerStorylet` game event.
+5. In the `applyEvent` fold, if there is a single candidate, select it. If there are multiple candidates, break ties deterministically using the single seeded RNG inside the `World`'s `rngState` (via `RngCursor`). Apply any effects or ambient text recursively.
+
+### 3. First slice = lowest risk
+We implement salience-selected ambient/barks by selecting matching storylets during each tick and applying their effects and ambient text. All quest-flow logic remains unaffected.
+
+### 4. Migration
+Additive optional field `storylets` added to `ContentPack`. Old packs omit it and default to `[]`. No `World` schema migration is required since storylet state is entirely derived or tracked via standard flags. Pack version is unchanged.

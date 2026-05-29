@@ -26,6 +26,7 @@ export const FactionId = brand("faction");
 export const ItemId = brand("item");
 export const DialogueId = brand("dialogue");
 export const FlagId = brand("flag");
+export const StoryletId = brand("storylet");
 
 export type NpcId = z.infer<typeof NpcId>;
 export type QuestId = z.infer<typeof QuestId>;
@@ -34,3 +35,4 @@ export type FactionId = z.infer<typeof FactionId>;
 export type ItemId = z.infer<typeof ItemId>;
 export type DialogueId = z.infer<typeof DialogueId>;
 export type FlagId = z.infer<typeof FlagId>;
+export type StoryletId = z.infer<typeof StoryletId>;

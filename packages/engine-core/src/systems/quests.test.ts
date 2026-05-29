@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Quest, QuestId, LocationId, FlagId, FactionId, ItemId } from "@codex/content-schema";
 import { createWorld, type World, type Entity, type CreateWorldOptions } from "../state/world";
 import { applyEvent, applyEvents } from "../events/apply";
-import type { System } from "../tick";
+import type { InputEvent } from "../events/event";
 import { questSystem } from "./quests";
 
 const START = LocationId.parse("location.start");
@@ -55,10 +55,28 @@ function world(opts?: Partial<CreateWorldOptions>): World {
   return createWorld({ seed: "ashfall", startLocationId: START, ...opts });
 }
 
-function drive(initial: World, sys: System, maxTicks = 12): World {
+/** Attempt the pursued branch's current objective only when it's a skill_check (S1.3). */
+function attemptFor(w: World, quests: ReadonlyMap<typeof QID, Quest>, branchId: string): InputEvent[] {
+  const rt = w.quests[QID];
+  if (!rt || rt.status !== "active") return [];
+  const branch = quests.get(QID)?.branches.find((b) => b.id === branchId);
+  if (!branch) return [];
+  let i = 0;
+  while (i < branch.objectives.length && rt.objectiveProgress[`${branchId}#${i}`]?.done) i++;
+  return branch.objectives[i]?.kind === "skill_check"
+    ? [{ type: "Attempt", questId: QID, branchId }]
+    : [];
+}
+
+function drive(
+  initial: World,
+  quests: ReadonlyMap<typeof QID, Quest>,
+  branchId: string,
+  maxTicks = 12,
+): World {
   let w = initial;
   for (let t = 0; t < maxTicks; t++) {
-    const events = sys(w, 0);
+    const events = questSystem(quests, attemptFor(w, quests, branchId))(w, 0);
     if (events.length === 0) break;
     w = applyEvents(w, events);
   }
@@ -78,7 +96,7 @@ describe("quest runtime", () => {
 
   it("completes the talk branch atomically (onComplete → onAnyComplete → rewards)", () => {
     const start = applyEvent(world({ skills: { persuade: 20 } }), { type: "SetFlag", flag: MET, to: true });
-    const final = drive(start, questSystem(registry));
+    const final = drive(start, registry, "talk");
     const rt = final.quests[QID]!;
     expect(rt.status).toBe("completed");
     expect(rt.completedBranchId).toBe("talk");
@@ -101,7 +119,8 @@ describe("quest runtime", () => {
     };
     start = applyEvent(start, { type: "SpawnEntity", entity: guard });
     start = applyEvent(start, { type: "SetEntityHp", entityId: "entity.guard", hp: 0, alive: false });
-    const final = drive(start, questSystem(registry));
+    // persuade 0, but pursuing "force" never attempts the talk check, so force wins deterministically
+    const final = drive(start, registry, "force");
     expect(final.quests[QID]?.completedBranchId).toBe("force");
     expect(final.reputation[SYNDICATE]).toBe(-15); // the cost of force
     expect(final.flags[PEACE]).toBeUndefined(); // talk's consequence did NOT happen
@@ -111,18 +130,17 @@ describe("quest runtime", () => {
   it("forecloses a failed non-retryable branch; quest fails when all branches close", () => {
     // single-branch quest, persuade 0 vs dc 12 -> always fails -> foreclosed -> failed
     const solo = Quest.parse({ ...quest, branches: [quest.branches[0]] });
-    const sys = questSystem(new Map([[QID, solo]]));
+    const soloMap = new Map([[QID, solo]]);
     const start = applyEvent(world({ skills: { persuade: 0 } }), { type: "SetFlag", flag: MET, to: true });
-    const final = drive(start, sys);
+    const final = drive(start, soloMap, "talk");
     expect(final.quests[QID]?.status).toBe("failed");
     expect(final.flags[FlagId.parse("flag.guard_suspicious")]).toBe(true); // onFail fired
   });
 
   it("is idempotent: a completed quest emits nothing and rewards never double-apply", () => {
     const start = applyEvent(world({ skills: { persuade: 20 } }), { type: "SetFlag", flag: MET, to: true });
-    const sys = questSystem(registry);
-    const final = drive(start, sys);
-    expect(sys(final, 0)).toHaveLength(0);
+    const final = drive(start, registry, "talk");
+    expect(questSystem(registry)(final, 0)).toHaveLength(0);
     expect(final.inventory[CREDITS]).toBe(200);
   });
 });

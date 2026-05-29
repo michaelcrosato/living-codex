@@ -60,7 +60,8 @@ function nextInputs(world: World, branchId: string): InputEvent[] {
     return idx >= 0 ? [{ type: "UseExit", exitIndex: idx }] : [];
   }
   if (obj.kind === "defeat") return [{ type: "Attack" }];
-  return []; // skill_check auto-resolves in the quest system
+  if (obj.kind === "skill_check") return [{ type: "Attempt", questId: QID, branchId }];
+  return [];
 }
 
 interface Playthrough {
@@ -99,7 +100,7 @@ function play(branchId: string, skills: Partial<Record<SkillId, number>>): Playt
   const ctx = { locations: registries.locations, npcs: registries.npcs };
   for (let t = 0; t < 60 && world.quests[QID]?.status !== "completed"; t++) {
     const inputs = nextInputs(world, branchId);
-    const systems = [interactionSystem(inputs, ctx), combatSystem(inputs), questSystem(registries.quests)];
+    const systems = [interactionSystem(inputs, ctx), combatSystem(inputs), questSystem(registries.quests, inputs)];
     const result = tick(world, inputs, systems, 1 / 60);
     log.entries.push(...result.entries);
     world = result.world;
@@ -115,7 +116,7 @@ function assertReplayMatches(p: Playthrough): void {
 describe("The Warehouse, Three Ways (agency proven, replayable)", () => {
   const talk = play("talk", { persuade: 20 });
   const sneak = play("sneak", { sneak: 20 });
-  const force = play("force", { force: 4, persuade: -10 }); // can't talk -> talk check fails, force wins deterministically
+  const force = play("force", { force: 4 }); // pursuing force never attempts talk's check (S1.3) -> force wins
 
   it("all three branches complete the quest", () => {
     expect(talk.world.quests[QID]?.status).toBe("completed");

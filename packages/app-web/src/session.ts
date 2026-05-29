@@ -87,7 +87,7 @@ export class GameSession {
       interactionSystem(inputs, ctx),
       combatSystem(inputs),
       reactionsSystem(this.registries.npcs),
-      questSystem(this.registries.quests),
+      questSystem(this.registries.quests, inputs),
       dialogueSystem(inputs, { narrative: this.narrative, dialogues: this.registries.dialogues }),
     ];
     const result = tick(this.world, inputs, systems, dt);

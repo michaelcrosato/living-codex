@@ -62,4 +62,6 @@ export type InputEvent =
   | { type: "Interact" }
   | { type: "Choose"; dialogueId: DialogueId; choiceIndex: number }
   | { type: "UseExit"; exitIndex: number }
-  | { type: "Attack" };
+  | { type: "Attack" }
+  // commit to attempting the current objective of a quest branch (drives skill_check resolution)
+  | { type: "Attempt"; questId: QuestId; branchId: string };

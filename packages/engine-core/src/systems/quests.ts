@@ -1,7 +1,7 @@
 import type { Quest, QuestId } from "@codex/content-schema";
 import { ItemId } from "@codex/content-schema";
 import type { System } from "../tick";
-import type { GameEvent } from "../events/event";
+import type { GameEvent, InputEvent } from "../events/event";
 import { evaluateAll } from "../conditions/conditions";
 import { effectsToEvents } from "../events/effects";
 
@@ -50,7 +50,12 @@ function completionEvents(quest: Quest, branch: Quest["branches"][number]): Game
   ];
 }
 
-export function questSystem(quests: ReadonlyMap<QuestId, Quest>): System {
+export function questSystem(
+  quests: ReadonlyMap<QuestId, Quest>,
+  inputs: readonly InputEvent[] = [],
+): System {
+  const attempted = (questId: QuestId, branchId: string): boolean =>
+    inputs.some((i) => i.type === "Attempt" && i.questId === questId && i.branchId === branchId);
   return (world) => {
     const events: GameEvent[] = [];
 
@@ -118,7 +123,10 @@ export function questSystem(quests: ReadonlyMap<QuestId, Quest>): System {
             if (world.flags[objective.flag] === objective.to) events.push(mark(quest.id, key, true));
             break;
           case "skill_check":
-            if (!progress || progress.attempts === 0) {
+            // Honest agency (S1.3): a check resolves only when the player explicitly attempts
+            // THIS branch — not auto-fired for every active branch. Pursuing "force" never
+            // rolls "talk"'s persuade check.
+            if (attempted(quest.id, branchId) && (!progress || progress.attempts === 0)) {
               events.push({
                 type: "ResolveSkillCheck",
                 questId: quest.id,

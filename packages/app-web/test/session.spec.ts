@@ -35,6 +35,7 @@ function navInputs(session: GameSession, branchId: string): InputEvent[] {
     return idx >= 0 ? [{ type: "UseExit", exitIndex: idx }] : [];
   }
   if (obj.kind === "defeat") return [{ type: "Attack" }];
+  if (obj.kind === "skill_check") return [{ type: "Attempt", questId: QID, branchId }];
   return [];
 }
 
@@ -58,10 +59,9 @@ describe("GameSession (the playable app's headless heart)", () => {
   });
 
   it("plays the force branch to completion through the real session and replays exactly", () => {
-    // persuade -10 makes the (auto-fired) talk check fail deterministically regardless of the
-    // seed's d20 roll, so the force branch is the one that completes. (Known slice simplification:
-    // the quest auto-resolves skill checks for every active branch, not just the pursued one.)
-    const { session, opts } = newSession({ force: 4, persuade: -10 });
+    // Pursuing "force" never issues an Attempt for the talk branch (S1.3), so the talk check
+    // never fires and force is the deterministic winner — no skill tuning needed.
+    const { session, opts } = newSession({ force: 4 });
     for (let t = 0; t < 80 && session.world.quests[QID]?.status !== "completed"; t++) {
       session.step(navInputs(session, "force"));
     }

@@ -194,6 +194,9 @@ export const Effect = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("unlock_exit"), locationId: LocationId, exitIndex: z.number().int().nonnegative() }),
   z.object({ kind: z.literal("set_npc_dialogue"), npcId: NpcId, dialogueId: DialogueId }),
   z.object({ kind: z.literal("show_text"), text: z.string().max(400) }),
+  // bribe a faction: spend `cost` credits (only if affordable, enforced in applyEvent) to shift
+  // standing by `standing`. Added in T-16 — the worked example of the "extending the vocabulary" note below.
+  z.object({ kind: z.literal("bribe_faction"), factionId: FactionId, cost: z.number().int().positive(), standing: z.number().int() }),
 ]);
 export type Effect = z.infer<typeof Effect>;
 ```
@@ -238,6 +241,7 @@ export const Condition: z.ZodType<Condition> = z.lazy(() =>
     z.object({ kind: z.literal("reputation_at_least"), factionId: FactionId, value: z.number().int() }),
     z.object({ kind: z.literal("has_item"), itemId: ItemId, count: z.number().int().positive().default(1) }),
     z.object({ kind: z.literal("quest_completed"), questId: QuestId }),
+    z.object({ kind: z.literal("credits_at_least"), amount: z.number().int().nonnegative() }),
     z.object({ kind: z.literal("not"), of: Condition }),
     z.object({ kind: z.literal("all"), of: z.array(Condition).min(1) }),
     z.object({ kind: z.literal("any"), of: z.array(Condition).min(1) }),
@@ -248,6 +252,7 @@ export type Condition =
   | { kind: "reputation_at_least"; factionId: FactionId; value: number }
   | { kind: "has_item"; itemId: ItemId; count: number }
   | { kind: "quest_completed"; questId: QuestId }
+  | { kind: "credits_at_least"; amount: number }
   | { kind: "not"; of: Condition }
   | { kind: "all"; of: Condition[] }
   | { kind: "any"; of: Condition[] };

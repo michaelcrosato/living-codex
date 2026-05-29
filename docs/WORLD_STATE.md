@@ -12,7 +12,7 @@ Subordinate to `GOAL.md`. Pairs with `SCHEMA.md` (static content) — this file 
 
 ```ts
 interface World {
-  version: number;                 // World schema version (for migration, §7)
+  version: number;                 // World schema version (currently 2; for migration, §7)
   seed: string;                    // master seed; the ONLY entropy origin
   rngState: string;                // serialized PRNG state (so replay resumes mid-stream)
   tick: number;                    // monotonic fixed-timestep counter
@@ -28,6 +28,10 @@ interface World {
 
   quests: Record<QuestId, QuestRuntimeState>;        // see §2
   dialogue: Record<DialogueId, SerializedDialogueState>;  // see §4
+
+  // Added in v2 (NPC reactions / set_npc_dialogue / unlock_exit effects):
+  npcDialogue: Record<NpcId, DialogueId>;    // NPC -> override dialogue (reactsTo or set_npc_dialogue)
+  unlockedExits: Record<string, boolean>;    // "locationId#exitIndex" -> true once unlock_exit fires
 }
 ```
 

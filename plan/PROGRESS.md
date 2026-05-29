@@ -12,7 +12,7 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 
 | Spec | Title | Wave | Status | Branch/worktree | Commit | Verify | Notes |
 |------|-------|------|--------|-----------------|--------|--------|-------|
-| SPEC-01 | Doc-sync | 0 | Todo | — | — | — | — |
+| SPEC-01 | Doc-sync | 0 | Done | main | (see log) | green | bribe_faction + credits_at_least + v2 World fields |
 | SPEC-03 | CI coverage + doctor | 0 | Todo | — | — | — | supersedes TICKET005 |
 | SPEC-06 | CI supply-chain hardening | 0 | Todo | — | — | — | serialize w/ SPEC-03 (both edit verify.yml) |
 | SPEC-07 | depcruise layers + no-orphans | 0 | Todo | — | — | — | — |
@@ -38,4 +38,5 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 
 ## Changelog (append-only; newest last)
 - 2026-05-29 — `/plan/` authored from the 2026 baseline + 4-agent research pass. No code changed yet.
+- 2026-05-29 — SPEC-01 doc-sync: SCHEMA §5 +bribe_faction, §7 +credits_at_least, WORLD_STATE §1 +npcDialogue/+unlockedExits (v2). Docs-only; `pnpm verify` green.
 <!-- Append: `YYYY-MM-DD — SPEC-NN <slug>: <what changed> (<commit>); verify <green/red>.` -->

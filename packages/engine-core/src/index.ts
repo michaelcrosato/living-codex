@@ -25,6 +25,8 @@ export * from "./conditions/conditions";
 
 // ports (interfaces the app injects implementations for)
 export * from "./ports/narrative";
+export * from "./ports/renderer";
+export * from "./ports/audio";
 
 // systems
 export * from "./systems/movement";

@@ -9,5 +9,11 @@
     "tools/*/src/**/*.ts",
     "tools/scripts/**/*.ts",
     "*.config.ts"
+  ],
+  "//": "Browser packages (DOM lib) are typechecked separately via tsconfig.dom.json so the pure core never gains ambient DOM types.",
+  "exclude": [
+    "packages/render-pixi/**",
+    "packages/persistence/**",
+    "packages/app-web/**"
   ]
 }

@@ -1,0 +1,16 @@
+{
+  "//": "Typechecks the browser-facing packages with DOM lib. Kept separate from the root config so engine-core and the other pure packages never gain ambient DOM globals (purity is compiler-enforced, ARCHITECTURE.md §7).",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node"]
+  },
+  "include": [
+    "packages/render-pixi/src/**/*.ts",
+    "packages/render-pixi/test/**/*.ts",
+    "packages/persistence/src/**/*.ts",
+    "packages/persistence/test/**/*.ts",
+    "packages/app-web/src/**/*.ts",
+    "packages/app-web/test/**/*.ts"
+  ]
+}

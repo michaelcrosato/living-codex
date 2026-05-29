@@ -7,6 +7,7 @@
   "types": "src/index.ts",
   "exports": { ".": "./src/index.ts" },
   "dependencies": {
-    "@codex/engine-core": "workspace:*"
+    "@codex/engine-core": "workspace:*",
+    "pixi.js": "^8.18.1"
   }
 }

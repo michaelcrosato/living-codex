@@ -3,7 +3,7 @@
  * Uses OpenRouter when OPENROUTER_API_KEY is set; otherwise the shared demo stub so the full
  * decomposition + curation bundle is runnable offline. Real generation requires a key.
  */
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { loadPacks } from "@codex/content-loader";
 import {
@@ -12,6 +12,7 @@ import {
   OpenRouterProvider,
   demoProvider,
   renderBundleMarkdown,
+  renderBundleHtml,
   type ModelProvider,
 } from "@codex/pipeline";
 
@@ -61,3 +62,10 @@ const bundle = await runCycle({
 console.log(renderBundleMarkdown(bundle));
 console.log(`\n--- candidate pack (${bundle.candidate.id}) ---`);
 console.log(JSON.stringify(bundle.candidate, null, 2));
+
+const htmlFlag = process.argv.indexOf("--html");
+if (htmlFlag >= 0 && process.argv[htmlFlag + 1]) {
+  const htmlPath = resolve(process.cwd(), process.argv[htmlFlag + 1]!);
+  writeFileSync(htmlPath, renderBundleHtml(bundle), "utf8");
+  console.log(`\n[pipeline:cycle] wrote review page → ${htmlPath}`);
+}

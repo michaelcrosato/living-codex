@@ -17,6 +17,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "schema:export": "tsx tools/scripts/schema-export.ts",
+    "content:new": "tsx tools/scripts/content-new.ts",
     "content:compile-ink": "tsx tools/scripts/compile-ink.ts",
     "pipeline:export": "tsx tools/scripts/pipeline-export.ts",
     "pipeline:cycle": "tsx tools/scripts/pipeline-cycle.ts",

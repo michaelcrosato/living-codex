@@ -1,4 +1,4 @@
-import type { LocationId, FactionId, ItemId, FlagId, QuestId } from "@codex/content-schema";
+import type { LocationId, FactionId, ItemId, FlagId, QuestId, DialogueId } from "@codex/content-schema";
 import { seedRng, serializeRng } from "../time/rng";
 
 /**
@@ -12,7 +12,8 @@ import { seedRng, serializeRng } from "../time/rng";
 export type EntityId = string;
 export type SkillId = "persuade" | "sneak" | "force" | "tech";
 
-export const WORLD_VERSION = 1;
+// v2: added npcDialogue + unlockedExits (NPC reactions / set_npc_dialogue / unlock_exit).
+export const WORLD_VERSION = 2;
 export const SKILLS: readonly SkillId[] = ["persuade", "sneak", "force", "tech"];
 
 export interface CharacterState {
@@ -62,6 +63,10 @@ export interface World {
   reputation: Record<FactionId, number>;
   quests: Record<QuestId, QuestRuntimeState>;
   dialogue: Record<string, SerializedDialogueState>;
+  /** NPC id -> override dialogue (from reactsTo reactions or the set_npc_dialogue effect). */
+  npcDialogue: Record<string, DialogueId>;
+  /** "locationId#exitIndex" -> true once unlocked by the unlock_exit effect. */
+  unlockedExits: Record<string, boolean>;
 }
 
 export interface CreateWorldOptions {
@@ -105,5 +110,12 @@ export function createWorld(opts: CreateWorldOptions): World {
     reputation: {},
     quests: {},
     dialogue: {},
+    npcDialogue: {},
+    unlockedExits: {},
   };
+}
+
+/** The current dialogue id for an NPC: a reaction/effect override, else its static default. */
+export function currentDialogueId(world: World, npcId: string, fallback: DialogueId): DialogueId {
+  return world.npcDialogue[npcId] ?? fallback;
 }

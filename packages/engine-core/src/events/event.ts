@@ -1,4 +1,4 @@
-import type { LocationId, FactionId, ItemId, FlagId, QuestId, DialogueId, Effect } from "@codex/content-schema";
+import type { LocationId, FactionId, ItemId, FlagId, QuestId, DialogueId, NpcId, Effect } from "@codex/content-schema";
 import type { Entity, EntityId, SkillId } from "../state/world";
 
 /**
@@ -20,6 +20,10 @@ export type GameEvent =
   | { type: "MoveEntity"; entityId: EntityId; to: { x: number; y: number } }
   | { type: "SetEntityHp"; entityId: EntityId; hp: number; alive: boolean }
   | { type: "OfferQuest"; questId: QuestId }
+  // override an NPC's active dialogue (reactsTo reaction or the set_npc_dialogue effect)
+  | { type: "SetNpcDialogue"; npcId: NpcId; dialogueId: DialogueId }
+  // unlock a previously-gated exit by index (the unlock_exit effect)
+  | { type: "UnlockExit"; locationId: LocationId; exitIndex: number }
   // intent: the player interacted with an entity (the dialogue system, T-07, will consume it)
   | { type: "Interacted"; entityId: EntityId; dialogueId?: DialogueId }
   // resolves a skill_check objective: rolls the single RNG inside the fold, captures the

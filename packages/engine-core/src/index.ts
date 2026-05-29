@@ -34,3 +34,4 @@ export * from "./systems/interaction";
 export * from "./systems/quests";
 export * from "./systems/combat";
 export * from "./systems/dialogue";
+export * from "./systems/reactions";

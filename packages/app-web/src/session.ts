@@ -9,6 +9,7 @@ import {
   interactionSystem,
   movementSystem,
   questSystem,
+  reactionsSystem,
   tick,
   type CreateWorldOptions,
   type Entity,
@@ -85,6 +86,7 @@ export class GameSession {
       movementSystem(inputs),
       interactionSystem(inputs, ctx),
       combatSystem(inputs),
+      reactionsSystem(this.registries.npcs),
       questSystem(this.registries.quests),
       dialogueSystem(inputs, { narrative: this.narrative, dialogues: this.registries.dialogues }),
     ];

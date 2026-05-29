@@ -108,6 +108,15 @@ export function applyEvent(world: World, ev: GameEvent): World {
       };
     }
 
+    case "SetNpcDialogue":
+      return { ...world, npcDialogue: { ...world.npcDialogue, [ev.npcId]: ev.dialogueId } };
+
+    case "UnlockExit":
+      return {
+        ...world,
+        unlockedExits: { ...world.unlockedExits, [`${ev.locationId}#${ev.exitIndex}`]: true },
+      };
+
     case "ResolveSkillCheck": {
       // The ONE place a skill check consumes randomness. Because the fold is sequential and
       // replay re-applies this same event against the same starting rngState, the roll is

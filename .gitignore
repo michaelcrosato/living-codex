@@ -8,3 +8,8 @@ schema/generated/
 test-results/
 playwright-report/
 playwright/.cache/
+
+# Claude Code: commit the project AFK permission policy, ignore runtime/session files.
+.claude/*
+!.claude/settings.json
+

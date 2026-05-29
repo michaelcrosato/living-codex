@@ -40,7 +40,10 @@ verify`; reconcile the golden hash last.
   golden-master fixture. **Collision:** the entire schema layer — **do not run concurrently with SPEC-02/11/13**.
 
 ## Dependencies / prereqs
-Independent, but **should precede SPEC-11** (storylet adds schema) to avoid double churn. Codemod + network for the dep change.
+Independent. **Note (2026-05-29):** SPEC-11 already landed (out of plan order), so the prior "precede
+SPEC-11" ordering is moot — the migration now ALSO covers `packages/content-schema/src/storylet.ts`
+(and the `ContentPack.storylets` field). The pack golden-master already reflects SPEC-11. Codemod +
+network for the dep change.
 
 ## Test strategy
 `pnpm verify` (typecheck across both tsconfigs is the long pole — Zod 4 type changes surface here). Round-trip:

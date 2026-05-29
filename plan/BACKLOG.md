@@ -47,11 +47,8 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
   documents the `Npc` shape WITHOUT the additive `combat: { hp }` and `homeLocationId` fields that
   exist in `content-schema/src/npc.ts`. Same class of drift SPEC-01 fixed for §5/§7/WORLD_STATE §1;
   a one-paragraph doc edit (no code).
-- **e2e port robustness** — `packages/app-web/playwright.config.ts` uses `reuseExistingServer: !CI`,
-  which blindly reuses ANY server already on :4173. Found 2026-05-29: a foreign dev server squatting
-  that port made the slice walk fail with a misleading "#cold-open not found" (the walk passes against a
-  clean server — verified on a temp :4199 config). Options: a dedicated/random port, `reuseExistingServer:
-  false` locally, or a health-check asserting the served HTML actually contains `#cold-open` before testing.
+_(Resolved 2026-05-29: e2e port robustness — Playwright preview moved to a dedicated port 4319 so a
+foreign server on Vite's default 4173/5173 can't be silently reused. See `playwright.config.ts`.)_
 
 ## Notes
 Every item above was considered and *deliberately deferred* during the 2026-05-29 planning pass. The

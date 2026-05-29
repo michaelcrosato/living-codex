@@ -16,3 +16,8 @@ export * from "./events/log";
 
 // the tick loop
 export * from "./tick";
+
+// derived query layer + the condition language
+export * from "./ecs/components";
+export * from "./ecs/registry";
+export * from "./conditions/conditions";

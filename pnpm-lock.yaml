@@ -93,6 +93,9 @@ importers:
       '@codex/content-schema':
         specifier: workspace:*
         version: link:../content-schema
+      miniplex:
+        specifier: ^2.0.0
+        version: 2.0.0
 
   packages/narrative-ink:
     dependencies:

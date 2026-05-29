@@ -11,6 +11,7 @@ import { drawScene } from "./scene";
 import { InputController } from "./input";
 import { renderHud } from "./hud";
 import { DialogueController } from "./dialogue-controller";
+import { DialogueView } from "./dialogue-view";
 import { beats } from "./beats";
 import { mark, measure, installErrorBoundary, getTelemetry } from "./telemetry";
 
@@ -53,7 +54,10 @@ async function main(): Promise<void> {
   const input = new InputController();
   input.attach(window);
   const dialogue = new DialogueController(registries, new InkNarrative());
-  const dialogueEl = document.getElementById("dialogue") as HTMLElement;
+  const dialogueView = new DialogueView(
+    document.getElementById("dialogue") as HTMLElement,
+    (choiceIndex) => input.choose(choiceIndex),
+  );
 
   // cold open (VERTICAL_SLICE §2 0:00): dismiss on first input
   const coldOpenEl = document.getElementById("cold-open") as HTMLElement;
@@ -62,12 +66,19 @@ async function main(): Promise<void> {
   };
   coldOpenEl.addEventListener("click", dismissColdOpen);
 
+  // Accessibility: user toggle for a more legible (dyslexia-friendly) font.
+  const fontToggle = document.getElementById("font-toggle");
+  fontToggle?.addEventListener("click", () => {
+    const on = document.body.classList.toggle("dyslexia");
+    fontToggle.setAttribute("aria-pressed", String(on));
+  });
+
   // app-only UI state: which NPC's dialogue is open (by def id), if any
   let openNpcId: string | null = null;
   const closeDialogue = (): void => {
     openNpcId = null;
     input.closeDialogue();
-    dialogueEl.style.display = "none";
+    dialogueView.close();
   };
 
   let accumulatorMs = 0;
@@ -94,17 +105,13 @@ async function main(): Promise<void> {
     renderHud(hud, session.world, registries);
     measure("codex:draw", "codex:draw:start");
 
-    // render / refresh the dialogue panel from current world state
-    if (openNpcId) {
-      const open = dialogue.openFor(session.world, openNpcId);
-      if (!open || open.frame.choices.length === 0) {
-        closeDialogue();
-      } else {
-        input.openDialogue(open.dialogueId);
-        dialogueEl.style.display = "block";
-        const choices = open.frame.choices.map((c) => `  [${c.index + 1}] ${c.text}`).join("\n");
-        dialogueEl.textContent = `${open.npcName}\n\n${open.frame.text}\n\n${choices}\n\n(number keys to choose · Esc to leave)`;
-      }
+    // render / refresh the accessible dialogue panel from current world state
+    const open = openNpcId ? dialogue.openFor(session.world, openNpcId) : null;
+    if (open && open.frame.choices.length > 0) {
+      input.openDialogue(open.dialogueId);
+      dialogueView.render(open);
+    } else if (dialogueView.isOpen()) {
+      closeDialogue();
     }
     requestAnimationFrame(frame);
   };

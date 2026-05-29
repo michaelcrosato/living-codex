@@ -24,6 +24,12 @@ export class InputController {
   closeDialogue(): void {
     this.dialogueId = null;
   }
+  /** Queue a dialogue choice (from a clicked/keyboard-activated choice button). No-op if none open. */
+  choose(choiceIndex: number): void {
+    if (this.dialogueId !== null) {
+      this.queued.push({ type: "Choose", dialogueId: this.dialogueId, choiceIndex });
+    }
+  }
   isDialogueOpen(): boolean {
     return this.dialogueId !== null;
   }

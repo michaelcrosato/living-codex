@@ -27,7 +27,7 @@ import { z } from "zod";
 // JSON, so without this both an NpcId and a QuestId could parse the same string.
 const brand = <B extends string>(prefix: B) =>
   z.string()
-   .regex(new RegExp(`^${prefix}\\.[a-z0-9]+(\\.[a-z0-9_]+)*$`), `expected id like "${prefix}.example"`)
+   .regex(new RegExp(`^${prefix}\\.[a-z0-9_]+(\\.[a-z0-9_]+)*$`), `expected id like "${prefix}.example"`)  // underscores allowed in every segment (matches the canonical ids in §9/§11)
    .brand<B>();
 
 export const NpcId      = brand("npc");

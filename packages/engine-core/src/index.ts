@@ -21,3 +21,7 @@ export * from "./tick";
 export * from "./ecs/components";
 export * from "./ecs/registry";
 export * from "./conditions/conditions";
+
+// systems
+export * from "./systems/movement";
+export * from "./systems/interaction";

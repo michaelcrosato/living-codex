@@ -55,7 +55,9 @@ export function applyEvent(world: World, ev: GameEvent): World {
     }
 
     case "ShowText":
-      // UI-only; logged for transcript/debugging, no world mutation.
+    case "Interacted":
+      // Logged intent for transcript/debugging (and the dialogue system, T-07); no world
+      // mutation yet. Folding it is a no-op, so replay stays exact.
       return world;
 
     case "SpawnEntity":

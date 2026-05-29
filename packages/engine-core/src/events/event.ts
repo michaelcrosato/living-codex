@@ -1,4 +1,4 @@
-import type { LocationId, FactionId, ItemId, FlagId, QuestId } from "@codex/content-schema";
+import type { LocationId, FactionId, ItemId, FlagId, QuestId, DialogueId } from "@codex/content-schema";
 import type { Entity, EntityId, SkillId } from "../state/world";
 
 /**
@@ -19,7 +19,9 @@ export type GameEvent =
   | { type: "EnterLocation"; locationId: LocationId; spawnAt: { x: number; y: number } }
   | { type: "MoveEntity"; entityId: EntityId; to: { x: number; y: number } }
   | { type: "SetEntityHp"; entityId: EntityId; hp: number; alive: boolean }
-  | { type: "OfferQuest"; questId: QuestId };
+  | { type: "OfferQuest"; questId: QuestId }
+  // intent: the player interacted with an entity (the dialogue system, T-07, will consume it)
+  | { type: "Interacted"; entityId: EntityId; dialogueId?: DialogueId };
 
 export type GameEventType = GameEvent["type"];
 

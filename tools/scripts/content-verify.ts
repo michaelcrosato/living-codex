@@ -40,6 +40,13 @@ const raw = files.map((f) => JSON.parse(readFileSync(f, "utf8")) as unknown);
 const { registries } = loadPacks(raw);
 const errors: string[] = [];
 
+// Locations you can actually enter: the destination of some exit. A reach() target that is an
+// island (no exits in OR out) is unwinnable — something the loader's ref-integrity can't catch.
+const enterable = new Set<string>();
+for (const loc of registries.locations.values()) {
+  for (const exit of loc.exits) enterable.add(exit.toLocationId);
+}
+
 /** An objective is satisfiable-in-principle if its referenced entity exists and bounds hold. */
 function objectiveSatisfiable(obj: Objective): boolean {
   switch (obj.kind) {
@@ -88,12 +95,48 @@ function checkQuest(quest: Quest): void {
   checkUnlockExits(quest.onAnyComplete, `${quest.id}.onAnyComplete`);
 }
 
-for (const quest of registries.quests.values()) checkQuest(quest);
+/** Every reach() target must be connected to the location graph (catches island locations). */
+function checkReachability(quest: Quest): void {
+  for (const branch of quest.branches) {
+    for (const obj of branch.objectives) {
+      if (obj.kind !== "reach") continue;
+      const loc = registries.locations.get(obj.locationId);
+      const connected = enterable.has(obj.locationId) || (loc?.exits.length ?? 0) > 0;
+      if (loc && !connected) {
+        errors.push(
+          `${quest.id}.${branch.id}: reach target "${obj.locationId}" is an island (no exits in or out) — unreachable.`,
+        );
+      }
+    }
+  }
+}
+
+/** A quest with directly contradictory flag_is gates in offerWhen can never be offered. */
+function checkOfferWhen(quest: Quest): void {
+  const seen = new Map<string, boolean | number | string>();
+  for (const cond of quest.offerWhen) {
+    if (cond.kind !== "flag_is") continue;
+    const prev = seen.get(cond.flag);
+    if (prev !== undefined && prev !== cond.equals) {
+      errors.push(
+        `${quest.id}.offerWhen: contradictory flag_is on "${cond.flag}" — the quest can never be offered.`,
+      );
+    }
+    seen.set(cond.flag, cond.equals);
+  }
+}
+
+for (const quest of registries.quests.values()) {
+  checkQuest(quest);
+  checkReachability(quest);
+  checkOfferWhen(quest);
+}
 
 if (errors.length > 0) {
   console.error(`[content:verify] FAILED (${errors.length} issue(s)):\n` + errors.map((e) => `  - ${e}`).join("\n"));
   process.exit(1);
 }
 console.log(
-  `[content:verify] OK — ${registries.quests.size} quest(s) solvable, all unlock_exit indices in range.`,
+  `[content:verify] OK — ${registries.quests.size} quest(s) solvable & reachable, ` +
+    `${registries.locations.size} locations, all unlock_exit indices in range, no contradictory gates.`,
 );

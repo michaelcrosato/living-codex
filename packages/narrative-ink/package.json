@@ -7,6 +7,8 @@
   "types": "src/index.ts",
   "exports": { ".": "./src/index.ts" },
   "dependencies": {
-    "@codex/engine-core": "workspace:*"
+    "@codex/content-schema": "workspace:*",
+    "@codex/engine-core": "workspace:*",
+    "inkjs": "^2.3.2"
   }
 }

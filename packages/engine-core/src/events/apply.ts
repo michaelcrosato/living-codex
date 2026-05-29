@@ -59,6 +59,16 @@ export function applyEvent(world: World, ev: GameEvent): World {
     case "AdvanceTick":
       return { ...world, tick: world.tick + 1 };
 
+    case "DialogueAdvanced":
+      // Store the captured Ink snapshot and mirror declared story-vars into flags so
+      // conditions can gate on them. Folding a captured snapshot is deterministic — replay
+      // restores it instead of re-running Ink (WORLD_STATE.md §4).
+      return {
+        ...world,
+        dialogue: { ...world.dialogue, [ev.dialogueId]: ev.inkState },
+        flags: { ...world.flags, ...ev.flags },
+      };
+
     case "ShowText":
     case "Interacted":
       // Logged intent for transcript/debugging (and the dialogue system, T-07); no world

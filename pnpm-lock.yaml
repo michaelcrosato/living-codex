@@ -99,9 +99,15 @@ importers:
 
   packages/narrative-ink:
     dependencies:
+      '@codex/content-schema':
+        specifier: workspace:*
+        version: link:../content-schema
       '@codex/engine-core':
         specifier: workspace:*
         version: link:../engine-core
+      inkjs:
+        specifier: ^2.3.2
+        version: 2.4.0
 
   packages/persistence:
     dependencies:
@@ -1040,6 +1046,10 @@ packages:
   ini@4.1.1:
     resolution: {integrity: sha512-QQnnxNyfvmHFIsj7gkPcYymR8Jdw/o7mp5ZFihxn6h8Ci6fh3Dx4E1gPjpQEpIuPo9XVNY/ZUwh4BPMjGyL01g==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
+
+  inkjs@2.4.0:
+    resolution: {integrity: sha512-EoPCYESIbMtfI8SqEDZCJwn+A5is0QozMLw250iic1ReJCgZpRKIezWj0VqgRUzAx0f3MmEbsUjY/ILe2815JQ==}
+    hasBin: true
 
   interpret@3.1.1:
     resolution: {integrity: sha512-6xwYfHbajpoF0xLW+iwLkhwgvLoZDfjYfoFNu8ftMoXINzwuymNLd9u/KmwtdT2GbR+/Cz66otEGEVVUHX9QLQ==}
@@ -2270,6 +2280,8 @@ snapshots:
   imurmurhash@0.1.4: {}
 
   ini@4.1.1: {}
+
+  inkjs@2.4.0: {}
 
   interpret@3.1.1: {}
 

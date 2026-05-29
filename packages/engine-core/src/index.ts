@@ -23,8 +23,12 @@ export * from "./ecs/components";
 export * from "./ecs/registry";
 export * from "./conditions/conditions";
 
+// ports (interfaces the app injects implementations for)
+export * from "./ports/narrative";
+
 // systems
 export * from "./systems/movement";
 export * from "./systems/interaction";
 export * from "./systems/quests";
 export * from "./systems/combat";
+export * from "./systems/dialogue";

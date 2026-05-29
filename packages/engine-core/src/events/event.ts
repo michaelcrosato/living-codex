@@ -40,7 +40,15 @@ export type GameEvent =
   // --- minimal combat (T-09): resolves a `defeat` objective deterministically ---
   | { type: "ResolveAttack"; attackerEntityId: EntityId; targetEntityId: EntityId }
   // bookkeeping: advances the fixed-timestep counter; logged so replay reproduces World.tick
-  | { type: "AdvanceTick" };
+  | { type: "AdvanceTick" }
+  // dialogue advanced one choice: carries the post-choice serialized Ink state (captured, not
+  // recomputed — WORLD_STATE.md §4) and the declared story-vars mirrored into World.flags
+  | {
+      type: "DialogueAdvanced";
+      dialogueId: DialogueId;
+      inkState: string;
+      flags: Record<string, boolean | number | string>;
+    };
 
 export type GameEventType = GameEvent["type"];
 
@@ -48,6 +56,6 @@ export type GameEventType = GameEvent["type"];
 export type InputEvent =
   | { type: "Move"; dir: { x: number; y: number } }
   | { type: "Interact" }
-  | { type: "Choose"; choiceIndex: number }
+  | { type: "Choose"; dialogueId: DialogueId; choiceIndex: number }
   | { type: "UseExit"; exitIndex: number }
   | { type: "Attack" };

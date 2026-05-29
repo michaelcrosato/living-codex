@@ -54,7 +54,9 @@ export function renderBundleHtml(bundle: CurationBundle): string {
     .map((n) => `<li><code>${esc(n.id)}</code> — ${esc(n.name)} <em>${esc(n.bio.role)}</em></li>`)
     .join("");
   const questRows = bundle.candidate.quests
-    .map((q) => `<li><code>${esc(q.id)}</code> — ${esc(q.title)} (${q.branches.length} branches)</li>`)
+    .map(
+      (q) => `<li><code>${esc(q.id)}</code> — ${esc(q.title)} (${q.branches.length} branches)</li>`,
+    )
     .join("");
   const flagged = bundle.flagged.length
     ? `<ul class="flagged">${bundle.flagged.map((f) => `<li>⚠ ${esc(f)}</li>`).join("")}</ul>`

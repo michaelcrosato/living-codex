@@ -5,7 +5,12 @@
 export { loadPacks, orderByDependencies } from "./load";
 export { validatePack } from "./validate";
 export { checkIntegrity, type IntegrityError, type RefType } from "./integrity";
-export { buildRegistries, fingerprintRegistries, type Registries, type LoadResult } from "./registries";
+export {
+  buildRegistries,
+  fingerprintRegistries,
+  type Registries,
+  type LoadResult,
+} from "./registries";
 export {
   buildCanonGraph,
   findCanonContradictions,

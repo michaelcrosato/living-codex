@@ -16,13 +16,14 @@ export function combatSystem(inputs: readonly InputEvent[]): System {
       if (input.type !== "Attack") continue;
       const target = Object.values(world.entities).find(
         (e) =>
-          e.id !== player.id &&
-          e.locationId === player.locationId &&
-          e.alive &&
-          e.hp !== undefined,
+          e.id !== player.id && e.locationId === player.locationId && e.alive && e.hp !== undefined,
       );
       if (target) {
-        events.push({ type: "ResolveAttack", attackerEntityId: player.id, targetEntityId: target.id });
+        events.push({
+          type: "ResolveAttack",
+          attackerEntityId: player.id,
+          targetEntityId: target.id,
+        });
       }
     }
     return events;

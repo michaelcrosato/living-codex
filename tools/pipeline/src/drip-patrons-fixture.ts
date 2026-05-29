@@ -30,7 +30,7 @@ const PATRONS: PatronSeed[] = [
     wants: "to close out the night without a body on the floor",
     fears: "the Syndicate calling in her brother's debt",
     voice: "dry, unhurried, sees everything",
-    line: 'Mox slides a glass over. "First one\'s on the house. The next one\'s the truth."',
+    line: "Mox slides a glass over. \"First one's on the house. The next one's the truth.\"",
   },
   {
     id: "npc.drip_rumor",
@@ -65,7 +65,7 @@ const PATRONS: PatronSeed[] = [
     wants: "to prove she's ready for the bigger jobs",
     fears: "letting Varga down",
     voice: "eager, clipped, proud",
-    line: 'Wren sizes you up. "You\'re the one Varga\'s waiting on. Don\'t keep her."',
+    line: "Wren sizes you up. \"You're the one Varga's waiting on. Don't keep her.\"",
   },
   {
     id: "npc.drip_bex",
@@ -77,7 +77,7 @@ const PATRONS: PatronSeed[] = [
     wants: "a quiet pint and no questions",
     fears: "the auditors",
     voice: "flat, heavy, faintly bored",
-    line: 'Bex doesn\'t look up. "Whatever you\'re selling, I\'m not buying. Move along."',
+    line: "Bex doesn't look up. \"Whatever you're selling, I'm not buying. Move along.\"",
   },
   {
     id: "npc.drip_sull",
@@ -99,7 +99,7 @@ const PATRONS: PatronSeed[] = [
     wants: "the one big score that clears the board",
     fears: "his luck was never luck",
     voice: "smooth, teasing, always counting",
-    line: 'Lucky Yi fans a deck. "Sit. One hand. I\'ll even let you think you\'re winning."',
+    line: "Lucky Yi fans a deck. \"Sit. One hand. I'll even let you think you're winning.\"",
   },
   {
     id: "npc.drip_halo",
@@ -129,11 +129,12 @@ const PATRONS: PatronSeed[] = [
     name: "The Archivist",
     silhouette: "cloaked",
     role: "keeper of dangerous truths",
-    backstory: "Appears when something important has just happened. Nobody knows for whom they work.",
+    backstory:
+      "Appears when something important has just happened. Nobody knows for whom they work.",
     wants: "the drive, and the one who took it",
     fears: "being too late, again",
     voice: "calm, deliberate, unsettlingly certain",
-    line: 'A figure in a long coat settles across from you. "I heard what happened at the warehouse. The drive — you don\'t know what\'s on it, do you? Find me when you want the truth. About the drive. About you."',
+    line: "A figure in a long coat settles across from you. \"I heard what happened at the warehouse. The drive — you don't know what's on it, do you? Find me when you want the truth. About the drive. About you.\"",
     flag: "met_archivist",
   },
 ];
@@ -168,7 +169,13 @@ const ARC = {
   title: "The Regulars of the Drip",
   premise: "A dozen lives orbit a dim bar in Ashfall; one carries a rumor, one carries a hook.",
   beats: ["Enter the Drip", "Read the room", "Catch the rumor", "Meet the one who was waiting"],
-  branches: [{ label: "Work the room", approach: "other", stakes: "What you learn here changes what's possible later." }],
+  branches: [
+    {
+      label: "Work the room",
+      approach: "other",
+      stakes: "What you learn here changes what's possible later.",
+    },
+  ],
 };
 
 const REFERENCES = {

@@ -1,4 +1,11 @@
-import type { LocationId, FactionId, ItemId, FlagId, QuestId, DialogueId } from "@codex/content-schema";
+import type {
+  LocationId,
+  FactionId,
+  ItemId,
+  FlagId,
+  QuestId,
+  DialogueId,
+} from "@codex/content-schema";
 import { seedRng, serializeRng } from "../time/rng";
 
 /**

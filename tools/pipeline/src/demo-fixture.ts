@@ -11,8 +11,16 @@ const ARC = {
   premise: "A smoother operator sets up across the district and starts poaching Varga's jobs.",
   beats: ["Hear about Sable", "Take a test job", "Choose a side or burn both"],
   branches: [
-    { label: "Stay loyal to Varga", approach: "talk", stakes: "Varga's trust deepens; Sable turns hostile." },
-    { label: "Play them against each other", approach: "tech", stakes: "Both owe you — and both watch you." },
+    {
+      label: "Stay loyal to Varga",
+      approach: "talk",
+      stakes: "Varga's trust deepens; Sable turns hostile.",
+    },
+    {
+      label: "Play them against each other",
+      approach: "tech",
+      stakes: "Both owe you — and both watch you.",
+    },
     { label: "Throw in with Sable", approach: "force", stakes: "Fast credits, a burned bridge." },
   ],
 };
@@ -68,7 +76,9 @@ const QUEST = {
       id: "defect",
       label: "Throw in with Sable",
       objectives: [{ kind: "talk_to", npcId: "npc.rival_fixer" }],
-      onComplete: [{ kind: "adjust_reputation", factionId: "faction.ashfall_syndicate", delta: 10 }],
+      onComplete: [
+        { kind: "adjust_reputation", factionId: "faction.ashfall_syndicate", delta: 10 },
+      ],
     },
   ],
   onAnyComplete: [{ kind: "set_flag", flag: "flag.rival_resolved", to: true }],

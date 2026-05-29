@@ -45,7 +45,11 @@ describe("minimal combat", () => {
 
   it("ResolveAttack is deterministic under a fixed seed", () => {
     const w = withGuard(12);
-    const ev = { type: "ResolveAttack", attackerEntityId: "entity.player", targetEntityId: "entity.guard" } as const;
+    const ev = {
+      type: "ResolveAttack",
+      attackerEntityId: "entity.player",
+      targetEntityId: "entity.guard",
+    } as const;
     expect(hash(applyEvent(w, ev))).toBe(hash(applyEvent(w, ev)));
   });
 });

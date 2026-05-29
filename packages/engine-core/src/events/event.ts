@@ -1,4 +1,13 @@
-import type { LocationId, FactionId, ItemId, FlagId, QuestId, DialogueId, NpcId, Effect } from "@codex/content-schema";
+import type {
+  LocationId,
+  FactionId,
+  ItemId,
+  FlagId,
+  QuestId,
+  DialogueId,
+  NpcId,
+  Effect,
+} from "@codex/content-schema";
 import type { Entity, EntityId, SkillId } from "../state/world";
 
 /**
@@ -40,7 +49,13 @@ export type GameEvent =
     }
   // --- quest runtime (T-08) ---
   | { type: "ActivateQuest"; questId: QuestId; branchIds: string[] }
-  | { type: "MarkObjective"; questId: QuestId; objectiveKey: string; done: boolean; failed: boolean }
+  | {
+      type: "MarkObjective";
+      questId: QuestId;
+      objectiveKey: string;
+      done: boolean;
+      failed: boolean;
+    }
   | { type: "CompleteQuestBranch"; questId: QuestId; branchId: string; appliedEffectIds: string[] }
   | { type: "ForecloseBranch"; questId: QuestId; branchId: string }
   // --- minimal combat (T-09): resolves a `defeat` objective deterministically ---

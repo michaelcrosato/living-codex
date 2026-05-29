@@ -34,11 +34,11 @@ describe("bribe a faction — the T-16 extensibility verb, end to end", () => {
 
   it("bribeSystem forwards a Bribe input, and effectToEvent maps the effect, to BribeFaction", () => {
     const expected = { type: "BribeFaction", factionId: VARGA, cost: 50, standing: 5 } as const;
-    expect(bribeSystem([{ type: "Bribe", factionId: VARGA, cost: 50, standing: 5 }])(world(), 0)).toEqual([
-      expected,
-    ]);
-    expect(effectToEvent({ kind: "bribe_faction", factionId: VARGA, cost: 50, standing: 5 })).toEqual(
-      expected,
-    );
+    expect(
+      bribeSystem([{ type: "Bribe", factionId: VARGA, cost: 50, standing: 5 }])(world(), 0),
+    ).toEqual([expected]);
+    expect(
+      effectToEvent({ kind: "bribe_faction", factionId: VARGA, cost: 50, standing: 5 }),
+    ).toEqual(expected);
   });
 });

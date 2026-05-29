@@ -9,7 +9,8 @@ import type { Camera, Renderer, ShapeStyle, TextStyle, Vec2 } from "@codex/engin
  */
 function paint(gfx: Graphics, style: ShapeStyle): void {
   if (style.fill !== undefined) gfx.fill({ color: style.fill });
-  if (style.stroke !== undefined) gfx.stroke({ color: style.stroke, width: style.strokeWidth ?? 1 });
+  if (style.stroke !== undefined)
+    gfx.stroke({ color: style.stroke, width: style.strokeWidth ?? 1 });
 }
 
 export class PixiRenderer implements Renderer {

@@ -27,7 +27,14 @@ function worldWithActiveQuest(): World {
 const onFail: Effect[] = [{ kind: "set_flag", flag: SUSPICIOUS, to: true }];
 
 function check(dc: number): GameEvent {
-  return { type: "ResolveSkillCheck", questId: QUEST, objectiveKey: "talk#1", skill: "persuade", dc, onFail };
+  return {
+    type: "ResolveSkillCheck",
+    questId: QUEST,
+    objectiveKey: "talk#1",
+    skill: "persuade",
+    dc,
+    onFail,
+  };
 }
 
 describe("ResolveSkillCheck (deterministic, replay-stable)", () => {
@@ -50,20 +57,27 @@ describe("ResolveSkillCheck (deterministic, replay-stable)", () => {
 
   it("an impossible-to-pass check (dc 30, skill 0) fails and applies onFail effects", () => {
     const w = applyEvent(worldWithActiveQuest(), check(30));
-    expect(w.quests[QUEST]?.objectiveProgress["talk#1"]).toMatchObject({ done: false, failed: true });
+    expect(w.quests[QUEST]?.objectiveProgress["talk#1"]).toMatchObject({
+      done: false,
+      failed: true,
+    });
     expect(w.flags[SUSPICIOUS]).toBe(true);
   });
 
   it("condition modifiers feed the roll math (what you learned in the bar matters)", () => {
     // dc 21 is unreachable with skill 0 (max roll 20). A +25 conditionMod makes it certain.
     const base = worldWithActiveQuest();
-    expect(applyEvent(base, check(21)).quests[QUEST]?.objectiveProgress["talk#1"]?.failed).toBe(true);
+    expect(applyEvent(base, check(21)).quests[QUEST]?.objectiveProgress["talk#1"]?.failed).toBe(
+      true,
+    );
 
     const buffed: World = {
       ...base,
       player: { ...base.player, conditionMods: { ...base.player.conditionMods, persuade: 25 } },
     };
-    expect(applyEvent(buffed, check(21)).quests[QUEST]?.objectiveProgress["talk#1"]?.done).toBe(true);
+    expect(applyEvent(buffed, check(21)).quests[QUEST]?.objectiveProgress["talk#1"]?.done).toBe(
+      true,
+    );
   });
 
   it("advances rngState (the roll consumes the single RNG)", () => {

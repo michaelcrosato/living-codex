@@ -35,7 +35,12 @@ export class OpenRouterProvider implements ModelProvider {
           { role: "user", content: req.user },
         ],
         ...(req.jsonSchema
-          ? { response_format: { type: "json_schema", json_schema: { name: "proposal", schema: req.jsonSchema, strict: true } } }
+          ? {
+              response_format: {
+                type: "json_schema",
+                json_schema: { name: "proposal", schema: req.jsonSchema, strict: true },
+              },
+            }
           : {}),
       }),
     });

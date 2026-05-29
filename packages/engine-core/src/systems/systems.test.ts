@@ -68,7 +68,9 @@ describe("movement system", () => {
 
 describe("interaction system", () => {
   it("emits Interacted for a nearby NPC and nothing for a distant one", () => {
-    const w = withVarga(createWorld({ seed: "s", startLocationId: START, startPos: { x: 12, y: 12 } }));
+    const w = withVarga(
+      createWorld({ seed: "s", startLocationId: START, startPos: { x: 12, y: 12 } }),
+    );
     const near = interactionSystem([{ type: "Interact" }], ctx)(w, 0);
     expect(near).toEqual([
       { type: "Interacted", entityId: "entity.varga", dialogueId: "dialogue.varga_intro" },
@@ -85,9 +87,7 @@ describe("interaction system", () => {
 
     const unlocked = applyEvent(atExit, { type: "SetFlag", flag: KEY, to: true });
     const passed = interactionSystem([{ type: "UseExit", exitIndex: 0 }], ctx)(unlocked, 0);
-    expect(passed).toEqual([
-      { type: "EnterLocation", locationId: NEXT, spawnAt: { x: 1, y: 1 } },
-    ]);
+    expect(passed).toEqual([{ type: "EnterLocation", locationId: NEXT, spawnAt: { x: 1, y: 1 } }]);
   });
 
   it("does not trigger an exit when the player is not near it", () => {

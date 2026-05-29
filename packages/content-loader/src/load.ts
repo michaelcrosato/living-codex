@@ -49,7 +49,9 @@ export function loadPacks(rawPacks: unknown[]): LoadResult {
     const detail = errors
       .map((e) => `  - [${e.pack}] ${e.where} -> missing ${e.type} "${e.id}"`)
       .join("\n");
-    throw new Error(`Referential integrity failed (${errors.length} dangling reference(s)):\n${detail}`);
+    throw new Error(
+      `Referential integrity failed (${errors.length} dangling reference(s)):\n${detail}`,
+    );
   }
 
   const registries = buildRegistries(ordered);

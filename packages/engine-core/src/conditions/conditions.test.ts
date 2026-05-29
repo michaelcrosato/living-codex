@@ -45,9 +45,9 @@ describe("evaluate (condition language)", () => {
 
   it("quest_completed", () => {
     expect(evaluate(w, { kind: "quest_completed", questId: quest })).toBe(true);
-    expect(
-      evaluate(w, { kind: "quest_completed", questId: QuestId.parse("quest.other") }),
-    ).toBe(false);
+    expect(evaluate(w, { kind: "quest_completed", questId: QuestId.parse("quest.other") })).toBe(
+      false,
+    );
   });
 
   it("not / all / any (including nesting)", () => {

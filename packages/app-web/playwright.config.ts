@@ -14,7 +14,8 @@ export default defineConfig({
   timeout: 30_000,
   use: { baseURL: "http://localhost:4173", headless: true },
   webServer: {
-    command: "pnpm --filter @codex/app-web build && pnpm --filter @codex/app-web preview --port 4173 --strictPort",
+    command:
+      "pnpm --filter @codex/app-web build && pnpm --filter @codex/app-web preview --port 4173 --strictPort",
     url: "http://localhost:4173",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

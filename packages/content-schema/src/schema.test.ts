@@ -193,7 +193,10 @@ describe("content-schema", () => {
       kind: "all",
       of: [
         { kind: "flag_is", flag: "flag.met_varga", equals: true },
-        { kind: "any", of: [{ kind: "not", of: { kind: "quest_completed", questId: "quest.the_warehouse" } }] },
+        {
+          kind: "any",
+          of: [{ kind: "not", of: { kind: "quest_completed", questId: "quest.the_warehouse" } }],
+        },
       ],
     };
     expect(Condition.safeParse(cond).success).toBe(true);

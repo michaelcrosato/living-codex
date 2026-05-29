@@ -41,7 +41,9 @@ export function entitiesAt(ecs: Miniplex<EcsEntity>, locationId: LocationId): Ec
 
 /** Interactable NPCs co-located with the player (basis for "talk to" detection, T-06). */
 export function interactablesAt(ecs: Miniplex<EcsEntity>, locationId: LocationId): EcsEntity[] {
-  return ecs.entities.filter((e) => e.interactive === true && !e.isPlayer && e.locationId === locationId);
+  return ecs.entities.filter(
+    (e) => e.interactive === true && !e.isPlayer && e.locationId === locationId,
+  );
 }
 
 /** Living combatants (entities with hp), the basis for the `defeat` objective (T-09). */

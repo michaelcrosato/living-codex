@@ -10,7 +10,8 @@ const opening = JSON.parse(
 ) as unknown;
 const { registries } = loadPacks([opening]);
 const narrative = new InkNarrative();
-const open = (id: string) => narrative.load(registries.dialogues.get(DialogueId.parse(id))!.compiled);
+const open = (id: string) =>
+  narrative.load(registries.dialogues.get(DialogueId.parse(id))!.compiled);
 
 describe("hand-authored opening dialogues are real, playable Ink (S2.2)", () => {
   it("the stranger sets met_stranger and points you to Varga", () => {

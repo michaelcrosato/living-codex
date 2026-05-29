@@ -20,7 +20,10 @@ export const Effect = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("give_item"),
     itemId: ItemId,
-    count: z.number().int().refine((n) => n !== 0, "count must be non-zero"),
+    count: z
+      .number()
+      .int()
+      .refine((n) => n !== 0, "count must be non-zero"),
   }),
   z.object({
     kind: z.literal("modify_skill"),

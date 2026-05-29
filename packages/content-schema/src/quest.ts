@@ -47,12 +47,8 @@ export const Quest = z.object({
   onAnyComplete: z.array(Effect).default([]),
   rewards: z.object({
     credits: z.number().int().nonnegative().default(0),
-    items: z
-      .array(z.object({ itemId: ItemId, count: z.number().int().positive() }))
-      .default([]),
-    reputation: z
-      .array(z.object({ factionId: FactionId, delta: z.number().int() }))
-      .default([]),
+    items: z.array(z.object({ itemId: ItemId, count: z.number().int().positive() })).default([]),
+    reputation: z.array(z.object({ factionId: FactionId, delta: z.number().int() })).default([]),
   }),
 });
 export type Quest = z.infer<typeof Quest>;

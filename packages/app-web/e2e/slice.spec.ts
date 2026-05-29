@@ -13,7 +13,11 @@ interface DebugBeats {
 }
 declare global {
   interface Window {
-    __codex: { world: () => DebugWorld; log: () => { entries: unknown[] }; beats: () => DebugBeats };
+    __codex: {
+      world: () => DebugWorld;
+      log: () => { entries: unknown[] };
+      beats: () => DebugBeats;
+    };
   }
 }
 

@@ -100,7 +100,11 @@ function play(branchId: string, skills: Partial<Record<SkillId, number>>): Playt
   const ctx = { locations: registries.locations, npcs: registries.npcs };
   for (let t = 0; t < 60 && world.quests[QID]?.status !== "completed"; t++) {
     const inputs = nextInputs(world, branchId);
-    const systems = [interactionSystem(inputs, ctx), combatSystem(inputs), questSystem(registries.quests, inputs)];
+    const systems = [
+      interactionSystem(inputs, ctx),
+      combatSystem(inputs),
+      questSystem(registries.quests, inputs),
+    ];
     const result = tick(world, inputs, systems, 1 / 60);
     log.entries.push(...result.entries);
     world = result.world;

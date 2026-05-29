@@ -6,7 +6,8 @@ module.exports = {
   forbidden: [
     {
       name: "engine-core-is-pure",
-      comment: "engine-core depends on content-schema ONLY — never render/narrative/loader/persistence or their vendors.",
+      comment:
+        "engine-core depends on content-schema ONLY — never render/narrative/loader/persistence or their vendors.",
       severity: "error",
       from: { path: "^packages/engine-core/src", pathNot: "\\.test\\.ts$" },
       to: {
@@ -54,6 +55,9 @@ module.exports = {
     doNotFollow: { path: "node_modules" },
     tsConfig: { fileName: "tsconfig.json" },
     tsPreCompilationDeps: true,
-    enhancedResolveOptions: { exportsFields: ["exports"], conditionNames: ["import", "require", "node", "default"] },
+    enhancedResolveOptions: {
+      exportsFields: ["exports"],
+      conditionNames: ["import", "require", "node", "default"],
+    },
   },
 };

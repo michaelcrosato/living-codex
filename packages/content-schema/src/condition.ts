@@ -30,7 +30,11 @@ export const Condition: z.ZodType<Condition, z.ZodTypeDef, unknown> = z.lazy(() 
       factionId: FactionId,
       value: z.number().int(),
     }),
-    z.object({ kind: z.literal("has_item"), itemId: ItemId, count: z.number().int().positive().default(1) }),
+    z.object({
+      kind: z.literal("has_item"),
+      itemId: ItemId,
+      count: z.number().int().positive().default(1),
+    }),
     z.object({ kind: z.literal("quest_completed"), questId: QuestId }),
     z.object({ kind: z.literal("credits_at_least"), amount: z.number().int().nonnegative() }),
     z.object({ kind: z.literal("not"), of: Condition }),

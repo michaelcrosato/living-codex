@@ -1,6 +1,14 @@
 import { describe, it, expect } from "vitest";
 import type { Effect } from "@codex/content-schema";
-import { FlagId, FactionId, ItemId, QuestId, LocationId, NpcId, DialogueId } from "@codex/content-schema";
+import {
+  FlagId,
+  FactionId,
+  ItemId,
+  QuestId,
+  LocationId,
+  NpcId,
+  DialogueId,
+} from "@codex/content-schema";
 import { effectToEvent, effectsToEvents } from "./effects";
 
 describe("effectToEvent (the SCHEMA §5 1:1 seam)", () => {
@@ -11,9 +19,15 @@ describe("effectToEvent (the SCHEMA §5 1:1 seam)", () => {
       to: true,
     });
     expect(
-      effectToEvent({ kind: "adjust_reputation", factionId: FactionId.parse("faction.x"), delta: -15 }),
+      effectToEvent({
+        kind: "adjust_reputation",
+        factionId: FactionId.parse("faction.x"),
+        delta: -15,
+      }),
     ).toEqual({ type: "AdjustReputation", factionId: "faction.x", delta: -15 });
-    expect(effectToEvent({ kind: "give_item", itemId: ItemId.parse("item.drive"), count: 1 })).toEqual({
+    expect(
+      effectToEvent({ kind: "give_item", itemId: ItemId.parse("item.drive"), count: 1 }),
+    ).toEqual({
       type: "GiveItem",
       itemId: "item.drive",
       count: 1,
@@ -27,7 +41,10 @@ describe("effectToEvent (the SCHEMA §5 1:1 seam)", () => {
       type: "StartQuest",
       questId: "quest.q",
     });
-    expect(effectToEvent({ kind: "show_text", text: "hi" })).toEqual({ type: "ShowText", text: "hi" });
+    expect(effectToEvent({ kind: "show_text", text: "hi" })).toEqual({
+      type: "ShowText",
+      text: "hi",
+    });
   });
 
   it("maps a list", () => {
@@ -40,7 +57,11 @@ describe("effectToEvent (the SCHEMA §5 1:1 seam)", () => {
 
   it("maps unlock_exit and set_npc_dialogue (S1.2)", () => {
     expect(
-      effectToEvent({ kind: "unlock_exit", locationId: LocationId.parse("location.x"), exitIndex: 2 }),
+      effectToEvent({
+        kind: "unlock_exit",
+        locationId: LocationId.parse("location.x"),
+        exitIndex: 2,
+      }),
     ).toEqual({ type: "UnlockExit", locationId: "location.x", exitIndex: 2 });
     expect(
       effectToEvent({

@@ -22,7 +22,8 @@ export function beats(world: World): Beats {
   return {
     metStranger: flag(world, "flag.met_stranger"),
     metVarga: flag(world, "flag.met_varga"),
-    acceptedQuest: quest !== undefined && (quest.status === "active" || quest.status === "completed"),
+    acceptedQuest:
+      quest !== undefined && (quest.status === "active" || quest.status === "completed"),
     solved: flag(world, "flag.has_drive"),
     sawConsequence:
       flag(world, "flag.entered_peacefully") ||

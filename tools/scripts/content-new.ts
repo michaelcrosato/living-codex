@@ -40,4 +40,6 @@ writeFileSync(packPath, JSON.stringify(pack, null, 2) + "\n", "utf8");
 writeFileSync(resolve(packDir, "ink", ".gitkeep"), "", "utf8");
 
 console.log(`[content:new] scaffolded ${pack.id} → content/${scope}/${pack.id}/`);
-console.log(`  • edit pack.json, drop *.ink in ink/, then: pnpm content:compile-ink content/${scope}/${pack.id}`);
+console.log(
+  `  • edit pack.json, drop *.ink in ink/, then: pnpm content:compile-ink content/${scope}/${pack.id}`,
+);

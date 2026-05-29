@@ -11,9 +11,7 @@ function validPack(): Record<string, unknown> {
     dependsOn: [],
     provenance: { authoredBy: "human" },
     factions: [{ id: "faction.varga_crew", name: "Varga's Crew", ethos: "Debt remembered." }],
-    items: [
-      { id: "item.encrypted_drive", name: "Drive", description: "Secrets.", kind: "quest" },
-    ],
+    items: [{ id: "item.encrypted_drive", name: "Drive", description: "Secrets.", kind: "quest" }],
     dialogues: [
       {
         id: "dialogue.varga_intro",
@@ -104,7 +102,9 @@ describe("content-loader", () => {
       // give b its own ids so there are no duplicates with a
       factions: [{ id: "faction.b", name: "B", ethos: "e" }],
       items: [],
-      dialogues: [{ id: "dialogue.b", format: "ink-json", inkVersion: "21", sourceHash: "x", compiled: {} }],
+      dialogues: [
+        { id: "dialogue.b", format: "ink-json", inkVersion: "21", sourceHash: "x", compiled: {} },
+      ],
       locations: [],
       npcs: [
         {

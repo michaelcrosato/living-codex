@@ -22,7 +22,9 @@ const FP: ContentFingerprint = { packs: {}, registriesHash: "x" };
 function build(): { save: SaveEnvelope; fullHash: string } {
   const initial = createWorld({ seed: "s", startLocationId: START });
   const snapshot = applyEvents(initial, [{ type: "SetFlag", flag: FA, to: true }]);
-  const tail: ReplayEntry[] = [{ tick: 1, kind: "event", event: { type: "SetFlag", flag: FB, to: 5 } }];
+  const tail: ReplayEntry[] = [
+    { tick: 1, kind: "event", event: { type: "SetFlag", flag: FB, to: 5 } },
+  ];
   const full = applyEvents(snapshot, [{ type: "SetFlag", flag: FB, to: 5 }]);
   return { save: makeSave(snapshot, tail, FP), fullHash: hash(full) };
 }

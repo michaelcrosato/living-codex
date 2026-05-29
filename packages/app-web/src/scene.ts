@@ -30,7 +30,10 @@ function drawShape(renderer: Renderer, shape: VectorShape): void {
       });
       break;
     case "path":
-      renderer.drawPath(shape.points, { stroke: shape.stroke, ...(shape.fill ? { fill: shape.fill } : {}) });
+      renderer.drawPath(shape.points, {
+        stroke: shape.stroke,
+        ...(shape.fill ? { fill: shape.fill } : {}),
+      });
       break;
   }
 }

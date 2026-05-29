@@ -13,7 +13,7 @@ describe("generateStructured (provider-agnostic, validated, self-repairing)", ()
   });
 
   it("strips code fences before parsing", async () => {
-    const provider = new StubProvider(() => "```json\n{\"name\":\"V\",\"level\":1}\n```");
+    const provider = new StubProvider(() => '```json\n{"name":"V","level":1}\n```');
     expect(await generateStructured(provider, Shape, { system: "x", user: "y" })).toEqual({
       name: "V",
       level: 1,
@@ -22,8 +22,14 @@ describe("generateStructured (provider-agnostic, validated, self-repairing)", ()
 
   it("auto-repairs: re-prompts after a bad output, succeeds on the retry", async () => {
     let call = 0;
-    const provider = new StubProvider(() => (call++ === 0 ? "{ not json" : '{"name":"V","level":2}'));
-    const out = await generateStructured(provider, Shape, { system: "x", user: "y", repairAttempts: 1 });
+    const provider = new StubProvider(() =>
+      call++ === 0 ? "{ not json" : '{"name":"V","level":2}',
+    );
+    const out = await generateStructured(provider, Shape, {
+      system: "x",
+      user: "y",
+      repairAttempts: 1,
+    });
     expect(out.level).toBe(2);
     expect(call).toBe(2);
   });

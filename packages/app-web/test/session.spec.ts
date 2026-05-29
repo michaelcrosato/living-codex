@@ -39,7 +39,10 @@ function navInputs(session: GameSession, branchId: string): InputEvent[] {
   return [];
 }
 
-function newSession(skills: Partial<Record<SkillId, number>>): { session: GameSession; opts: GameSessionOptions } {
+function newSession(skills: Partial<Record<SkillId, number>>): {
+  session: GameSession;
+  opts: GameSessionOptions;
+} {
   const opts: GameSessionOptions = {
     seed: "first-light",
     startLocationId: DISTRICT,

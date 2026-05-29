@@ -8,7 +8,10 @@ const engineCoreForbiddenImports = [
   { name: "idb-keyval", message: "Persistence vendor — engine-core is pure." },
   { name: "@codex/render-pixi", message: "engine-core must not depend on a vendor package." },
   { name: "@codex/narrative-ink", message: "engine-core must not depend on a vendor package." },
-  { name: "@codex/content-loader", message: "engine-core is handed registries; it never loads them." },
+  {
+    name: "@codex/content-loader",
+    message: "engine-core is handed registries; it never loads them.",
+  },
   { name: "@codex/persistence", message: "engine-core must not depend on persistence." },
 ];
 const engineCoreForbiddenPatterns = ["node:*", "fs", "path", "crypto"];
@@ -31,9 +34,15 @@ export default tseslint.config(
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/ban-ts-comment": [
         "error",
-        { "ts-ignore": { descriptionFormat: "^ reason: " }, "ts-expect-error": { descriptionFormat: "^ reason: " } },
+        {
+          "ts-ignore": { descriptionFormat: "^ reason: " },
+          "ts-expect-error": { descriptionFormat: "^ reason: " },
+        },
       ],
-      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
     },
   },
   {

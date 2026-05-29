@@ -35,7 +35,7 @@ export function nextUint32(state: RngState): { value: number; next: RngState } {
   let b = state[1] | 0;
   let c = state[2] | 0;
   let d = state[3] | 0;
-  const t = ((a + b) | 0) + d | 0;
+  const t = (((a + b) | 0) + d) | 0;
   d = (d + 1) | 0;
   a = b ^ (b >>> 9);
   b = (c + (c << 3)) | 0;

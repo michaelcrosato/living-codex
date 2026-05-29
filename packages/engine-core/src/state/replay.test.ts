@@ -6,7 +6,14 @@ import { createWorld, type SkillId } from "./world";
 import { hash, serialize, deserialize } from "./snapshot";
 import { applyEvents } from "../events/apply";
 import type { GameEvent } from "../events/event";
-import { createLog, appendEvent, replay, makeSave, loadSave, type ReplayEntry } from "../events/log";
+import {
+  createLog,
+  appendEvent,
+  replay,
+  makeSave,
+  loadSave,
+  type ReplayEntry,
+} from "../events/log";
 
 const SEED = "ashfall";
 const START = LocationId.parse("location.start");
@@ -46,7 +53,10 @@ const eventArb = fc.oneof(
   fc.record({
     type: fc.constant("EnterLocation"),
     locationId: fc.constantFrom(...locations),
-    spawnAt: fc.record({ x: fc.integer({ min: 0, max: 100 }), y: fc.integer({ min: 0, max: 100 }) }),
+    spawnAt: fc.record({
+      x: fc.integer({ min: 0, max: 100 }),
+      y: fc.integer({ min: 0, max: 100 }),
+    }),
   }),
   fc.record({
     type: fc.constant("MoveEntity"),

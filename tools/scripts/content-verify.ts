@@ -141,7 +141,10 @@ for (const quest of registries.quests.values()) {
 }
 
 if (errors.length > 0) {
-  console.error(`[content:verify] FAILED (${errors.length} issue(s)):\n` + errors.map((e) => `  - ${e}`).join("\n"));
+  console.error(
+    `[content:verify] FAILED (${errors.length} issue(s)):\n` +
+      errors.map((e) => `  - ${e}`).join("\n"),
+  );
   process.exit(1);
 }
 console.log(

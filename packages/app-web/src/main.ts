@@ -82,9 +82,7 @@ async function main(): Promise<void> {
       } else {
         input.openDialogue(open.dialogueId);
         dialogueEl.style.display = "block";
-        const choices = open.frame.choices
-          .map((c) => `  [${c.index + 1}] ${c.text}`)
-          .join("\n");
+        const choices = open.frame.choices.map((c) => `  [${c.index + 1}] ${c.text}`).join("\n");
         dialogueEl.textContent = `${open.npcName}\n\n${open.frame.text}\n\n${choices}\n\n(number keys to choose · Esc to leave)`;
       }
     }

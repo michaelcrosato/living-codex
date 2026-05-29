@@ -17,7 +17,11 @@ const controller = new DialogueController(registries, new InkNarrative());
 /** Set the given flags, run the reactions system once, and read Varga's current line. */
 function afterCompletion(flags: readonly string[]) {
   let world = createWorld({ seed: "s", startLocationId: DISTRICT });
-  const sets: GameEvent[] = flags.map((flag) => ({ type: "SetFlag", flag: FlagId.parse(flag), to: true }));
+  const sets: GameEvent[] = flags.map((flag) => ({
+    type: "SetFlag",
+    flag: FlagId.parse(flag),
+    to: true,
+  }));
   world = applyEvents(world, sets);
   world = applyEvents(world, reactionsSystem(registries.npcs)(world, 0));
   return { world, open: controller.openFor(world, "npc.varga")! };

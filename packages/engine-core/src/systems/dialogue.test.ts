@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { DialogueAsset, DialogueId, FlagId, LocationId, type ContentFingerprint } from "@codex/content-schema";
+import {
+  DialogueAsset,
+  DialogueId,
+  FlagId,
+  LocationId,
+  type ContentFingerprint,
+} from "@codex/content-schema";
 import { createWorld } from "../state/world";
 import { applyEvents } from "../events/apply";
 import { hash } from "../state/snapshot";
@@ -15,7 +21,14 @@ const FP: ContentFingerprint = { packs: {}, registriesHash: "x" };
 class StubSession implements StorySession {
   private vars: Record<string, string | number | boolean> = { accepted: false };
   current(): StoryFrame {
-    return { text: "Lost. Or hunted.", tags: [], choices: [{ index: 0, text: "I'll do it" }, { index: 1, text: "No" }] };
+    return {
+      text: "Lost. Or hunted.",
+      tags: [],
+      choices: [
+        { index: 0, text: "I'll do it" },
+        { index: 1, text: "No" },
+      ],
+    };
   }
   choose(i: number): void {
     if (i === 0) this.vars.accepted = true;
@@ -48,7 +61,10 @@ const dialogues = new Map([[DLG, asset]]);
 describe("dialogue system (T-07)", () => {
   it("emits DialogueAdvanced capturing Ink state and mirrors declaredVars into flags", () => {
     const world = createWorld({ seed: "s", startLocationId: START });
-    const sys = dialogueSystem([{ type: "Choose", dialogueId: DLG, choiceIndex: 0 }], { narrative, dialogues });
+    const sys = dialogueSystem([{ type: "Choose", dialogueId: DLG, choiceIndex: 0 }], {
+      narrative,
+      dialogues,
+    });
     const events = sys(world, 0);
     expect(events).toHaveLength(1);
     const next = applyEvents(world, events);
@@ -58,16 +74,19 @@ describe("dialogue system (T-07)", () => {
 
   it("ignores an out-of-range choice index", () => {
     const world = createWorld({ seed: "s", startLocationId: START });
-    const sys = dialogueSystem([{ type: "Choose", dialogueId: DLG, choiceIndex: 9 }], { narrative, dialogues });
+    const sys = dialogueSystem([{ type: "Choose", dialogueId: DLG, choiceIndex: 9 }], {
+      narrative,
+      dialogues,
+    });
     expect(sys(world, 0)).toHaveLength(0);
   });
 
   it("replays from the captured snapshot to an identical world hash (no Ink re-run)", () => {
     const world = createWorld({ seed: "s", startLocationId: START });
-    const events = dialogueSystem([{ type: "Choose", dialogueId: DLG, choiceIndex: 0 }], { narrative, dialogues })(
-      world,
-      0,
-    );
+    const events = dialogueSystem([{ type: "Choose", dialogueId: DLG, choiceIndex: 0 }], {
+      narrative,
+      dialogues,
+    })(world, 0);
     const live = applyEvents(world, events);
 
     const log = createLog("s", FP);

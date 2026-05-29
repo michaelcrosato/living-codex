@@ -34,7 +34,11 @@ describe("applyEvent (the chokepoint)", () => {
 
   it("EnterLocation moves the player entity and sets the current location", () => {
     const dest = LocationId.parse("location.drip");
-    const w = applyEvent(world0(), { type: "EnterLocation", locationId: dest, spawnAt: { x: 5, y: 9 } });
+    const w = applyEvent(world0(), {
+      type: "EnterLocation",
+      locationId: dest,
+      spawnAt: { x: 5, y: 9 },
+    });
     expect(w.locationId).toBe(dest);
     expect(w.entities["entity.player"]?.locationId).toBe(dest);
     expect(w.entities["entity.player"]?.pos).toEqual({ x: 5, y: 9 });

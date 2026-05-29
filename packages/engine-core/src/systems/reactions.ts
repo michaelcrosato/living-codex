@@ -25,7 +25,11 @@ export function reactionsSystem(npcs: ReadonlyMap<NpcId, Npc>): System {
           reaction.overrideDialogueId &&
           world.npcDialogue[npc.id] !== reaction.overrideDialogueId
         ) {
-          events.push({ type: "SetNpcDialogue", npcId: npc.id, dialogueId: reaction.overrideDialogueId });
+          events.push({
+            type: "SetNpcDialogue",
+            npcId: npc.id,
+            dialogueId: reaction.overrideDialogueId,
+          });
         }
       }
     }

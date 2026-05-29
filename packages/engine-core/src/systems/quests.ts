@@ -91,7 +91,10 @@ export function questSystem(
         if (!branch) continue;
 
         let i = 0;
-        while (i < branch.objectives.length && rt.objectiveProgress[objectiveKey(branchId, i)]?.done) {
+        while (
+          i < branch.objectives.length &&
+          rt.objectiveProgress[objectiveKey(branchId, i)]?.done
+        ) {
           i++;
         }
         if (i >= branch.objectives.length) continue;
@@ -115,12 +118,15 @@ export function questSystem(
             }
             break;
           case "defeat":
-            if (Object.values(world.entities).some((e) => e.defId === objective.npcId && !e.alive)) {
+            if (
+              Object.values(world.entities).some((e) => e.defId === objective.npcId && !e.alive)
+            ) {
               events.push(mark(quest.id, key, true));
             }
             break;
           case "set_flag":
-            if (world.flags[objective.flag] === objective.to) events.push(mark(quest.id, key, true));
+            if (world.flags[objective.flag] === objective.to)
+              events.push(mark(quest.id, key, true));
             break;
           case "skill_check":
             // Honest agency (S1.3): a check resolves only when the player explicitly attempts

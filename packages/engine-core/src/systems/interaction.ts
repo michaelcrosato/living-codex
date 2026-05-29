@@ -37,7 +37,9 @@ export function interactionSystem(inputs: readonly InputEvent[], ctx: Interactio
       if (input.type === "Interact") {
         const ecs = buildEcs(world, ctx.npcs);
         const nearest = interactablesAt(ecs, world.locationId)
-          .filter((e) => distanceSquared(e.position, player.pos) <= INTERACT_RADIUS * INTERACT_RADIUS)
+          .filter(
+            (e) => distanceSquared(e.position, player.pos) <= INTERACT_RADIUS * INTERACT_RADIUS,
+          )
           .sort(
             (a, b) =>
               distanceSquared(a.position, player.pos) - distanceSquared(b.position, player.pos),
@@ -57,7 +59,11 @@ export function interactionSystem(inputs: readonly InputEvent[], ctx: Interactio
         // The unlock_exit effect force-opens an exit regardless of its `requires` gate.
         const unlocked = world.unlockedExits[`${world.locationId}#${input.exitIndex}`] === true;
         if (unlocked || evaluateAll(world, exit.requires)) {
-          events.push({ type: "EnterLocation", locationId: exit.toLocationId, spawnAt: exit.spawnAt });
+          events.push({
+            type: "EnterLocation",
+            locationId: exit.toLocationId,
+            spawnAt: exit.spawnAt,
+          });
         } else {
           events.push({ type: "ShowText", text: `The way to ${exit.label} is barred.` });
         }

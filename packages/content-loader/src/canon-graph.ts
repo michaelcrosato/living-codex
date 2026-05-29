@@ -92,7 +92,11 @@ export function buildCanonGraph(packs: readonly ContentPack[]): CanonGraph {
         add({ predicate: "member_of", subject: npc.id, object: npc.faction }, pack.id, true);
       }
       if (npc.homeLocationId) {
-        add({ predicate: "located_in", subject: npc.id, object: npc.homeLocationId }, pack.id, true);
+        add(
+          { predicate: "located_in", subject: npc.id, object: npc.homeLocationId },
+          pack.id,
+          true,
+        );
         add({ predicate: "status", subject: npc.id, state: "alive" }, pack.id, true);
       }
     }
@@ -239,7 +243,8 @@ export function findDanglingAssertionRefs(
   for (const record of graph.records) {
     if (record.derived) continue; // derived refs come from real entities by construction
     const a = record.assertion;
-    const refs = a.predicate === "status" || a.predicate === "fact" ? [a.subject] : [a.subject, a.object];
+    const refs =
+      a.predicate === "status" || a.predicate === "fact" ? [a.subject] : [a.subject, a.object];
     for (const ref of refs) {
       if (refExists(registries, ref)) continue;
       out.push({

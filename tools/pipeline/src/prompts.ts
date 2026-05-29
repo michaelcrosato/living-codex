@@ -28,7 +28,9 @@ export function buildUserPrompt(brief: Brief, canonText: string): string {
   return [
     "# Brief",
     `intent: ${brief.intent}`,
-    brief.constraints.length ? `constraints:\n${brief.constraints.map((c) => `  - ${c}`).join("\n")}` : "",
+    brief.constraints.length
+      ? `constraints:\n${brief.constraints.map((c) => `  - ${c}`).join("\n")}`
+      : "",
     brief.ground_in.length ? `ground_in: ${brief.ground_in.join(", ")}` : "",
     `budget: npcs=${brief.budget.npcs} quests=${brief.budget.quests} locations=${brief.budget.locations}`,
     brief.tone ? `tone: ${brief.tone}` : "",

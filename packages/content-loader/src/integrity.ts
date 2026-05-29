@@ -94,7 +94,11 @@ function collectObjectiveRefs(obj: Objective, where: string, out: Ref[]): void {
 function collectPackRefs(pack: ContentPack, out: Ref[]): void {
   for (const loc of pack.locations) {
     loc.exits.forEach((exit, i) => {
-      out.push({ type: "location", id: exit.toLocationId, where: `${loc.id}.exits[${i}].toLocationId` });
+      out.push({
+        type: "location",
+        id: exit.toLocationId,
+        where: `${loc.id}.exits[${i}].toLocationId`,
+      });
       exit.requires.forEach((c, j) =>
         collectConditionRefs(c, `${loc.id}.exits[${i}].requires[${j}]`, out),
       );
@@ -135,7 +139,9 @@ function collectPackRefs(pack: ContentPack, out: Ref[]): void {
     quest.offerWhen.forEach((c, i) => collectConditionRefs(c, `${quest.id}.offerWhen[${i}]`, out));
     quest.branches.forEach((branch, bi) => {
       const base = `${quest.id}.branches[${bi}]`;
-      branch.objectives.forEach((o, oi) => collectObjectiveRefs(o, `${base}.objectives[${oi}]`, out));
+      branch.objectives.forEach((o, oi) =>
+        collectObjectiveRefs(o, `${base}.objectives[${oi}]`, out),
+      );
       branch.onComplete.forEach((e, ei) => collectEffectRefs(e, `${base}.onComplete[${ei}]`, out));
       branch.onFail.forEach((e, ei) => collectEffectRefs(e, `${base}.onFail[${ei}]`, out));
     });

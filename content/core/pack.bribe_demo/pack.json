@@ -1,0 +1,32 @@
+{
+  "id": "pack.bribe_demo",
+  "version": "0.1.0",
+  "title": "Grease the Wheels — the T-16 extensibility demo",
+  "dependsOn": ["pack.opening"],
+  "provenance": { "authoredBy": "human", "models": [] },
+  "factions": [],
+  "items": [],
+  "locations": [],
+  "npcs": [],
+  "dialogues": [],
+  "quests": [
+    {
+      "id": "quest.grease_the_wheels",
+      "title": "Grease the Wheels",
+      "summary": "Credits open doors faster than charm. Pay off Varga's crew to smooth things over.",
+      "offerWhen": [{ "kind": "credits_at_least", "amount": 50 }],
+      "branches": [
+        {
+          "id": "pay",
+          "label": "Slip them some credits",
+          "objectives": [{ "kind": "skill_check", "skill": "tech", "dc": 5 }],
+          "onComplete": [
+            { "kind": "bribe_faction", "factionId": "faction.varga_crew", "cost": 50, "standing": 5 }
+          ]
+        }
+      ],
+      "onAnyComplete": [],
+      "rewards": { "credits": 0, "items": [], "reputation": [] }
+    }
+  ]
+}

@@ -25,6 +25,13 @@ export function effectToEvent(effect: Effect): GameEvent {
       return { type: "UnlockExit", locationId: effect.locationId, exitIndex: effect.exitIndex };
     case "set_npc_dialogue":
       return { type: "SetNpcDialogue", npcId: effect.npcId, dialogueId: effect.dialogueId };
+    case "bribe_faction":
+      return {
+        type: "BribeFaction",
+        factionId: effect.factionId,
+        cost: effect.cost,
+        standing: effect.standing,
+      };
     default: {
       const exhaustive: never = effect;
       throw new Error(`effectToEvent: unhandled effect ${JSON.stringify(exhaustive)}`);

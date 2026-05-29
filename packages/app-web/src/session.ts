@@ -2,6 +2,7 @@ import type { Registries } from "@codex/content-loader";
 import type { ContentFingerprint, LocationId } from "@codex/content-schema";
 import {
   applyEvent,
+  bribeSystem,
   combatSystem,
   createLog,
   createWorld,
@@ -97,6 +98,7 @@ export class GameSession {
       movementSystem(inputs),
       interactionSystem(inputs, ctx),
       combatSystem(inputs),
+      bribeSystem(inputs),
       reactionsSystem(this.registries.npcs),
       questSystem(this.registries.quests, inputs),
       dialogueSystem(inputs, { narrative: this.narrative, dialogues: this.registries.dialogues }),

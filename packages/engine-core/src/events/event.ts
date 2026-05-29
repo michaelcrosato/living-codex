@@ -24,6 +24,8 @@ export type GameEvent =
   | { type: "SetNpcDialogue"; npcId: NpcId; dialogueId: DialogueId }
   // unlock a previously-gated exit by index (the unlock_exit effect)
   | { type: "UnlockExit"; locationId: LocationId; exitIndex: number }
+  // bribe a faction (T-16): spend credits (only if affordable) to shift standing
+  | { type: "BribeFaction"; factionId: FactionId; cost: number; standing: number }
   // intent: the player interacted with an entity (the dialogue system, T-07, will consume it)
   | { type: "Interacted"; entityId: EntityId; dialogueId?: DialogueId }
   // resolves a skill_check objective: rolls the single RNG inside the fold, captures the
@@ -64,4 +66,6 @@ export type InputEvent =
   | { type: "UseExit"; exitIndex: number }
   | { type: "Attack" }
   // commit to attempting the current objective of a quest branch (drives skill_check resolution)
-  | { type: "Attempt"; questId: QuestId; branchId: string };
+  | { type: "Attempt"; questId: QuestId; branchId: string }
+  // offer a bribe to a faction (T-16); the bribe system forwards it as a BribeFaction event
+  | { type: "Bribe"; factionId: FactionId; cost: number; standing: number };

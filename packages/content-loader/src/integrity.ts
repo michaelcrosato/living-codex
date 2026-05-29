@@ -38,6 +38,7 @@ function collectConditionRefs(cond: Condition, where: string, out: Ref[]): void 
       cond.of.forEach((c, i) => collectConditionRefs(c, `${where}.${cond.kind}[${i}]`, out));
       break;
     case "flag_is":
+    case "credits_at_least":
       break;
   }
 }
@@ -59,6 +60,9 @@ function collectEffectRefs(effect: Effect, where: string, out: Ref[]): void {
     case "set_npc_dialogue":
       out.push({ type: "npc", id: effect.npcId, where });
       out.push({ type: "dialogue", id: effect.dialogueId, where });
+      break;
+    case "bribe_faction":
+      out.push({ type: "faction", id: effect.factionId, where });
       break;
     case "set_flag":
     case "modify_skill":

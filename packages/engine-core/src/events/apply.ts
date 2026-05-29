@@ -117,6 +117,25 @@ export function applyEvent(world: World, ev: GameEvent): World {
         unlockedExits: { ...world.unlockedExits, [`${ev.locationId}#${ev.exitIndex}`]: true },
       };
 
+    case "BribeFaction": {
+      // T-16: spend credits to shift standing — only if affordable. Bounds (no negative
+      // inventory, reputation clamp) hold here, the single chokepoint.
+      const inventory = world.inventory as Record<string, number>;
+      const credits = inventory["item.credits"] ?? 0;
+      if (credits < ev.cost) return world; // can't afford — the bribe doesn't happen
+      const standing = clamp(
+        (world.reputation[ev.factionId] ?? 0) + ev.standing,
+        REPUTATION_MIN,
+        REPUTATION_MAX,
+      );
+      const nextInventory = { ...inventory, "item.credits": credits - ev.cost };
+      return {
+        ...world,
+        inventory: nextInventory as World["inventory"],
+        reputation: { ...world.reputation, [ev.factionId]: standing },
+      };
+    }
+
     case "ResolveSkillCheck": {
       // The ONE place a skill check consumes randomness. Because the fold is sequential and
       // replay re-applies this same event against the same starting rngState, the roll is

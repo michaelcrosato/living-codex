@@ -11,6 +11,7 @@ export type Condition =
   | { kind: "reputation_at_least"; factionId: FactionId; value: number }
   | { kind: "has_item"; itemId: ItemId; count: number }
   | { kind: "quest_completed"; questId: QuestId }
+  | { kind: "credits_at_least"; amount: number }
   | { kind: "not"; of: Condition }
   | { kind: "all"; of: Condition[] }
   | { kind: "any"; of: Condition[] };
@@ -31,6 +32,7 @@ export const Condition: z.ZodType<Condition, z.ZodTypeDef, unknown> = z.lazy(() 
     }),
     z.object({ kind: z.literal("has_item"), itemId: ItemId, count: z.number().int().positive().default(1) }),
     z.object({ kind: z.literal("quest_completed"), questId: QuestId }),
+    z.object({ kind: z.literal("credits_at_least"), amount: z.number().int().nonnegative() }),
     z.object({ kind: z.literal("not"), of: Condition }),
     z.object({ kind: z.literal("all"), of: z.array(Condition).min(1) }),
     z.object({ kind: z.literal("any"), of: z.array(Condition).min(1) }),

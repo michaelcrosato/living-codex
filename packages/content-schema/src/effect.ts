@@ -35,5 +35,13 @@ export const Effect = z.discriminatedUnion("kind", [
   }),
   z.object({ kind: z.literal("set_npc_dialogue"), npcId: NpcId, dialogueId: DialogueId }),
   z.object({ kind: z.literal("show_text"), text: z.string().max(400) }),
+  // bribe a faction: spend `cost` credits (only if affordable) to shift standing by `standing`.
+  // Added in T-16 to demonstrate the bounded add-a-verb path (AGENT_GUIDES Recipe 1).
+  z.object({
+    kind: z.literal("bribe_faction"),
+    factionId: FactionId,
+    cost: z.number().int().positive(),
+    standing: z.number().int(),
+  }),
 ]);
 export type Effect = z.infer<typeof Effect>;

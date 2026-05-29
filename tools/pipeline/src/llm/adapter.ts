@@ -1,5 +1,5 @@
 import { zodToJsonSchema } from "zod-to-json-schema";
-import type { ZodType } from "zod";
+import { z } from "zod";
 
 /**
  * The provider-agnostic LLM seam (CONTENT_PIPELINE.md §3). The pipeline's logic never names a
@@ -60,11 +60,11 @@ Return ONLY corrected JSON that satisfies the schema. No prose, no code fences.`
  * CONTENT_PIPELINE.md §4) up to `repairAttempts` times, then throws so the human is surfaced a
  * "needs attention" instead of silently dropping content.
  */
-export async function generateStructured<T>(
+export async function generateStructured<S extends z.ZodTypeAny>(
   provider: ModelProvider,
-  schema: ZodType<T>,
+  schema: S,
   opts: GenerateOptions,
-): Promise<T> {
+): Promise<z.output<S>> {
   const jsonSchema = zodToJsonSchema(schema, { $refStrategy: "none" });
   const maxAttempts = (opts.repairAttempts ?? 2) + 1;
   let user = opts.user;

@@ -25,7 +25,7 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 | SPEC-10 | Durable saves + migration | 2 | Done | main | 827a741 | green | persist()/estimate/quota + migrate-on-load; **migration moved tools/migrate→engine-core** (shipped can't import tools/); +6 tests |
 | SPEC-13 | New curated pack (offline) | 2 | Done | main | (see log) | green | pack.kestrel (rival fixer + 3-branch quest + Ink + canon assertions); same-path load+play test; +4 tests; golden untouched |
 | SPEC-11 | Storylet / salience layer | 3 | Done | main | bb10696 | green | minimal additive schema + salience-selected ambient barks system; tie-breaker RNG inside applyEvent fold; +3 tests |
-| SPEC-14 | Retrieval-grounded canon | 3 | Todo | — | — | — | — |
+| SPEC-14 | Retrieval-grounded canon | 3 | Done | main | 816552a | green | subgraph query + cycle prompt grounding + integration spy test |
 | SPEC-15 | Rubric LLM-judge gate | 3 | Todo | — | — | — | hermetic StubProvider |
 | SPEC-16 | Zod 4 + native JSON Schema | 4 | Todo | — | — | — | MED risk; isolate; updates golden hash |
 
@@ -51,4 +51,5 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 - 2026-05-29 — SPEC-05 fast-check command fuzz: new app-web/test/replay-fuzz.spec.ts drives random valid-shaped input sequences (Move/Interact/Attack/UseExit/Attempt/Bribe) through a headless GameSession and asserts hash(replay)==hash(live) — exercising the full systems->events->apply->log path (complements the applyEvent-level fuzz in replay.test.ts). 60 runs, seed-pinned; no divergence surfaced. 152 tests (+1). `pnpm verify` green. (0ffff81)
 - 2026-05-29 — SPEC-02 wire talk_to: the `talk_to` objective (previously a runtime stub) now completes once the player has engaged the NPC's dialogue — detected via `world.dialogue` (set by DialogueAdvanced, replay-safe), so NO new World field/migration. `questSystem` takes an optional `npcs` registry to resolve the NPC's (base or overridden) dialogue id; session wires it in. +1 test (153). **Wave 1 complete.** `pnpm verify` green.
 - 2026-05-29 — SPEC-11 storylet-layer: added Zod schema, integrity checker, deterministic salience selector system, and TriggerStorylet tie-breaker event handler inside the fold (bb10696); verify green.
+- 2026-05-29 — SPEC-14 retrieval-grounded canon: queried 1-hop relevant subgraph over the S5 graph and injected as stable prompt context grounding (816552a); verify green.
 <!-- Append: `YYYY-MM-DD — SPEC-NN <slug>: <what changed> (<commit>); verify <green/red>.` -->

@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "moduleDetection": "force",
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@codex/engine-core": ["packages/engine-core/src/index.ts"],
+      "@codex/content-schema": ["packages/content-schema/src/index.ts"],
+      "@codex/content-loader": ["packages/content-loader/src/index.ts"],
+      "@codex/narrative-ink": ["packages/narrative-ink/src/index.ts"],
+      "@codex/render-pixi": ["packages/render-pixi/src/index.ts"],
+      "@codex/persistence": ["packages/persistence/src/index.ts"]
+    }
+  }
+}

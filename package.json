@@ -31,7 +31,9 @@
     "agent:bootstrap": "bash scripts/agent/bootstrap.sh",
     "agent:doctor": "bash scripts/agent/doctor.sh",
     "agent:check": "bash scripts/agent/check.sh",
-    "agent:status": "bash scripts/agent/status.sh"
+    "agent:status": "bash scripts/agent/status.sh",
+    "agent:preflight": "bash scripts/agent/afk-preflight.sh",
+    "agent:afk-status": "bash scripts/agent/afk-status.sh"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",

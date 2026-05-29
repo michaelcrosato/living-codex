@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { auditCanon, type Registries } from "@codex/content-loader";
+import {
+  auditCanon,
+  buildCanonGraph,
+  relevantSubgraph,
+  renderAssertionRecord,
+  type Registries,
+} from "@codex/content-loader";
 import { Quest, ContentPack } from "@codex/content-schema";
 import type { ModelProvider } from "../llm/adapter";
 import { generateStructured } from "../llm/adapter";
@@ -66,7 +72,38 @@ async function callRole<S extends z.ZodTypeAny>(
 
 export async function runCycle(args: RunCycleArgs): Promise<CurationBundle> {
   const canon = buildCanonIndex(args.registries, args.packIds ?? []);
-  const base = buildUserPrompt(args.brief, renderCanon(canon));
+
+  // 1. Build the canon assertion graph from prior packs (or compile from registries if priorPacks is not provided)
+  const priorPacks = args.priorPacks && args.priorPacks.length > 0
+    ? args.priorPacks
+    : [
+        {
+          id: "prior_packs_compiled",
+          version: "0",
+          title: "Compiled Prior Packs",
+          dependsOn: [],
+          provenance: { authoredBy: "human" as const, models: [] },
+          npcs: [...args.registries.npcs.values()],
+          factions: [...args.registries.factions.values()],
+          locations: [...args.registries.locations.values()],
+          items: [...args.registries.items.values()],
+          quests: [...args.registries.quests.values()],
+          assertions: [],
+          dialogues: [],
+          storylets: [],
+        } as ContentPack
+      ];
+  const graph = buildCanonGraph(priorPacks);
+
+  // 2. Query relevant subgraph for brief's seed IDs
+  const sub = relevantSubgraph(graph, args.brief.ground_in);
+
+  // 3. Serialize it deterministically
+  const groundingText = sub.records.length > 0
+    ? sub.records.map(renderAssertionRecord).join("\n")
+    : undefined;
+
+  const base = buildUserPrompt(args.brief, renderCanon(canon), groundingText);
 
   const arc = await callRole(args.provider, "architect", "ARC", ArcSkeleton, base);
   const references = await callRole(args.provider, "loremaster", "REFERENCES", ReferenceSet, base);

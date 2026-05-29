@@ -268,3 +268,81 @@ export function auditCanon(
   if (registries) out.push(...findDanglingAssertionRefs(graph, registries));
   return out;
 }
+
+export function serializeAssertion(a: CanonAssertion): string {
+  switch (a.predicate) {
+    case "status":
+      return `${a.subject} is ${a.state}${a.since !== undefined ? ` since epoch ${a.since}` : ""}`;
+    case "fact":
+      return `${a.subject}: ${a.note}`;
+    case "member_of":
+      return `${a.subject} is member of ${a.object}`;
+    case "allied_with":
+      return `${a.subject} allied with ${a.object}`;
+    case "enemy_of":
+      return `${a.subject} enemy of ${a.object}`;
+    case "funds":
+      return `${a.subject} funds ${a.object}`;
+    case "located_in":
+      return `${a.subject} located in ${a.object}`;
+  }
+}
+
+export function renderAssertionRecord(r: AssertionRecord): string {
+  const derStr = r.derived ? " [derived]" : "";
+  return `- ${serializeAssertion(r.assertion)} (from ${r.source}${derStr})`;
+}
+
+/**
+ * Query the canon graph for a subgraph relevant to a set of seed IDs (the brief's `ground_in`
+ * plus their 1-hop neighbors). Returns a deterministic set of AssertionRecords.
+ */
+export function relevantSubgraph(graph: CanonGraph, seedIds: readonly string[]): CanonGraph {
+  const seeds = new Set(seedIds);
+  const neighbors = new Set<string>();
+
+  // 1. Identify 1-hop neighbors of the seeds
+  for (const r of graph.records) {
+    const a = r.assertion;
+    if (a.predicate !== "status" && a.predicate !== "fact") {
+      // Binary predicate
+      if (seeds.has(a.subject)) {
+        neighbors.add(a.object);
+      }
+      if (seeds.has(a.object)) {
+        neighbors.add(a.subject);
+      }
+    }
+  }
+
+  const relevantEntities = new Set([...seeds, ...neighbors]);
+
+  // 2. Select records where subject or object is in the relevant set
+  const records = graph.records.filter((r) => {
+    const a = r.assertion;
+    if (relevantEntities.has(a.subject)) return true;
+    if (a.predicate !== "status" && a.predicate !== "fact") {
+      if (relevantEntities.has(a.object)) return true;
+    }
+    return false;
+  });
+
+  // 3. Deterministically sort records to ensure reproducibility
+  records.sort((a, b) => {
+    if (a.source !== b.source) {
+      return a.source.localeCompare(b.source);
+    }
+    const keyA = assertionKey(a.assertion);
+    const keyB = assertionKey(b.assertion);
+    if (keyA !== keyB) {
+      return keyA.localeCompare(keyB);
+    }
+    if (a.derived !== b.derived) {
+      return a.derived ? 1 : -1;
+    }
+    return 0;
+  });
+
+  return { records };
+}
+

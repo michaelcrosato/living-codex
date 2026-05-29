@@ -5,6 +5,9 @@ import {
   findCanonContradictions,
   findDanglingAssertionRefs,
   auditCanon,
+  relevantSubgraph,
+  serializeAssertion,
+  renderAssertionRecord,
 } from "./canon-graph";
 import { buildRegistries } from "./registries";
 
@@ -156,5 +159,85 @@ describe("canon assertion graph (CONTENT_PIPELINE.md §6)", () => {
       assertions: [{ predicate: "status", subject: "faction.a", state: "wealthy" }],
     });
     expect(auditCanon([pack], buildRegistries([pack]))).toEqual([]);
+  });
+
+  describe("relevantSubgraph and serialization", () => {
+    it("returns expected neighbors for a fixture graph and excludes unrelated packs", () => {
+      const p1 = ContentPack.parse({
+        id: "pack.one",
+        version: "0",
+        title: "Pack One",
+        provenance: { authoredBy: "human" },
+        npcs: [npc({ id: "npc.varga", faction: "faction.varga_crew" })],
+        assertions: [
+          { predicate: "status", subject: "npc.varga", state: "alive" },
+          { predicate: "fact", subject: "npc.varga", note: "knows the docks" },
+        ],
+      });
+
+      const p2 = ContentPack.parse({
+        id: "pack.two",
+        version: "0",
+        title: "Pack Two",
+        provenance: { authoredBy: "human" },
+        factions: [
+          { id: "faction.varga_crew", name: "Varga Crew", ethos: "Docks", allies: ["faction.smugglers"] },
+        ],
+        assertions: [
+          { predicate: "status", subject: "faction.varga_crew", state: "solvent" },
+        ],
+      });
+
+      const pUnrelated = ContentPack.parse({
+        id: "pack.unrelated",
+        version: "0",
+        title: "Pack Unrelated",
+        provenance: { authoredBy: "human" },
+        assertions: [
+          { predicate: "status", subject: "npc.unrelated", state: "alive" },
+        ],
+      });
+
+      const graph = buildCanonGraph([p1, p2, pUnrelated]);
+
+      // Query subgraph for npc.varga
+      const sub = relevantSubgraph(graph, ["npc.varga"]);
+
+      // npc.varga 1-hop neighbors should be faction.varga_crew (due to member_of)
+      // Therefore, relevantEntities = { npc.varga, faction.varga_crew }
+      // Should include npc.varga's status, fact, member_of, faction.varga_crew's status, allied_with
+      // Should NOT include npc.unrelated's status
+      const assertions = sub.records.map((r) => r.assertion);
+      
+      expect(assertions.some((a) => a.predicate === "member_of" && a.subject === "npc.varga" && a.object === "faction.varga_crew")).toBe(true);
+      expect(assertions.some((a) => a.predicate === "status" && a.subject === "faction.varga_crew" && a.state === "solvent")).toBe(true);
+      expect(assertions.some((a) => a.predicate === "allied_with" && a.subject === "faction.varga_crew" && a.object === "faction.smugglers")).toBe(true);
+
+      // Excludes npc.unrelated
+      expect(assertions.some((a) => a.subject === "npc.unrelated")).toBe(false);
+
+      // Verify renderAssertionRecord and serializeAssertion
+      const memberRec = sub.records.find((r) => r.assertion.predicate === "member_of");
+      expect(memberRec).toBeDefined();
+      expect(renderAssertionRecord(memberRec!)).toBe("- npc.varga is member of faction.varga_crew (from pack.one [derived])");
+
+      // Determinism test (stable sorting: deterministic across runs)
+      const sub2 = relevantSubgraph(graph, ["npc.varga"]);
+      expect(sub.records).toEqual(sub2.records);
+    });
+
+    it("serializeAssertion matches schema correctly", () => {
+      const a1: CanonAssertion = { predicate: "status", subject: "npc.varga", state: "alive", since: 3 };
+      expect(serializeAssertion(a1)).toBe("npc.varga is alive since epoch 3");
+
+      const a2: CanonAssertion = { predicate: "fact", subject: "npc.varga", note: "hello" };
+      expect(serializeAssertion(a2)).toBe("npc.varga: hello");
+
+      const a3: CanonAssertion = { predicate: "member_of", subject: "npc.varga", object: "faction.crew" };
+      expect(serializeAssertion(a3)).toBe("npc.varga is member of faction.crew");
+
+      const a4: CanonAssertion = { predicate: "allied_with", subject: "faction.a", object: "faction.b" };
+      expect(serializeAssertion(a4)).toBe("faction.a allied with faction.b");
+    });
   });
 });

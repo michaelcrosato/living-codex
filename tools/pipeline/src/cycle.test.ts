@@ -4,9 +4,10 @@ import { resolve } from "node:path";
 import { loadPacks, hashValue } from "@codex/content-loader";
 import { ContentPack } from "@codex/content-schema";
 import { makeBrief } from "./brief";
-import { demoProvider } from "./demo-fixture";
+import { demoProvider, DEMO_RESPONSES } from "./demo-fixture";
 import { runCycle } from "./pipelines/cycle";
 import { renderBundleMarkdown } from "./bundle";
+import type { ModelRequest, ModelProvider } from "./llm/adapter";
 
 const raw = JSON.parse(
   readFileSync(resolve(process.cwd(), "content/core/pack.opening/pack.json"), "utf8"),
@@ -52,5 +53,39 @@ describe("runCycle — full decomposition + curation bundle (P2)", () => {
     const md = renderBundleMarkdown(bundle);
     expect(md).toContain("Curation bundle");
     expect(md).toContain("pack.the_rival_fixer");
+  });
+
+  it("hermetic test: asserts that the grounding subgraph is correctly assembled and passed to the provider", async () => {
+    const requests: ModelRequest[] = [];
+    const spyProvider: ModelProvider = {
+      name: "spy",
+      complete: async (req: ModelRequest) => {
+        requests.push(req);
+        for (const [marker, body] of Object.entries(DEMO_RESPONSES)) {
+          if (req.system.includes(marker)) return body;
+        }
+        return "{}";
+      },
+    };
+
+    await runCycle({
+      brief: makeBrief({
+        intent: "Introduce a rival fixer",
+        budget: { npcs: 1, quests: 1 },
+        ground_in: ["npc.varga"],
+      }),
+      provider: spyProvider,
+      registries,
+      packIds: Object.keys(fingerprint.packs),
+      packId: "pack.the_rival_fixer",
+    });
+
+    expect(requests.length).toBeGreaterThan(0);
+    // Find architect ARC request
+    const arcReq = requests.find((r) => r.system.includes("TASK:ARC"));
+    expect(arcReq).toBeDefined();
+    // User prompt should contain the Grounding facts section
+    expect(arcReq!.user).toContain("# Grounding facts");
+    expect(arcReq!.user).toContain("npc.varga is member of faction.varga_crew (from prior_packs_compiled [derived])");
   });
 });

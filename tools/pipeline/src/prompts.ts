@@ -24,7 +24,7 @@ export const ROLE_SYSTEM_PROMPTS = {
 
 export type Role = keyof typeof ROLE_SYSTEM_PROMPTS;
 
-export function buildUserPrompt(brief: Brief, canonText: string): string {
+export function buildUserPrompt(brief: Brief, canonText: string, groundingText?: string): string {
   return [
     "# Brief",
     `intent: ${brief.intent}`,
@@ -38,6 +38,13 @@ export function buildUserPrompt(brief: Brief, canonText: string): string {
     "# Established canon (do not reinvent these IDs)",
     canonText,
     "",
+    groundingText
+      ? [
+          "# Grounding facts (assertions from related entities)",
+          groundingText,
+          "",
+        ].join("\n")
+      : "",
     "Return JSON that satisfies the provided schema. No prose, no code fences.",
   ]
     .filter(Boolean)

@@ -16,13 +16,13 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 | SPEC-03 | CI coverage + doctor | 0 | Done | main | 47d769d | green | @vitest/coverage-v8 + test:coverage + CI doctor/coverage; report-only; supersedes TICKET005 |
 | SPEC-06 | CI supply-chain hardening | 0 | Done | main | a4a6056 | green | SHA-pinned actions + least-priv permissions + --ignore-scripts |
 | SPEC-07 | depcruise layers + no-orphans | 0 | Done | main | 4f177d8 | green | 3 layer rules + no-orphans; rule fire proven via planted violation |
-| SPEC-02 | Wire `talk_to` objective | 1 | Done | main | (see log) | green | world.dialogue signal (no new World field/migration); questSystem gains optional npcs; +1 test |
+| SPEC-02 | Wire `talk_to` objective | 1 | Done | main | e471cc8 | green | world.dialogue signal (no new World field/migration); questSystem gains optional npcs; +1 test |
 | SPEC-04 | Per-tick state-hash divergence | 1 | Done | main | 12c6f63 | green | replayTrace + firstDivergence (pure, reuse hash()); bisects divergence to a step; +1 test |
 | SPEC-05 | fast-check command fuzz | 1 | Done | main | 0ffff81 | green | session-level input fuzz (60 runs, full systems path); replay-invariant-tagged; no divergence found |
 | SPEC-12 | Pipeline tolerant pre-parser | 1 | Done | main | d552be1 | green | tolerantParse: fences/CoT/trailing-comma (string-aware); golden-master byte-stable; +7 tests (143→150) |
 | SPEC-08 | Offline observability | 2 | Todo | — | — | — | coord main.ts w/ SPEC-09/10 |
 | SPEC-09 | Accessibility pass | 2 | Todo | — | — | — | run UI, not just tests |
-| SPEC-10 | Durable saves + migration | 2 | Todo | — | — | — | — |
+| SPEC-10 | Durable saves + migration | 2 | Done | main | (see log) | green | persist()/estimate/quota + migrate-on-load; **migration moved tools/migrate→engine-core** (shipped can't import tools/); +6 tests |
 | SPEC-13 | New curated pack (offline) | 2 | Todo | — | — | — | StubProvider; updates golden? |
 | SPEC-11 | Storylet / salience layer | 3 | Todo | — | — | — | HARD-dep SPEC-16 ordering; needs design note |
 | SPEC-14 | Retrieval-grounded canon | 3 | Todo | — | — | — | — |
@@ -32,7 +32,8 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 ## Wave gates
 - [x] **Wave 0 complete** (2026-05-29) — SPEC-01/07/03/06 shipped; `pnpm verify` green; `pnpm audit` clean. Re-baseline before Wave 1.
 - [x] **Wave 1 complete** (2026-05-29) — SPEC-12/04/05/02 shipped; replay invariant intact (now also session-fuzzed); 153 tests. `pnpm verify` green. Re-baseline before Wave 2.
-- [ ] **Wave 2 complete** — experience+durability+ops shipped; UI manually verified.
+- [ ] **Wave 2 in progress** — SPEC-10 durable saves done; SPEC-08 observability next. (SPEC-09 a11y + SPEC-13 content deferred to a UI/curation-focused session.)
+  - 2026-05-29 — SPEC-10 durable saves: `requestPersistentStorage()`/`estimateStorage()` (best-effort, feature-detected) + `SaveQuotaError` handling in persistence; `loadGame` forward-migrates the snapshot World. **Spec correction:** the AC said reuse `tools/migrate`, but a shipped package can't import `tools/` (deps rule) — so the canonical runner+worldMigrations+`migrateWorld` **moved into engine-core** (pure; owns World/WORLD_VERSION) and `tools/migrate` now re-exports them (single source of truth; its test passes unchanged). app-web requests persistence on startup + toasts save failures. +6 tests (159). `pnpm verify` green. **UNVERIFIED:** live-browser persist()/quota/toast behavior (covered by typecheck + non-blocking CI e2e; not run locally this turn).
 - [ ] **Wave 3 complete** — content depth + pipeline intelligence.
 - [ ] **Wave 4 complete** — Zod 4 migration landed in isolation; golden-master updated.
 

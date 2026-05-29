@@ -3,7 +3,7 @@ import { FlagId, LocationId } from "@codex/content-schema";
 import { accumulate, makeSave } from "@codex/engine-core";
 import { createPixiRenderer } from "@codex/render-pixi";
 import { InkNarrative } from "@codex/narrative-ink";
-import { exportSave, saveGame } from "@codex/persistence";
+import { exportSave, saveGame, requestPersistentStorage } from "@codex/persistence";
 import openingPack from "../../../content/core/pack.opening/pack.json";
 import dripPatrons from "../../../content/generated/pack.the_drip_patrons/pack.json";
 import { GameSession } from "./session";
@@ -19,8 +19,20 @@ import { beats } from "./beats";
  * and steps GameSession; the app then reads World and draws. Movement: WASD/arrows. Interact: E.
  * Attack: F. Use exit / dialogue choice: number keys.
  */
+/** A transient, screen-reader-announced status message (creates its own DOM; no markup needed). */
+function toast(message: string): void {
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.setAttribute("role", "status");
+  el.textContent = message;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
 async function main(): Promise<void> {
   const { registries, fingerprint } = loadPacks([openingPack, dripPatrons]);
+  // Best-effort: keep saves from being evicted under storage pressure (no-op if unsupported).
+  void requestPersistentStorage();
   const canvas = document.getElementById("game") as HTMLCanvasElement;
   const hud = document.getElementById("hud") as HTMLElement;
   const viewport = { w: canvas.width, h: canvas.height };
@@ -93,7 +105,11 @@ async function main(): Promise<void> {
     dismissColdOpen();
     const k = e.key.toLowerCase();
     if (e.key === "Escape") closeDialogue();
-    else if (k === "k") void saveGame("manual", makeSave(session.world, [], fingerprint));
+    else if (k === "k")
+      saveGame("manual", makeSave(session.world, [], fingerprint)).then(
+        () => toast("Saved."),
+        (err: unknown) => toast(err instanceof Error ? err.message : "Save failed."),
+      );
     else if (k === "l") {
       // export the current session as a downloadable JSON (replayable bug report / share)
       const json = exportSave(makeSave(session.world, [], fingerprint));

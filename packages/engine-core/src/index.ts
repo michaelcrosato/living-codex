@@ -8,6 +8,7 @@ export * from "./time/clock";
 // state
 export * from "./state/world";
 export * from "./state/snapshot";
+export * from "./state/migrate";
 
 // events + replay
 export * from "./events/event";

@@ -54,7 +54,9 @@ export function interactionSystem(inputs: readonly InputEvent[], ctx: Interactio
         const exit = location.exits[input.exitIndex];
         if (!exit) continue;
         if (distanceSquared(exit.at, player.pos) > EXIT_RADIUS * EXIT_RADIUS) continue;
-        if (evaluateAll(world, exit.requires)) {
+        // The unlock_exit effect force-opens an exit regardless of its `requires` gate.
+        const unlocked = world.unlockedExits[`${world.locationId}#${input.exitIndex}`] === true;
+        if (unlocked || evaluateAll(world, exit.requires)) {
           events.push({ type: "EnterLocation", locationId: exit.toLocationId, spawnAt: exit.spawnAt });
         } else {
           events.push({ type: "ShowText", text: `The way to ${exit.label} is barred.` });

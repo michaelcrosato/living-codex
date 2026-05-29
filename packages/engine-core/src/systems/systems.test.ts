@@ -97,4 +97,12 @@ describe("interaction system", () => {
     );
     expect(interactionSystem([{ type: "UseExit", exitIndex: 0 }], ctx)(away, 0)).toEqual([]);
   });
+
+  it("the unlock_exit effect force-opens a gated exit (S1.2)", () => {
+    const atExit = createWorld({ seed: "s", startLocationId: START, startPos: { x: 50, y: 50 } });
+    // unlock the exit directly (as the unlock_exit effect would), without setting the key flag
+    const unlocked = applyEvent(atExit, { type: "UnlockExit", locationId: START, exitIndex: 0 });
+    const passed = interactionSystem([{ type: "UseExit", exitIndex: 0 }], ctx)(unlocked, 0);
+    expect(passed).toEqual([{ type: "EnterLocation", locationId: NEXT, spawnAt: { x: 1, y: 1 } }]);
+  });
 });

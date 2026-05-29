@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { Effect } from "@codex/content-schema";
-import { FlagId, FactionId, ItemId, QuestId } from "@codex/content-schema";
+import { FlagId, FactionId, ItemId, QuestId, LocationId, NpcId, DialogueId } from "@codex/content-schema";
 import { effectToEvent, effectsToEvents } from "./effects";
 
 describe("effectToEvent (the SCHEMA §5 1:1 seam)", () => {
@@ -38,9 +38,16 @@ describe("effectToEvent (the SCHEMA §5 1:1 seam)", () => {
     expect(effectsToEvents(effects)).toHaveLength(2);
   });
 
-  it("throws on effects the engine does not yet implement", () => {
-    expect(() =>
-      effectToEvent({ kind: "unlock_exit", locationId: "location.x" as never, exitIndex: 0 }),
-    ).toThrowError(/not yet implemented/);
+  it("maps unlock_exit and set_npc_dialogue (S1.2)", () => {
+    expect(
+      effectToEvent({ kind: "unlock_exit", locationId: LocationId.parse("location.x"), exitIndex: 2 }),
+    ).toEqual({ type: "UnlockExit", locationId: "location.x", exitIndex: 2 });
+    expect(
+      effectToEvent({
+        kind: "set_npc_dialogue",
+        npcId: NpcId.parse("npc.varga"),
+        dialogueId: DialogueId.parse("dialogue.alt"),
+      }),
+    ).toEqual({ type: "SetNpcDialogue", npcId: "npc.varga", dialogueId: "dialogue.alt" });
   });
 });

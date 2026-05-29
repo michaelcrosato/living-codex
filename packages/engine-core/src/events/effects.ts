@@ -22,12 +22,9 @@ export function effectToEvent(effect: Effect): GameEvent {
     case "show_text":
       return { type: "ShowText", text: effect.text };
     case "unlock_exit":
+      return { type: "UnlockExit", locationId: effect.locationId, exitIndex: effect.exitIndex };
     case "set_npc_dialogue":
-      // Honest gap: these need World-shape extensions not in WORLD_STATE.md §1 and no slice
-      // content uses them yet. Add them (versioned) when a quest first needs the verb.
-      throw new Error(
-        `effectToEvent: effect "${effect.kind}" is not yet implemented by the engine.`,
-      );
+      return { type: "SetNpcDialogue", npcId: effect.npcId, dialogueId: effect.dialogueId };
     default: {
       const exhaustive: never = effect;
       throw new Error(`effectToEvent: unhandled effect ${JSON.stringify(exhaustive)}`);

@@ -32,6 +32,26 @@
       #stage {
         position: relative;
       }
+      #cold-open {
+        position: fixed;
+        inset: 0;
+        background: #05070c;
+        color: #cfe6f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        text-align: center;
+        font-size: 20px;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+      }
+      #cold-open .prompt {
+        margin-top: 24px;
+        color: #4a5a6a;
+        font-size: 14px;
+      }
       #dialogue {
         display: none;
         position: absolute;
@@ -55,6 +75,11 @@
       <div id="dialogue"></div>
     </div>
     <div id="hud">Loading…</div>
+    <div id="cold-open">
+      <div class="line">It is raining, and it has always been raining.</div>
+      <div class="line">You don't remember how you got here.</div>
+      <div class="prompt">— press any key —</div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

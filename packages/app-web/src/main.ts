@@ -11,6 +11,7 @@ import { drawScene } from "./scene";
 import { InputController } from "./input";
 import { renderHud } from "./hud";
 import { DialogueController } from "./dialogue-controller";
+import { beats } from "./beats";
 
 /**
  * The composition root (T-12): the ONLY place that wires loader + engine + render-pixi +
@@ -37,6 +38,13 @@ async function main(): Promise<void> {
   input.attach(window);
   const dialogue = new DialogueController(registries, new InkNarrative());
   const dialogueEl = document.getElementById("dialogue") as HTMLElement;
+
+  // cold open (VERTICAL_SLICE §2 0:00): dismiss on first input
+  const coldOpenEl = document.getElementById("cold-open") as HTMLElement;
+  const dismissColdOpen = (): void => {
+    coldOpenEl.style.display = "none";
+  };
+  coldOpenEl.addEventListener("click", dismissColdOpen);
 
   // app-only UI state: which NPC's dialogue is open (by def id), if any
   let openNpcId: string | null = null;
@@ -84,6 +92,7 @@ async function main(): Promise<void> {
   };
   requestAnimationFrame(frame);
   window.addEventListener("keydown", (e) => {
+    dismissColdOpen();
     const k = e.key.toLowerCase();
     if (e.key === "Escape") closeDialogue();
     else if (k === "k") void saveGame("manual", makeSave(session.world, [], fingerprint));
@@ -104,6 +113,7 @@ async function main(): Promise<void> {
     __codex: {
       world: () => session.world,
       log: () => session.log,
+      beats: () => beats(session.world),
       save: async (): Promise<string> => {
         const save = makeSave(session.world, [], fingerprint);
         await saveGame("auto", save);

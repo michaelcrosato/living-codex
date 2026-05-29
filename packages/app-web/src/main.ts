@@ -5,6 +5,7 @@ import { createPixiRenderer } from "@codex/render-pixi";
 import { InkNarrative } from "@codex/narrative-ink";
 import { exportSave, saveGame } from "@codex/persistence";
 import openingPack from "../../../content/core/pack.opening/pack.json";
+import dripPatrons from "../../../content/generated/pack.the_drip_patrons/pack.json";
 import { GameSession } from "./session";
 import { drawScene } from "./scene";
 import { InputController } from "./input";
@@ -17,7 +18,7 @@ import { renderHud } from "./hud";
  * Attack: F. Use exit / dialogue choice: number keys.
  */
 async function main(): Promise<void> {
-  const { registries, fingerprint } = loadPacks([openingPack]);
+  const { registries, fingerprint } = loadPacks([openingPack, dripPatrons]);
   const canvas = document.getElementById("game") as HTMLCanvasElement;
   const hud = document.getElementById("hud") as HTMLElement;
   const viewport = { w: canvas.width, h: canvas.height };

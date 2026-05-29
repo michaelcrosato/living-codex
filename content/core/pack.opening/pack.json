@@ -1,6 +1,6 @@
 {
   "id": "pack.opening",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "title": "The Opening — Ashfall",
   "dependsOn": [],
   "provenance": { "authoredBy": "human", "models": [] },
@@ -48,10 +48,30 @@
       ],
       "exits": [
         { "at": { "x": 50, "y": 50 }, "toLocationId": "location.warehouse_door", "spawnAt": { "x": 10, "y": 10 }, "label": "the warehouse door", "requires": [] },
-        { "at": { "x": 50, "y": 50 }, "toLocationId": "location.warehouse_roof", "spawnAt": { "x": 10, "y": 10 }, "label": "the fire escape", "requires": [] }
+        { "at": { "x": 50, "y": 50 }, "toLocationId": "location.warehouse_roof", "spawnAt": { "x": 10, "y": 10 }, "label": "the fire escape", "requires": [] },
+        { "at": { "x": 50, "y": 50 }, "toLocationId": "location.the_drip", "spawnAt": { "x": 60, "y": 260 }, "label": "the Drip", "requires": [] }
       ],
-      "npcSpawns": [{ "npcId": "npc.varga", "at": { "x": 150, "y": 320 } }],
-      "ambientText": ["A drone coughs past overhead."]
+      "npcSpawns": [
+        { "npcId": "npc.varga", "at": { "x": 150, "y": 320 } },
+        { "npcId": "npc.stranger", "at": { "x": 90, "y": 200 } }
+      ],
+      "ambientText": ["A drone coughs past overhead.", "You don't remember how you got here."]
+    },
+    {
+      "id": "location.the_drip",
+      "name": "The Drip",
+      "mood": "Warm light, low talk, a dozen sets of eyes that clock you and look away. The bar hums.",
+      "bounds": { "w": 400, "h": 300 },
+      "art": [
+        { "kind": "rect", "at": { "x": 0, "y": 0 }, "w": 400, "h": 300, "fill": "#120d0a" },
+        { "kind": "rect", "at": { "x": 20, "y": 30 }, "w": 360, "h": 40, "fill": "#241a12", "stroke": "#e0a35a" },
+        { "kind": "circle", "at": { "x": 200, "y": 150 }, "r": 90, "fill": "#1a130d" }
+      ],
+      "exits": [
+        { "at": { "x": 60, "y": 260 }, "toLocationId": "location.ashfall_district", "spawnAt": { "x": 50, "y": 50 }, "label": "back to the street", "requires": [] }
+      ],
+      "npcSpawns": [],
+      "ambientText": ["Somewhere a glass breaks. Nobody turns."]
     },
     {
       "id": "location.warehouse_door",
@@ -121,11 +141,27 @@
       "dialogueId": "dialogue.guard",
       "combat": { "hp": 12 },
       "reactsTo": []
+    },
+    {
+      "id": "npc.stranger",
+      "name": "The Stranger",
+      "appearance": { "bodyColor": "#23262e", "accentColor": "#8a8f98", "silhouette": "cloaked" },
+      "bio": {
+        "role": "the cold-open contact",
+        "backstory": "Pulls you off the street, points you at Varga, and knows more about your missing memory than they let on.",
+        "wants": "to hand you to Varga and vanish",
+        "fears": "being seen helping you",
+        "voice": "low, clipped, never quite answering",
+        "secrets": ["Knows how you really got to Ashfall."]
+      },
+      "dialogueId": "dialogue.stranger",
+      "reactsTo": []
     }
   ],
   "dialogues": [
     { "id": "dialogue.varga_intro", "format": "ink-json", "inkVersion": "21", "sourceHash": "stub", "compiled": {}, "declaredVars": ["accepted"] },
-    { "id": "dialogue.guard", "format": "ink-json", "inkVersion": "21", "sourceHash": "stub", "compiled": {}, "declaredVars": [] }
+    { "id": "dialogue.guard", "format": "ink-json", "inkVersion": "21", "sourceHash": "stub", "compiled": {}, "declaredVars": [] },
+    { "id": "dialogue.stranger", "format": "ink-json", "inkVersion": "21", "sourceHash": "stub", "compiled": {}, "declaredVars": ["met_stranger"] }
   ],
   "quests": [
     {

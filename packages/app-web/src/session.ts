@@ -63,19 +63,29 @@ export class GameSession {
     const location = this.registries.locations.get(locationId);
     if (!location) return;
     const events: GameEvent[] = [];
-    for (const spawn of location.npcSpawns) {
-      const entityId = `entity.${spawn.npcId}`;
-      if (this.world.entities[entityId]) continue;
-      const npc = this.registries.npcs.get(spawn.npcId);
+    const spawnNpc = (npcId: string, at: { x: number; y: number }): void => {
+      const entityId = `entity.${npcId}`;
+      if (this.world.entities[entityId]) return;
+      const npc = this.registries.npcs.get(npcId as never);
       const entity: Entity = {
         id: entityId,
-        defId: spawn.npcId,
+        defId: npcId,
         locationId,
-        pos: { ...spawn.at },
+        pos: { ...at },
         alive: true,
         ...(npc?.combat ? { hp: npc.combat.hp } : {}),
       };
       events.push({ type: "SpawnEntity", entity });
+    };
+    // explicit placements from the location...
+    for (const spawn of location.npcSpawns) spawnNpc(spawn.npcId, spawn.at);
+    // ...plus any NPC (from any pack) that calls this location home, scattered deterministically.
+    let i = 0;
+    for (const npc of this.registries.npcs.values()) {
+      if (npc.homeLocationId !== locationId) continue;
+      const at = { x: 40 + ((i * 53) % 320), y: 40 + ((i * 37) % 200) };
+      spawnNpc(npc.id, at);
+      i++;
     }
     this.applyAndLog(events);
   }

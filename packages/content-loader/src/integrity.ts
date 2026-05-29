@@ -102,6 +102,8 @@ function collectPackRefs(pack: ContentPack, out: Ref[]): void {
 
   for (const npc of pack.npcs) {
     if (npc.faction) out.push({ type: "faction", id: npc.faction, where: `${npc.id}.faction` });
+    if (npc.homeLocationId)
+      out.push({ type: "location", id: npc.homeLocationId, where: `${npc.id}.homeLocationId` });
     out.push({ type: "dialogue", id: npc.dialogueId, where: `${npc.id}.dialogueId` });
     npc.reactsTo.forEach((r, i) => {
       r.when.forEach((c, j) => collectConditionRefs(c, `${npc.id}.reactsTo[${i}].when[${j}]`, out));

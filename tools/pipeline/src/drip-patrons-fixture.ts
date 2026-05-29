@@ -149,6 +149,7 @@ const NPCS = {
     id: p.id,
     name: p.name,
     ...(p.faction ? { faction: p.faction } : {}),
+    homeLocationId: "location.the_drip",
     appearance: { bodyColor: "#3a3f4b", accentColor: "#2bd1ff", silhouette: p.silhouette },
     bio: {
       role: p.role,

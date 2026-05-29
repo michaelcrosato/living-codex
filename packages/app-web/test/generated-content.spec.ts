@@ -22,7 +22,7 @@ describe("generated content loads through the same path (GOAL §4 milestone)", (
     expect(registries.npcs.has(NpcId.parse("npc.varga"))).toBe(true); // hand-authored
     expect(registries.npcs.has(NpcId.parse("npc.the_archivist"))).toBe(true); // pipeline-generated
     expect(registries.npcs.has(NpcId.parse("npc.drip_rumor"))).toBe(true);
-    expect(registries.npcs.size).toBe(12); // 2 (opening) + 10 (generated)
+    expect(registries.npcs.size).toBe(13); // 3 (opening: varga, guard, stranger) + 10 (generated)
   });
 
   it("cross-pack references resolve through the one integrity pass", () => {

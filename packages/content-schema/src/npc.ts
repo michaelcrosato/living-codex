@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { NpcId, FactionId, DialogueId } from "./ids";
+import { NpcId, FactionId, DialogueId, LocationId } from "./ids";
 import { Condition } from "./condition";
 import { FlagEffect } from "./effect";
 
@@ -25,6 +25,10 @@ export const Npc = z.object({
   // Optional combat stats — present only for NPCs that can be the target of a `defeat`
   // objective. Additive/optional so existing packs and saves stay valid (SCHEMA.md §10).
   combat: z.object({ hp: z.number().int().positive() }).optional(),
+  // Where this NPC lives; the app spawns it there on entry. Decouples placement from the
+  // location definition, so a pack can place its NPCs without the location listing them
+  // (avoids a hand-authored location depending on a generated NPC pack).
+  homeLocationId: LocationId.optional(),
   reactsTo: z
     .array(
       z.object({

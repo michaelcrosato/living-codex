@@ -1,4 +1,4 @@
-import type { LocationId, FactionId, ItemId, FlagId, QuestId, DialogueId } from "@codex/content-schema";
+import type { LocationId, FactionId, ItemId, FlagId, QuestId, DialogueId, Effect } from "@codex/content-schema";
 import type { Entity, EntityId, SkillId } from "../state/world";
 
 /**
@@ -21,7 +21,17 @@ export type GameEvent =
   | { type: "SetEntityHp"; entityId: EntityId; hp: number; alive: boolean }
   | { type: "OfferQuest"; questId: QuestId }
   // intent: the player interacted with an entity (the dialogue system, T-07, will consume it)
-  | { type: "Interacted"; entityId: EntityId; dialogueId?: DialogueId };
+  | { type: "Interacted"; entityId: EntityId; dialogueId?: DialogueId }
+  // resolves a skill_check objective: rolls the single RNG inside the fold, captures the
+  // outcome, and applies authored onFail effects on failure (WORLD_STATE.md §3.2)
+  | {
+      type: "ResolveSkillCheck";
+      questId: QuestId;
+      objectiveKey: string;
+      skill: SkillId;
+      dc: number;
+      onFail: Effect[];
+    };
 
 export type GameEventType = GameEvent["type"];
 

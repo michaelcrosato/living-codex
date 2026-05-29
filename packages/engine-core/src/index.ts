@@ -12,6 +12,7 @@ export * from "./state/snapshot";
 // events + replay
 export * from "./events/event";
 export * from "./events/apply";
+export * from "./events/effects";
 export * from "./events/log";
 
 // the tick loop

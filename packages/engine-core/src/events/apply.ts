@@ -1,5 +1,7 @@
-import type { World, Entity, QuestRuntimeState } from "../state/world";
+import type { World, Entity, QuestRuntimeState, ObjectiveRuntimeState } from "../state/world";
 import type { GameEvent } from "./event";
+import { RngCursor, deserializeRng, serializeRng } from "../time/rng";
+import { effectsToEvents } from "./effects";
 
 /** The single chokepoint where bounds live, so they hold under replay (WORLD_STATE.md §5). */
 const REPUTATION_MIN = -100;
@@ -91,6 +93,47 @@ export function applyEvent(world: World, ev: GameEvent): World {
         ...world,
         entities: { ...world.entities, [entity.id]: { ...entity, hp: ev.hp, alive: ev.alive } },
       };
+    }
+
+    case "ResolveSkillCheck": {
+      // The ONE place a skill check consumes randomness. Because the fold is sequential and
+      // replay re-applies this same event against the same starting rngState, the roll is
+      // reproduced exactly (WORLD_STATE.md §3.2, §4 capture-don't-recompute).
+      const cursor = new RngCursor(deserializeRng(world.rngState));
+      const roll = cursor.int(1, 20);
+      const total = roll + world.player.skills[ev.skill] + world.player.conditionMods[ev.skill];
+      const success = total >= ev.dc;
+
+      let next: World = { ...world, rngState: serializeRng(cursor.state) };
+
+      const quest = next.quests[ev.questId];
+      if (quest) {
+        const prev: ObjectiveRuntimeState = quest.objectiveProgress[ev.objectiveKey] ?? {
+          done: false,
+          failed: false,
+          attempts: 0,
+        };
+        const updated: ObjectiveRuntimeState = {
+          done: success,
+          failed: !success,
+          attempts: prev.attempts + 1,
+        };
+        next = {
+          ...next,
+          quests: {
+            ...next.quests,
+            [ev.questId]: {
+              ...quest,
+              objectiveProgress: { ...quest.objectiveProgress, [ev.objectiveKey]: updated },
+            },
+          },
+        };
+      }
+
+      if (!success) {
+        for (const effectEvent of effectsToEvents(ev.onFail)) next = applyEvent(next, effectEvent);
+      }
+      return next;
     }
 
     case "StartQuest":

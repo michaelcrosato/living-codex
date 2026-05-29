@@ -5,7 +5,7 @@
  */
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { loadPacks } from "@codex/content-loader";
+import { loadPacks, validatePack } from "@codex/content-loader";
 import {
   makeBrief,
   runCycle,
@@ -39,7 +39,9 @@ const intent =
     : "Introduce a rival fixer who competes with Varga for the player's loyalty.";
 
 const files = findPackFiles(resolve(process.cwd(), "content"));
-const { registries, fingerprint } = loadPacks(files.map((f) => JSON.parse(readFileSync(f, "utf8")) as unknown));
+const raw = files.map((f) => JSON.parse(readFileSync(f, "utf8")) as unknown);
+const { registries, fingerprint } = loadPacks(raw);
+const priorPacks = raw.map((r, i) => validatePack(r, `#${i}`));
 
 const provider: ModelProvider = process.env.OPENROUTER_API_KEY
   ? new OpenRouterProvider({
@@ -57,6 +59,7 @@ const bundle = await runCycle({
   provider,
   registries,
   packIds: Object.keys(fingerprint.packs),
+  priorPacks,
 });
 
 console.log(renderBundleMarkdown(bundle));

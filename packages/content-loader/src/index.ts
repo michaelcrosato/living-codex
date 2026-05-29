@@ -6,4 +6,14 @@ export { loadPacks, orderByDependencies } from "./load";
 export { validatePack } from "./validate";
 export { checkIntegrity, type IntegrityError, type RefType } from "./integrity";
 export { buildRegistries, fingerprintRegistries, type Registries, type LoadResult } from "./registries";
+export {
+  buildCanonGraph,
+  findCanonContradictions,
+  findDanglingAssertionRefs,
+  auditCanon,
+  type CanonGraph,
+  type AssertionRecord,
+  type CanonContradiction,
+  type CanonRule,
+} from "./canon-graph";
 export { hashValue, stableStringify, hashString } from "./hash";

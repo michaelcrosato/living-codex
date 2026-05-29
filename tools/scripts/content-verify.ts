@@ -9,7 +9,7 @@
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { loadPacks } from "@codex/content-loader";
+import { loadPacks, validatePack, auditCanon } from "@codex/content-loader";
 import type { Effect, Objective, Quest } from "@codex/content-schema";
 
 const contentRoot = resolve(process.cwd(), "content");
@@ -38,7 +38,15 @@ if (files.length === 0) {
 
 const raw = files.map((f) => JSON.parse(readFileSync(f, "utf8")) as unknown);
 const { registries } = loadPacks(raw);
+const packs = raw.map((r, i) => validatePack(r, `#${i}`));
 const errors: string[] = [];
+
+// Canon assertion graph (CONTENT_PIPELINE.md §6): semantic contradictions the ID-level index
+// can't see — a broke patron who funds a faction, a dead NPC still placed in the world, allies
+// who are also enemies, or an assertion pointing at a nonexistent entity.
+for (const c of auditCanon(packs, registries)) {
+  errors.push(`canon [${c.rule}]: ${c.message} (packs: ${c.sources.join(", ")})`);
+}
 
 // Locations you can actually enter: the destination of some exit. A reach() target that is an
 // island (no exits in OR out) is unwinnable — something the loader's ref-integrity can't catch.
@@ -138,5 +146,6 @@ if (errors.length > 0) {
 }
 console.log(
   `[content:verify] OK — ${registries.quests.size} quest(s) solvable & reachable, ` +
-    `${registries.locations.size} locations, all unlock_exit indices in range, no contradictory gates.`,
+    `${registries.locations.size} locations, all unlock_exit indices in range, ` +
+    `no contradictory gates, canon assertion graph consistent.`,
 );

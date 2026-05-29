@@ -1,0 +1,160 @@
+import { describe, it, expect } from "vitest";
+import { ContentPack, type CanonAssertion } from "@codex/content-schema";
+import {
+  buildCanonGraph,
+  findCanonContradictions,
+  findDanglingAssertionRefs,
+  auditCanon,
+} from "./canon-graph";
+import { buildRegistries } from "./registries";
+
+/** Minimal valid pack carrying only assertions — enough to exercise the semantic rules. */
+function assertingPack(assertions: CanonAssertion[], id = "pack.test"): ContentPack {
+  return ContentPack.parse({
+    id,
+    version: "0",
+    title: "test",
+    provenance: { authoredBy: "human" },
+    assertions,
+  });
+}
+
+const npc = (over: Record<string, unknown>): Record<string, unknown> => ({
+  name: "X",
+  appearance: { bodyColor: "#000", accentColor: "#fff", silhouette: "humanoid" },
+  bio: { role: "r", backstory: "b", wants: "w", fears: "f", voice: "v" },
+  dialogueId: "dialogue.x",
+  ...over,
+});
+
+describe("canon assertion graph (CONTENT_PIPELINE.md §6)", () => {
+  it("a consistent world produces no contradictions", () => {
+    const pack = assertingPack([
+      { predicate: "funds", subject: "npc.varga", object: "faction.crew" },
+      { predicate: "status", subject: "npc.varga", state: "solvent" },
+      { predicate: "status", subject: "faction.crew", state: "wealthy" },
+      { predicate: "fact", subject: "npc.varga", note: "keeps her debts in a little black book" },
+    ]);
+    expect(findCanonContradictions(buildCanonGraph([pack]))).toEqual([]);
+  });
+
+  it("exclusive-status: a subject cannot be both alive and dead in the same epoch", () => {
+    const pack = assertingPack([
+      { predicate: "status", subject: "npc.kaine", state: "alive" },
+      { predicate: "status", subject: "npc.kaine", state: "dead" },
+    ]);
+    const found = findCanonContradictions(buildCanonGraph([pack]));
+    expect(found).toHaveLength(1);
+    expect(found[0]?.rule).toBe("exclusive-status");
+    expect(found[0]?.subjects).toEqual(["npc.kaine"]);
+  });
+
+  it("status-over-time: differing `since` epochs are a legitimate timeline, not a contradiction", () => {
+    const pack = assertingPack([
+      { predicate: "status", subject: "npc.kaine", state: "alive", since: 0 },
+      { predicate: "status", subject: "npc.kaine", state: "dead", since: 5 },
+    ]);
+    expect(findCanonContradictions(buildCanonGraph([pack]))).toEqual([]);
+  });
+
+  it("a dead NPC who is still placed in the world is caught (authored dead vs derived alive)", () => {
+    // placement ⟹ the app spawns the NPC ⟹ canonically present ⟹ alive
+    const pack = ContentPack.parse({
+      id: "pack.ghosttown",
+      version: "0",
+      title: "t",
+      provenance: { authoredBy: "human" },
+      npcs: [npc({ id: "npc.kaine", homeLocationId: "location.morgue" })],
+      assertions: [{ predicate: "status", subject: "npc.kaine", state: "dead" }],
+    });
+    const found = findCanonContradictions(buildCanonGraph([pack]));
+    expect(found.map((c) => c.rule)).toContain("exclusive-status");
+  });
+
+  it("allegiance-polarity: a faction cannot be both allied with and an enemy of another (derived)", () => {
+    const pack = ContentPack.parse({
+      id: "pack.feud",
+      version: "0",
+      title: "t",
+      provenance: { authoredBy: "human" },
+      factions: [
+        { id: "faction.a", name: "A", ethos: "e", allies: ["faction.b"], rivals: ["faction.b"] },
+      ],
+    });
+    const found = findCanonContradictions(buildCanonGraph([pack]));
+    expect(found).toHaveLength(1);
+    expect(found[0]?.rule).toBe("allegiance-polarity");
+    expect(found[0]?.subjects.sort()).toEqual(["faction.a", "faction.b"]);
+  });
+
+  it("allegiance-polarity is symmetric and spans packs (blast radius lists both)", () => {
+    const p1 = assertingPack(
+      [{ predicate: "allied_with", subject: "faction.a", object: "faction.b" }],
+      "pack.one",
+    );
+    const p2 = assertingPack(
+      [{ predicate: "enemy_of", subject: "faction.b", object: "faction.a" }],
+      "pack.two",
+    );
+    const found = findCanonContradictions(buildCanonGraph([p1, p2]));
+    expect(found).toHaveLength(1);
+    expect(found[0]?.sources).toEqual(["pack.one", "pack.two"]);
+  });
+
+  it("funds-while-broke: the §6 example — secretly broke yet quietly funding a faction", () => {
+    const pack = assertingPack([
+      { predicate: "funds", subject: "npc.varga", object: "faction.syndicate" },
+      { predicate: "status", subject: "npc.varga", state: "broke" },
+    ]);
+    const found = findCanonContradictions(buildCanonGraph([pack]));
+    expect(found).toHaveLength(1);
+    expect(found[0]?.rule).toBe("funds-while-broke");
+  });
+
+  it("derives member_of from an NPC's faction", () => {
+    const pack = ContentPack.parse({
+      id: "pack.crew",
+      version: "0",
+      title: "t",
+      provenance: { authoredBy: "human" },
+      npcs: [npc({ id: "npc.varga", faction: "faction.crew" })],
+    });
+    const graph = buildCanonGraph([pack]);
+    const member = graph.records.find((r) => r.assertion.predicate === "member_of");
+    expect(member?.derived).toBe(true);
+    expect(member?.assertion).toMatchObject({ subject: "npc.varga", object: "faction.crew" });
+  });
+
+  it("dangling-ref: an authored assertion pointing at a nonexistent entity is flagged", () => {
+    const pack = ContentPack.parse({
+      id: "pack.refs",
+      version: "0",
+      title: "t",
+      provenance: { authoredBy: "human" },
+      factions: [{ id: "faction.real", name: "R", ethos: "e" }],
+      assertions: [
+        { predicate: "member_of", subject: "npc.ghost", object: "faction.real" },
+        { predicate: "status", subject: "faction.real", state: "solvent" },
+      ],
+    });
+    const registries = buildRegistries([pack]);
+    const dangling = findDanglingAssertionRefs(buildCanonGraph([pack]), registries);
+    expect(dangling).toHaveLength(1);
+    expect(dangling[0]?.subjects).toEqual(["npc.ghost"]);
+  });
+
+  it("auditCanon runs every rule and returns nothing for a clean, self-referential pack", () => {
+    const pack = ContentPack.parse({
+      id: "pack.clean",
+      version: "0",
+      title: "t",
+      provenance: { authoredBy: "human" },
+      factions: [
+        { id: "faction.a", name: "A", ethos: "e", rivals: ["faction.b"] },
+        { id: "faction.b", name: "B", ethos: "e", rivals: ["faction.a"] },
+      ],
+      assertions: [{ predicate: "status", subject: "faction.a", state: "wealthy" }],
+    });
+    expect(auditCanon([pack], buildRegistries([pack]))).toEqual([]);
+  });
+});

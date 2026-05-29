@@ -1064,5 +1064,12 @@
         ]
       }
     }
+  ],
+  "assertions": [
+    { "predicate": "member_of", "subject": "npc.varga", "object": "faction.varga_crew" },
+    { "predicate": "funds", "subject": "npc.varga", "object": "faction.varga_crew" },
+    { "predicate": "status", "subject": "npc.varga", "state": "solvent" },
+    { "predicate": "status", "subject": "faction.ashfall_syndicate", "state": "wealthy" },
+    { "predicate": "fact", "subject": "npc.stranger", "note": "Identity withheld until the player earns it." }
   ]
 }

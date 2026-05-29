@@ -5,6 +5,7 @@ import { Npc } from "./npc";
 import { Quest } from "./quest";
 import { Faction } from "./faction";
 import { ItemTemplate } from "./item";
+import { CanonAssertion } from "./assertion";
 
 /** Content ships in packs (SCHEMA.md §8): a manifest + arrays of entities + provenance. */
 export const Provenance = z.object({
@@ -43,5 +44,8 @@ export const ContentPack = z.object({
   factions: z.array(Faction).default([]),
   items: z.array(ItemTemplate).default([]),
   dialogues: z.array(DialogueAsset).default([]),
+  // Structured canon facts queried by the offline canon audit (CONTENT_PIPELINE.md §6).
+  // Additive + engine-ignored: the simulation never reads these.
+  assertions: z.array(CanonAssertion).default([]),
 });
 export type ContentPack = z.infer<typeof ContentPack>;

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Registries } from "@codex/content-loader";
+import { auditCanon, type Registries } from "@codex/content-loader";
 import { Quest, ContentPack } from "@codex/content-schema";
 import type { ModelProvider } from "../llm/adapter";
 import { generateStructured } from "../llm/adapter";
@@ -36,6 +36,9 @@ export interface RunCycleArgs {
   packIds?: readonly string[];
   packId?: string;
   models?: readonly string[];
+  // Existing canon packs, so the candidate is audited against them (CONTENT_PIPELINE.md §6).
+  // Omit to audit the candidate's internal consistency only.
+  priorPacks?: readonly z.infer<typeof ContentPack>[];
 }
 
 function slug(text: string): string {
@@ -105,12 +108,19 @@ export async function runCycle(args: RunCycleArgs): Promise<CurationBundle> {
     ...(quest ? { quest } : {}),
   });
 
+  // Query the canon assertion graph for semantic contradictions (the candidate against existing
+  // canon) and surface them next to the Critic's prose flags for the human (CONTENT_PIPELINE §6).
+  const canonContradictions = auditCanon(
+    [...(args.priorPacks ?? []), candidate],
+    args.registries,
+  ).map((c) => `[canon:${c.rule}] ${c.message}`);
+
   return {
     brief: args.brief,
     canon,
     proposals: { arc, references, npcs: dramatist, ...(quest ? { quest } : {}) },
     scorecard,
     candidate,
-    flagged: [...scorecard.contradictions],
+    flagged: [...scorecard.contradictions, ...canonContradictions],
   };
 }

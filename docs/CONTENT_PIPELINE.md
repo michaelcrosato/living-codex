@@ -114,15 +114,27 @@ The pipeline injects the canon export + the relevant schema(s) and dispatches to
 
 ## 6. Canon consistency (the hard part, kept practical for now)
 
-The risk in growing a world is contradiction over time. For the slice and the near term, three lightweight mechanisms keep it coherent:
+The risk in growing a world is contradiction over time. Four mechanisms keep it coherent:
 
 1. **The world bible is the source of truth** (`WORLD_BIBLE.md` + a generated index). Every cycle is grounded in it; nothing is proposed without it in context. Content conditions on **Possible Outcomes**, never on one player's branch (`WORLD_BIBLE.md §A.3`).
 2. **A canon index** (`content/canon-index.json`, auto-generated) lists every entity ID, its name, and a one-line summary. It is small and fits easily in context, so models avoid reinventing or reusing IDs.
 3. **A contradiction check at validation time.** The Critic role receives the new pack + the canon index and answers a structured question: *does anything here contradict established canon (deaths, allegiances, established facts)?* Flagged contradictions block the bake until the human resolves them.
+4. **A canon assertion graph** (`content-loader/canon-graph.ts`) — the queryable structured layer (see below). It runs in `pnpm content:verify` (committed content must be contradiction-free) and folds its findings into the cycle's curation bundle next to the Critic's prose flags.
 
 Dependency tracking is data-driven: each pack declares `dependsOn`, and the canon index records which packs introduced which entities, so the human sees blast radius before changing canon.
 
-> **Honest limitation (deferred, by design).** The canon index is **ID-level**: it stops you reusing or contradicting an *identifier*, but it cannot by itself catch *semantic/relational* contradictions — "Varga is secretly broke" in one pack vs. "Varga quietly funds the Syndicate" in another, or an NPC killed in pack A greeting the player in pack F. The Critic pass + human curation catch most of these at slice scale. The real long-term fix is to store canon as **structured assertions** (entity → relation → entity, with status-over-time, mirroring the Events log) that a check can *query*, rather than prose a Critic eyeballs. That is a deliberate **post-slice** work item — it degrades gracefully (curation covers it meanwhile) and does not block the showcase. Do not build the assertion graph before the slice ships.
+### The canon assertion graph
+
+The canon index is **ID-level**: it stops you reusing or contradicting an *identifier*, but it cannot by itself catch *semantic/relational* contradictions — "Varga is secretly broke" in one pack vs. "Varga quietly funds the Syndicate" in another, or an NPC killed in pack A greeting the player in pack F. The fix, now implemented, is to store canon as **structured assertions** (`pack.assertions`, `SCHEMA.md §8`) — `subject → predicate → (object | status state)` with an optional `since` epoch for status-over-time — that a check can *query* rather than prose a Critic eyeballs.
+
+The graph ingests both **authored** assertions and ones **derived** from structural canon (an NPC's `faction` → `member_of`; a faction's `allies`/`rivals` → `allied_with`/`enemy_of`; placement via `homeLocationId`/`npcSpawns` → `located_in` + `status: alive`, since the world spawns them). Derived facts are restricted to canonical truths — never a quest's `defeat` objective, which is a *Possible Outcome*, not canon. Each record is tagged with the pack that introduced it, so a flagged contradiction reports its **blast radius**. Rules:
+
+- **exclusive-status** — a subject cannot hold two states from the same group (`{alive, dead, missing}`, `{broke, solvent, wealthy}`) in the same epoch. This is what catches the dead-NPC-still-placed bug (authored `dead` vs derived `alive`); differing `since` epochs are a legitimate timeline, not a contradiction.
+- **allegiance-polarity** — the same pair cannot be both `allied_with` and `enemy_of` (symmetric, cross-pack).
+- **funds-while-broke** — a subject asserted `broke` cannot also `funds` a faction (the §6 Varga example).
+- **dangling-ref** — every *authored* assertion ref must resolve to a real entity (referential integrity for the assertion layer).
+
+> **Honest limitation that remains.** The rule set is deliberately small and closed; it catches the contradiction *shapes* above, not arbitrary semantic conflict. The Critic pass + human curation still cover what the rules don't, and new rules are cheap to add as new contradiction shapes show up in practice.
 
 ---
 

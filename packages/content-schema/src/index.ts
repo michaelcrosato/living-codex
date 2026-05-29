@@ -4,6 +4,7 @@
 
 export * from "./ids";
 export * from "./condition";
+export * from "./assertion";
 export * from "./effect";
 export * from "./faction";
 export * from "./item";

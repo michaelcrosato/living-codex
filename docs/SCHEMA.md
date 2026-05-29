@@ -293,11 +293,14 @@ export const ContentPack = z.object({
   factions: z.array(Faction).default([]),
   items: z.array(ItemTemplate).default([]),
   dialogues: z.array(DialogueAsset).default([]),  // compiled Ink, referenced by DialogueId
+  assertions: z.array(CanonAssertion).default([]),// structured canon facts (CONTENT_PIPELINE §6)
 });
 export type ContentPack = z.infer<typeof ContentPack>;
 ```
 
 `content-loader` loads packs in dependency order, validates each with Zod, then runs a **referential-integrity pass**: every `NpcId`/`QuestId`/`ItemId`/`LocationId`/`FactionId`/`DialogueId` referenced anywhere must resolve to a defined entity. Any dangling reference fails the load with a precise error. This is how an AI-authored pack can never silently break the game.
+
+**Canon assertions** (`assertion.ts`, additive + ENGINE-IGNORED) are structured facts — `subject → predicate → (object | status state)`, with an optional `since` epoch for status-over-time. The simulation never reads them; the offline **canon assertion graph** (`CONTENT_PIPELINE.md §6`) queries them to catch *semantic* contradictions the ID-level check can't (a broke patron who funds a faction, a dead NPC still placed in the world, allies who are also enemies). Predicates: `member_of`, `allied_with`, `enemy_of`, `funds`, `located_in`, `status`, `fact`.
 
 ---
 

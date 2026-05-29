@@ -14,7 +14,7 @@ const raw = JSON.parse(
 const { registries, fingerprint } = loadPacks([raw]);
 
 /** The recorded golden hash: fixed brief + the demo ensemble => this exact candidate pack. */
-const GOLDEN_HASH = "15d6d7252d7ccb";
+const GOLDEN_HASH = "1960b594d42eeb";
 
 const run = () =>
   runCycle({

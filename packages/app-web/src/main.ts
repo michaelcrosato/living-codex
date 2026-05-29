@@ -12,6 +12,7 @@ import { InputController } from "./input";
 import { renderHud } from "./hud";
 import { DialogueController } from "./dialogue-controller";
 import { beats } from "./beats";
+import { mark, measure, installErrorBoundary, getTelemetry } from "./telemetry";
 
 /**
  * The composition root (T-12): the ONLY place that wires loader + engine + render-pixi +
@@ -46,6 +47,9 @@ async function main(): Promise<void> {
     seedEvents: [{ type: "SetFlag", flag: FlagId.parse("flag.met_varga"), to: true }],
   });
 
+  // Capture uncaught errors/rejections (tagged with the current tick) into the offline buffer.
+  installErrorBoundary(() => session.world.tick);
+
   const input = new InputController();
   input.attach(window);
   const dialogue = new DialogueController(registries, new InkNarrative());
@@ -72,6 +76,7 @@ async function main(): Promise<void> {
     const step = accumulate(accumulatorMs, now - last);
     accumulatorMs = step.accumulatorMs;
     last = now;
+    mark("codex:sim:start");
     for (let i = 0; i < step.steps; i++) {
       const events = session.step(input.drain());
       // open a dialogue panel when the interaction system reports a talk
@@ -82,9 +87,12 @@ async function main(): Promise<void> {
         }
       }
     }
+    measure("codex:sim", "codex:sim:start");
 
+    mark("codex:draw:start");
     drawScene(renderer, session.world, registries, viewport);
     renderHud(hud, session.world, registries);
+    measure("codex:draw", "codex:draw:start");
 
     // render / refresh the dialogue panel from current world state
     if (openNpcId) {
@@ -128,6 +136,7 @@ async function main(): Promise<void> {
       world: () => session.world,
       log: () => session.log,
       beats: () => beats(session.world),
+      telemetry: () => getTelemetry(),
       save: async (): Promise<string> => {
         const save = makeSave(session.world, [], fingerprint);
         await saveGame("auto", save);

@@ -43,6 +43,11 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
   could fold into SPEC-16 or a standalone hygiene commit.
 - **web-vitals reporting sink** — if/when a backend exists; until then SPEC-08 buffers locally only
   (offline-first). Don't add network telemetry that breaks the offline guarantee.
+- **e2e port robustness** — `packages/app-web/playwright.config.ts` uses `reuseExistingServer: !CI`,
+  which blindly reuses ANY server already on :4173. Found 2026-05-29: a foreign dev server squatting
+  that port made the slice walk fail with a misleading "#cold-open not found" (the walk passes against a
+  clean server — verified on a temp :4199 config). Options: a dedicated/random port, `reuseExistingServer:
+  false` locally, or a health-check asserting the served HTML actually contains `#cold-open` before testing.
 
 ## Notes
 Every item above was considered and *deliberately deferred* during the 2026-05-29 planning pass. The

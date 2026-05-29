@@ -1,0 +1,31 @@
+import type { LocationId, FactionId, ItemId, FlagId, QuestId } from "@codex/content-schema";
+import type { Entity, EntityId, SkillId } from "../state/world";
+
+/**
+ * The engine's vocabulary (ARCHITECTURE.md §3). Events are the ONLY way the world changes;
+ * `applyEvent` folds them. The state-mutating effect kinds in SCHEMA.md §5 map 1:1 onto a
+ * subset of these (SetFlag, AdjustReputation, GiveItem, ModifySkill, StartQuest, …).
+ */
+export type GameEvent =
+  // --- effect-mirroring events (content's vocabulary, SCHEMA.md §5) ---
+  | { type: "SetFlag"; flag: FlagId; to: boolean | number | string }
+  | { type: "AdjustReputation"; factionId: FactionId; delta: number }
+  | { type: "GiveItem"; itemId: ItemId; count: number }
+  | { type: "ModifySkill"; skill: SkillId; delta: number }
+  | { type: "StartQuest"; questId: QuestId }
+  | { type: "ShowText"; text: string }
+  // --- core engine events ---
+  | { type: "SpawnEntity"; entity: Entity }
+  | { type: "EnterLocation"; locationId: LocationId; spawnAt: { x: number; y: number } }
+  | { type: "MoveEntity"; entityId: EntityId; to: { x: number; y: number } }
+  | { type: "SetEntityHp"; entityId: EntityId; hp: number; alive: boolean }
+  | { type: "OfferQuest"; questId: QuestId };
+
+export type GameEventType = GameEvent["type"];
+
+/** Player input for a tick (WORLD_STATE.md §8). Systems (T-06+) turn these into GameEvents. */
+export type InputEvent =
+  | { type: "Move"; dir: { x: number; y: number } }
+  | { type: "Interact" }
+  | { type: "Choose"; choiceIndex: number }
+  | { type: "UseExit"; exitIndex: number };

@@ -17,9 +17,9 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 | SPEC-06 | CI supply-chain hardening | 0 | Done | main | a4a6056 | green | SHA-pinned actions + least-priv permissions + --ignore-scripts |
 | SPEC-07 | depcruise layers + no-orphans | 0 | Done | main | 4f177d8 | green | 3 layer rules + no-orphans; rule fire proven via planted violation |
 | SPEC-02 | Wire `talk_to` objective | 1 | Todo | — | — | — | — |
-| SPEC-04 | Per-tick state-hash divergence | 1 | Todo | — | — | — | — |
+| SPEC-04 | Per-tick state-hash divergence | 1 | Done | main | (see log) | green | replayTrace + firstDivergence (pure, reuse hash()); bisects divergence to a step; +1 test |
 | SPEC-05 | fast-check command fuzz | 1 | Todo | — | — | — | soft-dep SPEC-04 |
-| SPEC-12 | Pipeline tolerant pre-parser | 1 | Done | main | (see log) | green | tolerantParse: fences/CoT/trailing-comma (string-aware); golden-master byte-stable; +7 tests (143→150) |
+| SPEC-12 | Pipeline tolerant pre-parser | 1 | Done | main | d552be1 | green | tolerantParse: fences/CoT/trailing-comma (string-aware); golden-master byte-stable; +7 tests (143→150) |
 | SPEC-08 | Offline observability | 2 | Todo | — | — | — | coord main.ts w/ SPEC-09/10 |
 | SPEC-09 | Accessibility pass | 2 | Todo | — | — | — | run UI, not just tests |
 | SPEC-10 | Durable saves + migration | 2 | Todo | — | — | — | — |
@@ -42,5 +42,6 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 - 2026-05-29 — SPEC-07 depcruise: +content-schema-is-leaf, +content-loader-only-imports-schema, +render-and-persistence-only-in-app-web, +no-orphans. Corrected mid-impl: narrative-ink is legitimately imported by offline tooling (compile-ink/synthesis) + packages import their own internals. Rule-fire proven via a planted violation. `pnpm verify` green. (4f177d8)
 - 2026-05-29 — SPEC-03 CI coverage+doctor: added @vitest/coverage-v8 + `test:coverage` + vitest coverage config; CI runs `agent:doctor` before `verify` and uploads an lcov artifact. Report-only (no floor); verify stays blocking, e2e non-blocking. `pnpm verify` + `pnpm test:coverage` green. (CI run pending a push.) (47d769d)
 - 2026-05-29 — SPEC-06 CI hardening: pinned all 4 GitHub Actions to commit SHAs (+ tag comments), added top-level least-privilege `permissions: contents: read`, and `--ignore-scripts` on CI installs. Proved locally `pnpm install --frozen-lockfile --ignore-scripts` succeeds (no dep needs a lifecycle script). `pnpm verify` green. **Wave 0 complete.** (YAML validity confirmable on next push.) (a4a6056)
-- 2026-05-29 — SPEC-12 tolerant pre-parser: `generateStructured` now runs a string-aware `tolerantParse` (code fences / prose-wrapped JSON / trailing commas) before counting a repair, so recoverable output costs 0 re-prompts. No new dep. Golden-master byte-stable (StubProvider clean path unchanged). 150 tests (+7). `pnpm verify` green.
+- 2026-05-29 — SPEC-12 tolerant pre-parser: `generateStructured` now runs a string-aware `tolerantParse` (code fences / prose-wrapped JSON / trailing commas) before counting a repair, so recoverable output costs 0 re-prompts. No new dep. Golden-master byte-stable (StubProvider clean path unchanged). 150 tests (+7). `pnpm verify` green. (d552be1)
+- 2026-05-29 — SPEC-04 per-tick state-hash: added pure `replayTrace`/`firstDivergence` to engine-core (reuse `hash()`), exported via the log barrel; replay.test.ts gains a divergence-bisection test (perturb an event -> pinpoints the step). Caught+fixed a `exactOptionalPropertyTypes` error mid-impl (conditional-spread the optional fields). 151 tests (+1). `pnpm verify` green.
 <!-- Append: `YYYY-MM-DD — SPEC-NN <slug>: <what changed> (<commit>); verify <green/red>.` -->

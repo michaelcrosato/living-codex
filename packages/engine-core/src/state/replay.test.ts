@@ -10,6 +10,8 @@ import {
   createLog,
   appendEvent,
   replay,
+  replayTrace,
+  firstDivergence,
   makeSave,
   loadSave,
   type ReplayEntry,
@@ -105,6 +107,41 @@ describe("replay", () => {
         },
       ),
     );
+  });
+
+  it("replayTrace + firstDivergence bisect a divergence to the exact step", () => {
+    const events: GameEvent[] = [
+      { type: "SetFlag", flag: flags[0]!, to: true },
+      { type: "GiveItem", itemId: items[0]!, count: 2 },
+      { type: "AdjustReputation", factionId: factions[0]!, delta: 5 },
+    ];
+
+    const log = createLog(SEED, FP);
+    events.forEach((e, i) => appendEvent(log, i, e));
+    const traceA = replayTrace(createWorld({ seed: SEED, startLocationId: START }), log);
+
+    // trace = initial + one per event; its final hash agrees with replay()
+    expect(traceA).toHaveLength(events.length + 1);
+    const replayed = replay(createWorld({ seed: SEED, startLocationId: START }), log);
+    expect(traceA.at(-1)!.hash).toBe(hash(replayed));
+
+    // an identical replay never diverges
+    expect(
+      firstDivergence(traceA, replayTrace(createWorld({ seed: SEED, startLocationId: START }), log)),
+    ).toBeNull();
+
+    // perturb the 2nd event (count 2 -> 99): the trace must diverge exactly at that step (tick 1)
+    const perturbed = createLog(SEED, FP);
+    events.forEach((e, i) =>
+      appendEvent(perturbed, i, i === 1 ? { type: "GiveItem", itemId: items[0]!, count: 99 } : e),
+    );
+    const div = firstDivergence(
+      traceA,
+      replayTrace(createWorld({ seed: SEED, startLocationId: START }), perturbed),
+    );
+    expect(div).not.toBeNull();
+    expect(div!.tick).toBe(1);
+    expect(div!.index).toBe(2); // [initial, after-e0, after-e1(diverges)]
   });
 
   it("serialize / deserialize round-trips exactly", () => {

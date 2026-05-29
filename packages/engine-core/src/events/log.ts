@@ -2,6 +2,7 @@ import type { ContentFingerprint } from "@codex/content-schema";
 import type { World } from "../state/world";
 import type { GameEvent, InputEvent } from "./event";
 import { applyEvent } from "./apply";
+import { hash } from "../state/snapshot";
 
 /**
  * The save & replay envelope (WORLD_STATE.md §7). The replay log records both inputs and the
@@ -82,6 +83,59 @@ export function replay(initial: World, log: ReplayLog, opts: ReplayOptions = {})
     if (entry.kind === "event") world = applyEvent(world, entry.event);
   }
   return world;
+}
+
+export interface TickHash {
+  tick: number;
+  hash: string;
+}
+
+/**
+ * Like `replay`, but capture a per-step state hash so a divergence can be bisected to the exact
+ * step (the standard deterministic-replay debugging tool). Pure; computed on demand — it is NOT
+ * stored in the shipped `ReplayLog`. The trace starts with the initial snapshot, then records one
+ * `{ tick, hash }` after each applied event (tick taken from the log entry).
+ */
+export function replayTrace(initial: World, log: ReplayLog): TickHash[] {
+  if (initial.seed !== log.seed) {
+    throw new Error(`replayTrace: seed mismatch (initial "${initial.seed}" vs log "${log.seed}").`);
+  }
+  const trace: TickHash[] = [{ tick: initial.tick, hash: hash(initial) }];
+  let world = initial;
+  for (const entry of log.entries) {
+    if (entry.kind === "event") {
+      world = applyEvent(world, entry.event);
+      trace.push({ tick: entry.tick, hash: hash(world) });
+    }
+  }
+  return trace;
+}
+
+/**
+ * The first step at which two traces differ (by tick or hash), or `null` if identical. Turns a
+ * bare end-of-replay hash mismatch into "diverged at tick N", so a determinism regression is
+ * localized instead of merely detected.
+ */
+export function firstDivergence(
+  a: readonly TickHash[],
+  b: readonly TickHash[],
+): { index: number; tick: number; a?: TickHash; b?: TickHash } | null {
+  const n = Math.min(a.length, b.length);
+  for (let i = 0; i < n; i++) {
+    if (a[i]!.tick !== b[i]!.tick || a[i]!.hash !== b[i]!.hash) {
+      return { index: i, tick: a[i]!.tick, a: a[i]!, b: b[i]! };
+    }
+  }
+  if (a.length !== b.length) {
+    const present = (a[n] ?? b[n])!; // exactly one side ran out; the other has an element here
+    return {
+      index: n,
+      tick: present.tick,
+      ...(a[n] ? { a: a[n] } : {}),
+      ...(b[n] ? { b: b[n] } : {}),
+    };
+  }
+  return null;
 }
 
 export function makeSave(

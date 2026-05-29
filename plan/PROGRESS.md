@@ -26,7 +26,7 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 | SPEC-13 | New curated pack (offline) | 2 | Done | main | (see log) | green | pack.kestrel (rival fixer + 3-branch quest + Ink + canon assertions); same-path load+play test; +4 tests; golden untouched |
 | SPEC-11 | Storylet / salience layer | 3 | Done | main | bb10696 | green | minimal additive schema + salience-selected ambient barks system; tie-breaker RNG inside applyEvent fold; +3 tests |
 | SPEC-14 | Retrieval-grounded canon | 3 | Done | main | 816552a | green | subgraph query + cycle prompt grounding + integration spy test |
-| SPEC-15 | Rubric LLM-judge gate | 3 | In progress | spec/SPEC-15-rubric-judge-gate | — | — | hermetic StubProvider |
+| SPEC-15 | Rubric LLM-judge gate | 3 | Done | main | abf39e2 | green | 1-5 integer rubric + rationale CoT prompt + threshold low-score flagging; Html escaping rationales; +3 tests |
 | SPEC-16 | Zod 4 + native JSON Schema | 4 | Todo | — | — | — | MED risk; isolate; updates golden hash |
 
 ## Wave gates
@@ -52,4 +52,5 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 - 2026-05-29 — SPEC-02 wire talk_to: the `talk_to` objective (previously a runtime stub) now completes once the player has engaged the NPC's dialogue — detected via `world.dialogue` (set by DialogueAdvanced, replay-safe), so NO new World field/migration. `questSystem` takes an optional `npcs` registry to resolve the NPC's (base or overridden) dialogue id; session wires it in. +1 test (153). **Wave 1 complete.** `pnpm verify` green.
 - 2026-05-29 — SPEC-11 storylet-layer: added Zod schema, integrity checker, deterministic salience selector system, and TriggerStorylet tie-breaker event handler inside the fold (bb10696); verify green.
 - 2026-05-29 — SPEC-14 retrieval-grounded canon: queried 1-hop relevant subgraph over the S5 graph and injected as stable prompt context grounding (816552a); verify green.
+- 2026-05-29 — SPEC-15 rubric-judge-gate: added locked 1-5 integer rubric, rationale-before-score prompt, advisory threshold flagging, and HTML escaping of rationales (abf39e2); verify green.
 <!-- Append: `YYYY-MM-DD — SPEC-NN <slug>: <what changed> (<commit>); verify <green/red>.` -->

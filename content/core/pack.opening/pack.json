@@ -1,0 +1,183 @@
+{
+  "id": "pack.opening",
+  "version": "0.1.0",
+  "title": "The Opening — Ashfall",
+  "dependsOn": [],
+  "provenance": { "authoredBy": "human", "models": [] },
+  "factions": [
+    {
+      "id": "faction.varga_crew",
+      "name": "Varga's Crew",
+      "ethos": "Loyalty for loyalty. Debt remembered.",
+      "rivals": ["faction.ashfall_syndicate"],
+      "allies": []
+    },
+    {
+      "id": "faction.ashfall_syndicate",
+      "name": "Ashfall Syndicate",
+      "ethos": "The city runs on what we let it keep.",
+      "rivals": ["faction.varga_crew"],
+      "allies": []
+    }
+  ],
+  "items": [
+    {
+      "id": "item.encrypted_drive",
+      "name": "Encrypted Drive",
+      "description": "Heavy with someone's secrets.",
+      "kind": "quest",
+      "value": 0
+    },
+    {
+      "id": "item.credits",
+      "name": "Credits",
+      "description": "Ashfall runs on them.",
+      "kind": "trade",
+      "value": 1
+    }
+  ],
+  "locations": [
+    {
+      "id": "location.ashfall_district",
+      "name": "Ashfall Street",
+      "mood": "Acid rain hisses on neon. The awnings sag. Someone is always watching.",
+      "bounds": { "w": 800, "h": 600 },
+      "art": [
+        { "kind": "rect", "at": { "x": 0, "y": 0 }, "w": 800, "h": 600, "fill": "#0b0e14" },
+        { "kind": "rect", "at": { "x": 40, "y": 120 }, "w": 220, "h": 160, "fill": "#161b26", "stroke": "#2bd1ff" }
+      ],
+      "exits": [
+        { "at": { "x": 50, "y": 50 }, "toLocationId": "location.warehouse_door", "spawnAt": { "x": 10, "y": 10 }, "label": "the warehouse door", "requires": [] },
+        { "at": { "x": 50, "y": 50 }, "toLocationId": "location.warehouse_roof", "spawnAt": { "x": 10, "y": 10 }, "label": "the fire escape", "requires": [] }
+      ],
+      "npcSpawns": [{ "npcId": "npc.varga", "at": { "x": 150, "y": 320 } }],
+      "ambientText": ["A drone coughs past overhead."]
+    },
+    {
+      "id": "location.warehouse_door",
+      "name": "Warehouse Door",
+      "mood": "A bored guard, a heavy door, and the smell of ozone.",
+      "bounds": { "w": 400, "h": 300 },
+      "art": [{ "kind": "rect", "at": { "x": 0, "y": 0 }, "w": 400, "h": 300, "fill": "#0b0e14" }],
+      "exits": [
+        { "at": { "x": 10, "y": 10 }, "toLocationId": "location.warehouse_floor", "spawnAt": { "x": 10, "y": 10 }, "label": "inside", "requires": [] }
+      ],
+      "npcSpawns": [{ "npcId": "npc.warehouse_guard", "at": { "x": 200, "y": 150 } }],
+      "ambientText": []
+    },
+    {
+      "id": "location.warehouse_roof",
+      "name": "Warehouse Roof",
+      "mood": "Rain on corrugated steel. A skylight, loose on its hinges.",
+      "bounds": { "w": 400, "h": 300 },
+      "art": [{ "kind": "rect", "at": { "x": 0, "y": 0 }, "w": 400, "h": 300, "fill": "#0b0e14" }],
+      "exits": [
+        { "at": { "x": 10, "y": 10 }, "toLocationId": "location.warehouse_floor", "spawnAt": { "x": 10, "y": 10 }, "label": "down through the skylight", "requires": [] }
+      ],
+      "npcSpawns": [],
+      "ambientText": []
+    },
+    {
+      "id": "location.warehouse_floor",
+      "name": "Warehouse Floor",
+      "mood": "Crates to the ceiling. On a workbench: the drive.",
+      "bounds": { "w": 500, "h": 400 },
+      "art": [{ "kind": "rect", "at": { "x": 0, "y": 0 }, "w": 500, "h": 400, "fill": "#0b0e14" }],
+      "exits": [],
+      "npcSpawns": [],
+      "ambientText": ["Somewhere, a fan turns over."]
+    }
+  ],
+  "npcs": [
+    {
+      "id": "npc.varga",
+      "name": "Varga",
+      "faction": "faction.varga_crew",
+      "appearance": { "bodyColor": "#c8c8d0", "accentColor": "#2bd1ff", "silhouette": "cloaked" },
+      "bio": {
+        "role": "dock-side fixer",
+        "backstory": "Owes the Syndicate more than she'll admit.",
+        "wants": "the encrypted drive from the Syndicate warehouse",
+        "fears": "her crew learning how deep her debt runs",
+        "voice": "clipped, warm under the wariness",
+        "secrets": ["The debt is in her dead brother's name."]
+      },
+      "dialogueId": "dialogue.varga_intro",
+      "reactsTo": []
+    },
+    {
+      "id": "npc.warehouse_guard",
+      "name": "Syndicate Guard",
+      "faction": "faction.ashfall_syndicate",
+      "appearance": { "bodyColor": "#3a3f4b", "accentColor": "#ff5a3c", "silhouette": "stocky" },
+      "bio": {
+        "role": "warehouse muscle",
+        "backstory": "Took the job for the dental. Regrets it nightly.",
+        "wants": "to get through the shift",
+        "fears": "whatever is in crate 7",
+        "voice": "flat, tired, faintly hopeful you'll just leave",
+        "secrets": []
+      },
+      "dialogueId": "dialogue.guard",
+      "reactsTo": []
+    }
+  ],
+  "dialogues": [
+    { "id": "dialogue.varga_intro", "format": "ink-json", "inkVersion": "21", "sourceHash": "stub", "compiled": {}, "declaredVars": ["accepted"] },
+    { "id": "dialogue.guard", "format": "ink-json", "inkVersion": "21", "sourceHash": "stub", "compiled": {}, "declaredVars": [] }
+  ],
+  "quests": [
+    {
+      "id": "quest.the_warehouse",
+      "title": "What's in the Warehouse",
+      "giverNpcId": "npc.varga",
+      "summary": "Varga says there's something worth taking in the Ashfall warehouse. Getting in is your problem.",
+      "offerWhen": [{ "kind": "flag_is", "flag": "flag.met_varga", "equals": true }],
+      "branches": [
+        {
+          "id": "talk",
+          "label": "Talk your way past the guard",
+          "objectives": [
+            { "kind": "reach", "locationId": "location.warehouse_door" },
+            {
+              "kind": "skill_check",
+              "skill": "persuade",
+              "dc": 12,
+              "onFail": [
+                { "kind": "set_flag", "flag": "flag.guard_suspicious", "to": true },
+                { "kind": "show_text", "text": "The guard's hand drifts to his stun baton. So much for talking." }
+              ]
+            },
+            { "kind": "reach", "locationId": "location.warehouse_floor" }
+          ],
+          "onComplete": [{ "kind": "set_flag", "flag": "flag.entered_peacefully", "to": true }]
+        },
+        {
+          "id": "sneak",
+          "label": "Slip in through the skylight",
+          "objectives": [
+            { "kind": "reach", "locationId": "location.warehouse_roof" },
+            { "kind": "skill_check", "skill": "sneak", "dc": 14 },
+            { "kind": "reach", "locationId": "location.warehouse_floor" }
+          ],
+          "onComplete": [{ "kind": "set_flag", "flag": "flag.entered_unseen", "to": true }]
+        },
+        {
+          "id": "force",
+          "label": "Just take it",
+          "objectives": [
+            { "kind": "reach", "locationId": "location.warehouse_door" },
+            { "kind": "defeat", "npcId": "npc.warehouse_guard" },
+            { "kind": "reach", "locationId": "location.warehouse_floor" }
+          ],
+          "onComplete": [{ "kind": "adjust_reputation", "factionId": "faction.ashfall_syndicate", "delta": -15 }]
+        }
+      ],
+      "onAnyComplete": [
+        { "kind": "give_item", "itemId": "item.encrypted_drive", "count": 1 },
+        { "kind": "set_flag", "flag": "flag.has_drive", "to": true }
+      ],
+      "rewards": { "credits": 200, "items": [], "reputation": [{ "factionId": "faction.varga_crew", "delta": 10 }] }
+    }
+  ]
+}

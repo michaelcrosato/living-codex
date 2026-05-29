@@ -56,6 +56,9 @@ export function applyEvent(world: World, ev: GameEvent): World {
       };
     }
 
+    case "AdvanceTick":
+      return { ...world, tick: world.tick + 1 };
+
     case "ShowText":
     case "Interacted":
       // Logged intent for transcript/debugging (and the dialogue system, T-07); no world

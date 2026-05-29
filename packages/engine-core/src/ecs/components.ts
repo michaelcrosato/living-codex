@@ -24,5 +24,6 @@ export interface EcsEntity {
 
 /** A minimal NPC lookup (a ReadonlyMap<NpcId, Npc> satisfies this) used to enrich the ECS. */
 export interface NpcLookup {
-  get(id: NpcId): { dialogueId: DialogueId; faction?: FactionId } | undefined;
+  // `faction?: … | undefined` so a ReadonlyMap<NpcId, Npc> (whose faction is optional) satisfies it.
+  get(id: NpcId): { dialogueId: DialogueId; faction?: FactionId | undefined } | undefined;
 }

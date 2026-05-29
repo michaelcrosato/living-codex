@@ -40,6 +40,10 @@ export function tick(
     next = applyEvent(next, event);
   }
 
-  next = { ...next, tick: at + 1 };
+  // Advance the tick as a logged event so replay reproduces World.tick exactly.
+  const advance: GameEvent = { type: "AdvanceTick" };
+  entries.push({ tick: at, kind: "event", event: advance });
+  next = applyEvent(next, advance);
+
   return { world: next, entries, events };
 }

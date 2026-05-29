@@ -38,7 +38,9 @@ export type GameEvent =
   | { type: "CompleteQuestBranch"; questId: QuestId; branchId: string; appliedEffectIds: string[] }
   | { type: "ForecloseBranch"; questId: QuestId; branchId: string }
   // --- minimal combat (T-09): resolves a `defeat` objective deterministically ---
-  | { type: "ResolveAttack"; attackerEntityId: EntityId; targetEntityId: EntityId };
+  | { type: "ResolveAttack"; attackerEntityId: EntityId; targetEntityId: EntityId }
+  // bookkeeping: advances the fixed-timestep counter; logged so replay reproduces World.tick
+  | { type: "AdvanceTick" };
 
 export type GameEventType = GameEvent["type"];
 

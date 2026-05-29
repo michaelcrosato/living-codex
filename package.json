@@ -26,7 +26,11 @@
     "content:verify": "tsx tools/scripts/content-verify.ts",
     "replay:verify": "vitest run -t \"replay invariant\"",
     "e2e": "playwright test -c packages/app-web/playwright.config.ts",
-    "verify": "pnpm typecheck && pnpm lint && pnpm deps:check && pnpm test && pnpm content:validate && pnpm content:verify && pnpm replay:verify"
+    "verify": "pnpm typecheck && pnpm lint && pnpm deps:check && pnpm test && pnpm content:validate && pnpm content:verify && pnpm replay:verify",
+    "agent:bootstrap": "bash scripts/agent/bootstrap.sh",
+    "agent:doctor": "bash scripts/agent/doctor.sh",
+    "agent:check": "bash scripts/agent/check.sh",
+    "agent:status": "bash scripts/agent/status.sh"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",

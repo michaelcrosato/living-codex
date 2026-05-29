@@ -1,6 +1,9 @@
 # Repository Structure — The Living Codex
 
-Generated layout. Docs live in `docs/`; `AGENTS.md` and `README.md` sit at the root where agents and humans look first. The `packages/`, `content/`, and `tools/` trees match `docs/ARCHITECTURE.md §2` and are ready for ticket **T-00**.
+Repository layout (built). Docs live in `docs/`; `AGENTS.md`, `README.md`, `GOAL.md`, and
+`ROADMAP.md` sit at the root where agents and humans look first. The `packages/`, `content/`, and
+`tools/` trees match `docs/ARCHITECTURE.md §2`. For a concise, link-rich agent map see
+`docs/ai/REPO_MAP.md`.
 
 ```
 living-codex/
@@ -17,6 +20,8 @@ living-codex/
 │   │   ├── debugging.md
 │   │   ├── evolving-the-schema.md
 │   │   └── extending-the-renderer.md
+│   ├── ai/
+│   │   └── REPO_MAP.md
 │   ├── AGENT_GUIDES.md
 │   ├── ARCHITECTURE.md
 │   ├── CONTENT_PIPELINE.md
@@ -55,9 +60,14 @@ living-codex/
 │   └── render-pixi/
 │       ├── src/
 │       └── README.md
+├── scripts/
+│   └── agent/              # thin gate wrappers (bootstrap, doctor, check, status, …)
+├── tickets/               # atomic agent work items (TICKET0NN.md)
 ├── tools/
 │   ├── migrate/
+│   │   ├── src/
 │   │   └── README.md
+│   ├── scripts/           # pnpm script bodies (content/pipeline/schema CLIs)
 │   └── pipeline/
 │       ├── src/
 │       │   ├── cache/
@@ -66,8 +76,13 @@ living-codex/
 │       │   ├── prompts/
 │       │   └── schemas/
 │       └── README.md
+├── .aiignore
+├── .env.example
 ├── AGENTS.md
-└── README.md
+├── GOAL.md
+├── README.md
+├── ROADMAP.md
+└── STRUCTURE.md
 ```
 
 ## Where each document lives and why
@@ -87,11 +102,11 @@ living-codex/
 | `WORLD_BIBLE.md` | `docs/` | Canon format + Ashfall starter setting. |
 | `VERTICAL_SLICE.md` | `docs/` | The 10-minute demo target. |
 
-## Source tree (empty, ready for T-00)
+## Source tree (built)
 
-- `packages/` — the eight workspaces from `ARCHITECTURE.md §2`. `engine-core/src/` is pre-divided into the modules from §3 (`time, state, ecs, systems, events, conditions, ports`). Each package has a one-paragraph `README.md` stating its job and public API.
-- `content/core/pack.opening/` — hand-authored slice content (T-13). `content/generated/` — pipeline output (T-14c).
-- `tools/pipeline/` — offline content pipeline (T-14a–c), never shipped. `tools/migrate/` — schema/save migrations.
-- `.gitkeep` files hold empty directories in version control; delete them as real files land.
+- `packages/` — the workspaces from `ARCHITECTURE.md §2`. `engine-core/src/` holds the §3 modules (`time, state, ecs, systems, events, conditions, ports`). Each package has a one-paragraph `README.md` stating its job and public API.
+- `content/core/pack.opening` + `pack.bribe_demo` — hand-authored content. `content/generated/pack.the_drip_patrons` — baked pipeline output.
+- `tools/pipeline/` — offline content pipeline, never shipped. `tools/migrate/` — schema/save migrations. `tools/scripts/` — the `pnpm` CLI bodies.
+- Root config: `package.json` (the `pnpm verify` gate), `pnpm-workspace.yaml`, `tsconfig.base.json` + `tsconfig.json` + `tsconfig.dom.json`, `eslint.config.js`, `.dependency-cruiser.cjs`, `vitest.config.ts`, `.prettierrc.json`. CI in `.github/workflows/verify.yml`.
 
-> Not yet present (created during T-00): `pnpm-workspace.yaml`, `tsconfig.base.json`, ESLint/Prettier/dependency-cruiser configs, Vitest config, and the root `package.json` with the `pnpm verify` script. See the T-00 scaffolding note in `docs/TICKETS.md`.
+> Per-file locations and skip paths for agents: `docs/ai/REPO_MAP.md`.

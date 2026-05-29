@@ -43,6 +43,10 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
   could fold into SPEC-16 or a standalone hygiene commit.
 - **web-vitals reporting sink** — if/when a backend exists; until then SPEC-08 buffers locally only
   (offline-first). Don't add network telemetry that breaks the offline guarantee.
+- **Doc-sync SCHEMA §3 (NPC)** — found 2026-05-29 while authoring pack.kestrel: `docs/SCHEMA.md §3`
+  documents the `Npc` shape WITHOUT the additive `combat: { hp }` and `homeLocationId` fields that
+  exist in `content-schema/src/npc.ts`. Same class of drift SPEC-01 fixed for §5/§7/WORLD_STATE §1;
+  a one-paragraph doc edit (no code).
 - **e2e port robustness** — `packages/app-web/playwright.config.ts` uses `reuseExistingServer: !CI`,
   which blindly reuses ANY server already on :4173. Found 2026-05-29: a foreign dev server squatting
   that port made the slice walk fail with a misleading "#cold-open not found" (the walk passes against a

@@ -3,20 +3,27 @@
   "version": "0.2.0",
   "title": "The Opening — Ashfall",
   "dependsOn": [],
-  "provenance": { "authoredBy": "human", "models": [] },
+  "provenance": {
+    "authoredBy": "human",
+    "models": []
+  },
   "factions": [
     {
       "id": "faction.varga_crew",
       "name": "Varga's Crew",
       "ethos": "Loyalty for loyalty. Debt remembered.",
-      "rivals": ["faction.ashfall_syndicate"],
+      "rivals": [
+        "faction.ashfall_syndicate"
+      ],
       "allies": []
     },
     {
       "id": "faction.ashfall_syndicate",
       "name": "Ashfall Syndicate",
       "ethos": "The city runs on what we let it keep.",
-      "rivals": ["faction.varga_crew"],
+      "rivals": [
+        "faction.varga_crew"
+      ],
       "allies": []
     }
   ],
@@ -41,58 +48,235 @@
       "id": "location.ashfall_district",
       "name": "Ashfall Street",
       "mood": "Acid rain hisses on neon. The awnings sag. Someone is always watching.",
-      "bounds": { "w": 800, "h": 600 },
+      "bounds": {
+        "w": 800,
+        "h": 600
+      },
       "art": [
-        { "kind": "rect", "at": { "x": 0, "y": 0 }, "w": 800, "h": 600, "fill": "#0b0e14" },
-        { "kind": "rect", "at": { "x": 40, "y": 120 }, "w": 220, "h": 160, "fill": "#161b26", "stroke": "#2bd1ff" }
+        {
+          "kind": "rect",
+          "at": {
+            "x": 0,
+            "y": 0
+          },
+          "w": 800,
+          "h": 600,
+          "fill": "#0b0e14"
+        },
+        {
+          "kind": "rect",
+          "at": {
+            "x": 40,
+            "y": 120
+          },
+          "w": 220,
+          "h": 160,
+          "fill": "#161b26",
+          "stroke": "#2bd1ff"
+        }
       ],
       "exits": [
-        { "at": { "x": 50, "y": 50 }, "toLocationId": "location.warehouse_door", "spawnAt": { "x": 10, "y": 10 }, "label": "the warehouse door", "requires": [] },
-        { "at": { "x": 50, "y": 50 }, "toLocationId": "location.warehouse_roof", "spawnAt": { "x": 10, "y": 10 }, "label": "the fire escape", "requires": [] },
-        { "at": { "x": 50, "y": 50 }, "toLocationId": "location.the_drip", "spawnAt": { "x": 60, "y": 260 }, "label": "the Drip", "requires": [] }
+        {
+          "at": {
+            "x": 50,
+            "y": 50
+          },
+          "toLocationId": "location.warehouse_door",
+          "spawnAt": {
+            "x": 10,
+            "y": 10
+          },
+          "label": "the warehouse door",
+          "requires": []
+        },
+        {
+          "at": {
+            "x": 50,
+            "y": 50
+          },
+          "toLocationId": "location.warehouse_roof",
+          "spawnAt": {
+            "x": 10,
+            "y": 10
+          },
+          "label": "the fire escape",
+          "requires": []
+        },
+        {
+          "at": {
+            "x": 50,
+            "y": 50
+          },
+          "toLocationId": "location.the_drip",
+          "spawnAt": {
+            "x": 60,
+            "y": 260
+          },
+          "label": "the Drip",
+          "requires": []
+        }
       ],
       "npcSpawns": [
-        { "npcId": "npc.varga", "at": { "x": 150, "y": 320 } },
-        { "npcId": "npc.stranger", "at": { "x": 90, "y": 200 } }
+        {
+          "npcId": "npc.varga",
+          "at": {
+            "x": 150,
+            "y": 320
+          }
+        },
+        {
+          "npcId": "npc.stranger",
+          "at": {
+            "x": 90,
+            "y": 200
+          }
+        }
       ],
-      "ambientText": ["A drone coughs past overhead.", "You don't remember how you got here."]
+      "ambientText": [
+        "A drone coughs past overhead.",
+        "You don't remember how you got here."
+      ]
     },
     {
       "id": "location.the_drip",
       "name": "The Drip",
       "mood": "Warm light, low talk, a dozen sets of eyes that clock you and look away. The bar hums.",
-      "bounds": { "w": 400, "h": 300 },
+      "bounds": {
+        "w": 400,
+        "h": 300
+      },
       "art": [
-        { "kind": "rect", "at": { "x": 0, "y": 0 }, "w": 400, "h": 300, "fill": "#120d0a" },
-        { "kind": "rect", "at": { "x": 20, "y": 30 }, "w": 360, "h": 40, "fill": "#241a12", "stroke": "#e0a35a" },
-        { "kind": "circle", "at": { "x": 200, "y": 150 }, "r": 90, "fill": "#1a130d" }
+        {
+          "kind": "rect",
+          "at": {
+            "x": 0,
+            "y": 0
+          },
+          "w": 400,
+          "h": 300,
+          "fill": "#120d0a"
+        },
+        {
+          "kind": "rect",
+          "at": {
+            "x": 20,
+            "y": 30
+          },
+          "w": 360,
+          "h": 40,
+          "fill": "#241a12",
+          "stroke": "#e0a35a"
+        },
+        {
+          "kind": "circle",
+          "at": {
+            "x": 200,
+            "y": 150
+          },
+          "r": 90,
+          "fill": "#1a130d"
+        }
       ],
       "exits": [
-        { "at": { "x": 60, "y": 260 }, "toLocationId": "location.ashfall_district", "spawnAt": { "x": 50, "y": 50 }, "label": "back to the street", "requires": [] }
+        {
+          "at": {
+            "x": 60,
+            "y": 260
+          },
+          "toLocationId": "location.ashfall_district",
+          "spawnAt": {
+            "x": 50,
+            "y": 50
+          },
+          "label": "back to the street",
+          "requires": []
+        }
       ],
       "npcSpawns": [],
-      "ambientText": ["Somewhere a glass breaks. Nobody turns."]
+      "ambientText": [
+        "Somewhere a glass breaks. Nobody turns."
+      ]
     },
     {
       "id": "location.warehouse_door",
       "name": "Warehouse Door",
       "mood": "A bored guard, a heavy door, and the smell of ozone.",
-      "bounds": { "w": 400, "h": 300 },
-      "art": [{ "kind": "rect", "at": { "x": 0, "y": 0 }, "w": 400, "h": 300, "fill": "#0b0e14" }],
-      "exits": [
-        { "at": { "x": 10, "y": 10 }, "toLocationId": "location.warehouse_floor", "spawnAt": { "x": 10, "y": 10 }, "label": "inside", "requires": [] }
+      "bounds": {
+        "w": 400,
+        "h": 300
+      },
+      "art": [
+        {
+          "kind": "rect",
+          "at": {
+            "x": 0,
+            "y": 0
+          },
+          "w": 400,
+          "h": 300,
+          "fill": "#0b0e14"
+        }
       ],
-      "npcSpawns": [{ "npcId": "npc.warehouse_guard", "at": { "x": 200, "y": 150 } }],
+      "exits": [
+        {
+          "at": {
+            "x": 10,
+            "y": 10
+          },
+          "toLocationId": "location.warehouse_floor",
+          "spawnAt": {
+            "x": 10,
+            "y": 10
+          },
+          "label": "inside",
+          "requires": []
+        }
+      ],
+      "npcSpawns": [
+        {
+          "npcId": "npc.warehouse_guard",
+          "at": {
+            "x": 200,
+            "y": 150
+          }
+        }
+      ],
       "ambientText": []
     },
     {
       "id": "location.warehouse_roof",
       "name": "Warehouse Roof",
       "mood": "Rain on corrugated steel. A skylight, loose on its hinges.",
-      "bounds": { "w": 400, "h": 300 },
-      "art": [{ "kind": "rect", "at": { "x": 0, "y": 0 }, "w": 400, "h": 300, "fill": "#0b0e14" }],
+      "bounds": {
+        "w": 400,
+        "h": 300
+      },
+      "art": [
+        {
+          "kind": "rect",
+          "at": {
+            "x": 0,
+            "y": 0
+          },
+          "w": 400,
+          "h": 300,
+          "fill": "#0b0e14"
+        }
+      ],
       "exits": [
-        { "at": { "x": 10, "y": 10 }, "toLocationId": "location.warehouse_floor", "spawnAt": { "x": 10, "y": 10 }, "label": "down through the skylight", "requires": [] }
+        {
+          "at": {
+            "x": 10,
+            "y": 10
+          },
+          "toLocationId": "location.warehouse_floor",
+          "spawnAt": {
+            "x": 10,
+            "y": 10
+          },
+          "label": "down through the skylight",
+          "requires": []
+        }
       ],
       "npcSpawns": [],
       "ambientText": []
@@ -101,11 +285,27 @@
       "id": "location.warehouse_floor",
       "name": "Warehouse Floor",
       "mood": "Crates to the ceiling. On a workbench: the drive.",
-      "bounds": { "w": 500, "h": 400 },
-      "art": [{ "kind": "rect", "at": { "x": 0, "y": 0 }, "w": 500, "h": 400, "fill": "#0b0e14" }],
+      "bounds": {
+        "w": 500,
+        "h": 400
+      },
+      "art": [
+        {
+          "kind": "rect",
+          "at": {
+            "x": 0,
+            "y": 0
+          },
+          "w": 500,
+          "h": 400,
+          "fill": "#0b0e14"
+        }
+      ],
       "exits": [],
       "npcSpawns": [],
-      "ambientText": ["Somewhere, a fan turns over."]
+      "ambientText": [
+        "Somewhere, a fan turns over."
+      ]
     }
   ],
   "npcs": [
@@ -113,14 +313,20 @@
       "id": "npc.varga",
       "name": "Varga",
       "faction": "faction.varga_crew",
-      "appearance": { "bodyColor": "#c8c8d0", "accentColor": "#2bd1ff", "silhouette": "cloaked" },
+      "appearance": {
+        "bodyColor": "#c8c8d0",
+        "accentColor": "#2bd1ff",
+        "silhouette": "cloaked"
+      },
       "bio": {
         "role": "dock-side fixer",
         "backstory": "Owes the Syndicate more than she'll admit.",
         "wants": "the encrypted drive from the Syndicate warehouse",
         "fears": "her crew learning how deep her debt runs",
         "voice": "clipped, warm under the wariness",
-        "secrets": ["The debt is in her dead brother's name."]
+        "secrets": [
+          "The debt is in her dead brother's name."
+        ]
       },
       "dialogueId": "dialogue.varga_intro",
       "reactsTo": []
@@ -129,7 +335,11 @@
       "id": "npc.warehouse_guard",
       "name": "Syndicate Guard",
       "faction": "faction.ashfall_syndicate",
-      "appearance": { "bodyColor": "#3a3f4b", "accentColor": "#ff5a3c", "silhouette": "stocky" },
+      "appearance": {
+        "bodyColor": "#3a3f4b",
+        "accentColor": "#ff5a3c",
+        "silhouette": "stocky"
+      },
       "bio": {
         "role": "warehouse muscle",
         "backstory": "Took the job for the dental. Regrets it nightly.",
@@ -139,29 +349,401 @@
         "secrets": []
       },
       "dialogueId": "dialogue.guard",
-      "combat": { "hp": 12 },
+      "combat": {
+        "hp": 12
+      },
       "reactsTo": []
     },
     {
       "id": "npc.stranger",
       "name": "The Stranger",
-      "appearance": { "bodyColor": "#23262e", "accentColor": "#8a8f98", "silhouette": "cloaked" },
+      "appearance": {
+        "bodyColor": "#23262e",
+        "accentColor": "#8a8f98",
+        "silhouette": "cloaked"
+      },
       "bio": {
         "role": "the cold-open contact",
         "backstory": "Pulls you off the street, points you at Varga, and knows more about your missing memory than they let on.",
         "wants": "to hand you to Varga and vanish",
         "fears": "being seen helping you",
         "voice": "low, clipped, never quite answering",
-        "secrets": ["Knows how you really got to Ashfall."]
+        "secrets": [
+          "Knows how you really got to Ashfall."
+        ]
       },
       "dialogueId": "dialogue.stranger",
       "reactsTo": []
     }
   ],
   "dialogues": [
-    { "id": "dialogue.varga_intro", "format": "ink-json", "inkVersion": "21", "sourceHash": "stub", "compiled": {}, "declaredVars": ["accepted"] },
-    { "id": "dialogue.guard", "format": "ink-json", "inkVersion": "21", "sourceHash": "stub", "compiled": {}, "declaredVars": [] },
-    { "id": "dialogue.stranger", "format": "ink-json", "inkVersion": "21", "sourceHash": "stub", "compiled": {}, "declaredVars": ["met_stranger"] }
+    {
+      "id": "dialogue.varga_intro",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "03e9638e0c926d",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "ev",
+            true,
+            "/ev",
+            {
+              "VAR=": "met_varga",
+              "re": true
+            },
+            "^Varga looks up from her drink. \"You're the one the stranger sent. Good.\"",
+            "\n",
+            "^\"There's an encrypted drive in the Syndicate warehouse. I need it. Getting in is your problem — talk, sneak, or kick the door. I don't care how.\"",
+            "\n",
+            "ev",
+            "str",
+            "^I'll do it",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^What's in it for me?",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-1",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^Not interested",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-2",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "ev",
+                true,
+                "/ev",
+                {
+                  "VAR=": "accepted",
+                  "re": true
+                },
+                "^\"Then go. Don't come back empty-handed.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-1": [
+                "\n",
+                "^\"Credits. And me owing you one. In Ashfall, that's worth more than credits.\"",
+                "\n",
+                [
+                  "ev",
+                  "str",
+                  "^Fine, I'll do it",
+                  "/str",
+                  "/ev",
+                  {
+                    "*": ".^.c-0",
+                    "flg": 20
+                  },
+                  "ev",
+                  "str",
+                  "^Still not interested",
+                  "/str",
+                  "/ev",
+                  {
+                    "*": ".^.c-1",
+                    "flg": 20
+                  },
+                  {
+                    "c-0": [
+                      "\n",
+                      "ev",
+                      true,
+                      "/ev",
+                      {
+                        "VAR=": "accepted",
+                        "re": true
+                      },
+                      "^\"Then go.\"",
+                      "\n",
+                      "end",
+                      {
+                        "->": "0.g-0"
+                      },
+                      {
+                        "#f": 5
+                      }
+                    ],
+                    "c-1": [
+                      "\n",
+                      "^\"Then you're wasting my drink.\"",
+                      "\n",
+                      "end",
+                      {
+                        "->": "0.g-0"
+                      },
+                      {
+                        "#f": 5
+                      }
+                    ]
+                  }
+                ],
+                {
+                  "#f": 5
+                }
+              ],
+              "c-2": [
+                "\n",
+                "^\"Then you're no use to me.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          {
+            "global decl": [
+              "ev",
+              false,
+              {
+                "VAR=": "met_varga"
+              },
+              false,
+              {
+                "VAR=": "accepted"
+              },
+              "/ev",
+              "end",
+              null
+            ]
+          }
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": [
+        "met_varga",
+        "accepted"
+      ]
+    },
+    {
+      "id": "dialogue.guard",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "1df15e8a05e8ee",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "^The guard shifts his weight, one hand near his stun baton. \"Warehouse is closed. Syndicate business. Move along.\"",
+            "\n",
+            "ev",
+            "str",
+            "^Talk your way in",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^Look for another way around",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-1",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^Make him move",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-2",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^Leave it for now",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-3",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "^\"...You've got about ten seconds to be convincing.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-1": [
+                "\n",
+                "^\"Suit yourself.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-2": [
+                "\n",
+                "^\"Try it, and see what happens.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-3": [
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          null
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": []
+    },
+    {
+      "id": "dialogue.stranger",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "07a0d08649f33f",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "ev",
+            true,
+            "/ev",
+            {
+              "VAR=": "met_stranger",
+              "re": true
+            },
+            "^The stranger watches the rain sheet off the awning. \"Lost. Or hunted. Hard to tell with your kind.\"",
+            "\n",
+            "^\"Varga's looking for someone like you. The Drip, down the street. Go.\"",
+            "\n",
+            "ev",
+            "str",
+            "^Who's Varga?",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^Say nothing, and go",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-1",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "^\"Your way out, maybe. Or your way deeper in. Ask her yourself.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-1": [
+                "\n",
+                "^The stranger is already gone.",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          {
+            "global decl": [
+              "ev",
+              false,
+              {
+                "VAR=": "met_stranger"
+              },
+              "/ev",
+              "end",
+              null
+            ]
+          }
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": [
+        "met_stranger"
+      ]
+    }
   ],
   "quests": [
     {
@@ -169,52 +751,125 @@
       "title": "What's in the Warehouse",
       "giverNpcId": "npc.varga",
       "summary": "Varga says there's something worth taking in the Ashfall warehouse. Getting in is your problem.",
-      "offerWhen": [{ "kind": "flag_is", "flag": "flag.met_varga", "equals": true }],
+      "offerWhen": [
+        {
+          "kind": "flag_is",
+          "flag": "flag.met_varga",
+          "equals": true
+        }
+      ],
       "branches": [
         {
           "id": "talk",
           "label": "Talk your way past the guard",
           "objectives": [
-            { "kind": "reach", "locationId": "location.warehouse_door" },
+            {
+              "kind": "reach",
+              "locationId": "location.warehouse_door"
+            },
             {
               "kind": "skill_check",
               "skill": "persuade",
               "dc": 12,
               "onFail": [
-                { "kind": "set_flag", "flag": "flag.guard_suspicious", "to": true },
-                { "kind": "show_text", "text": "The guard's hand drifts to his stun baton. So much for talking." }
+                {
+                  "kind": "set_flag",
+                  "flag": "flag.guard_suspicious",
+                  "to": true
+                },
+                {
+                  "kind": "show_text",
+                  "text": "The guard's hand drifts to his stun baton. So much for talking."
+                }
               ]
             },
-            { "kind": "reach", "locationId": "location.warehouse_floor" }
+            {
+              "kind": "reach",
+              "locationId": "location.warehouse_floor"
+            }
           ],
-          "onComplete": [{ "kind": "set_flag", "flag": "flag.entered_peacefully", "to": true }]
+          "onComplete": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.entered_peacefully",
+              "to": true
+            }
+          ]
         },
         {
           "id": "sneak",
           "label": "Slip in through the skylight",
           "objectives": [
-            { "kind": "reach", "locationId": "location.warehouse_roof" },
-            { "kind": "skill_check", "skill": "sneak", "dc": 14 },
-            { "kind": "reach", "locationId": "location.warehouse_floor" }
+            {
+              "kind": "reach",
+              "locationId": "location.warehouse_roof"
+            },
+            {
+              "kind": "skill_check",
+              "skill": "sneak",
+              "dc": 14
+            },
+            {
+              "kind": "reach",
+              "locationId": "location.warehouse_floor"
+            }
           ],
-          "onComplete": [{ "kind": "set_flag", "flag": "flag.entered_unseen", "to": true }]
+          "onComplete": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.entered_unseen",
+              "to": true
+            }
+          ]
         },
         {
           "id": "force",
           "label": "Just take it",
           "objectives": [
-            { "kind": "reach", "locationId": "location.warehouse_door" },
-            { "kind": "defeat", "npcId": "npc.warehouse_guard" },
-            { "kind": "reach", "locationId": "location.warehouse_floor" }
+            {
+              "kind": "reach",
+              "locationId": "location.warehouse_door"
+            },
+            {
+              "kind": "defeat",
+              "npcId": "npc.warehouse_guard"
+            },
+            {
+              "kind": "reach",
+              "locationId": "location.warehouse_floor"
+            }
           ],
-          "onComplete": [{ "kind": "adjust_reputation", "factionId": "faction.ashfall_syndicate", "delta": -15 }]
+          "onComplete": [
+            {
+              "kind": "adjust_reputation",
+              "factionId": "faction.ashfall_syndicate",
+              "delta": -15
+            }
+          ]
         }
       ],
       "onAnyComplete": [
-        { "kind": "give_item", "itemId": "item.encrypted_drive", "count": 1 },
-        { "kind": "set_flag", "flag": "flag.has_drive", "to": true }
+        {
+          "kind": "give_item",
+          "itemId": "item.encrypted_drive",
+          "count": 1
+        },
+        {
+          "kind": "set_flag",
+          "flag": "flag.has_drive",
+          "to": true
+        }
       ],
-      "rewards": { "credits": 200, "items": [], "reputation": [{ "factionId": "faction.varga_crew", "delta": 10 }] }
+      "rewards": {
+        "credits": 200,
+        "items": [],
+        "reputation": [
+          {
+            "factionId": "faction.varga_crew",
+            "delta": 10
+          }
+        ]
+      }
     }
   ]
 }

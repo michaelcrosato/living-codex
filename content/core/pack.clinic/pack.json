@@ -12,7 +12,15 @@
     "approvedAt": "2026-05-30T00:00:00.000Z"
   },
   "factions": [],
-  "items": [],
+  "items": [
+    {
+      "id": "item.field_kit",
+      "name": "Field Kit",
+      "description": "Sister Vane's spare: clamps, sealant, a stim that mostly works. Enough to keep someone breathing until it stops being your problem.",
+      "kind": "consumable",
+      "value": 20
+    }
+  ],
   "locations": [],
   "npcs": [
     {
@@ -354,9 +362,105 @@
         "items": [],
         "reputation": []
       }
+    },
+    {
+      "id": "quest.clinic_training",
+      "title": "Field Medicine",
+      "giverNpcId": "npc.clinic_medic",
+      "summary": "You squared Vane's debt. Now she will trade you something better than coin: enough field medicine to keep yourself alive out there.",
+      "offerWhen": [
+        {
+          "kind": "flag_is",
+          "flag": "flag.clinic_debt_resolved",
+          "equals": true
+        }
+      ],
+      "branches": [
+        {
+          "id": "train",
+          "label": "Learn what she teaches",
+          "objectives": [
+            {
+              "kind": "talk_to",
+              "npcId": "npc.clinic_medic"
+            },
+            {
+              "kind": "skill_check",
+              "skill": "tech",
+              "dc": 8,
+              "onFail": [
+                {
+                  "kind": "show_text",
+                  "text": "Your hands are clumsy on the clamps. \"Again,\" she says, not unkindly. \"It keeps until you have got it.\""
+                }
+              ]
+            }
+          ],
+          "onComplete": [
+            {
+              "kind": "modify_skill",
+              "skill": "tech",
+              "delta": 1
+            },
+            {
+              "kind": "give_item",
+              "itemId": "item.field_kit",
+              "count": 1
+            },
+            {
+              "kind": "set_flag",
+              "flag": "flag.trained_by_vane",
+              "to": true
+            }
+          ]
+        }
+      ],
+      "onAnyComplete": [
+        {
+          "kind": "set_flag",
+          "flag": "flag.clinic_training_resolved",
+          "to": true
+        }
+      ],
+      "rewards": {
+        "credits": 0,
+        "items": [],
+        "reputation": []
+      }
     }
   ],
-  "storylets": [],
+  "storylets": [
+    {
+      "id": "storylet.field_kit_ready",
+      "preconditions": [
+        {
+          "kind": "has_item",
+          "itemId": "item.field_kit",
+          "count": 1
+        },
+        {
+          "kind": "not",
+          "of": {
+            "kind": "flag_is",
+            "flag": "flag.bark_field_kit_seen",
+            "equals": true
+          }
+        }
+      ],
+      "salience": 3,
+      "tags": [],
+      "content": {
+        "ambient": "The field kit rides heavy in your coat. For the first time since you woke in Ashfall, you could patch yourself up instead of bleeding out in someone else's doorway."
+      },
+      "effects": [
+        {
+          "kind": "set_flag",
+          "flag": "flag.bark_field_kit_seen",
+          "to": true
+        }
+      ]
+    }
+  ],
   "assertions": [
     {
       "predicate": "located_in",

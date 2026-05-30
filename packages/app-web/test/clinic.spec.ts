@@ -89,6 +89,24 @@ describe("ashfall clinic thread (SPEC-67)", () => {
     expect(w.flags[FlagId.parse("flag.clinic_debt_resolved")]).toBe(true);
   });
 
+  // SPEC-77 — the training quest exercises modify_skill (progression) + give_item; has_item gates a storylet.
+  it("the training quest raises tech (modify_skill) and grants the field kit", () => {
+    let w = createWorld({ seed: "train", startLocationId: CLINIC, skills: { tech: 15 } });
+    w = applyEvent(w, { type: "SetFlag", flag: FlagId.parse("flag.clinic_debt_resolved"), to: true });
+    w = applyEvent(w, { type: "DialogueAdvanced", dialogueId: DLG, inkState: "{}", flags: {} });
+    const TQ = QuestId.parse("quest.clinic_training");
+    const attempt = [{ type: "Attempt" as const, questId: TQ, branchId: "train" }];
+    for (let t = 0; t < 8 && w.quests[TQ]?.status !== "completed"; t++) {
+      w = applyEvents(w, questSystem(registries.quests, attempt, registries.npcs)(w, 0));
+    }
+    expect(w.quests[TQ]?.completedBranchId).toBe("train");
+    // modify_skill raises the situational conditionMods (the effective-skill bonus), not the base skill.
+    expect(w.player.conditionMods.tech).toBe(1); // +1 from training
+    expect(w.player.skills.tech).toBe(15); // base unchanged (by design)
+    expect((w.inventory as Record<string, number>)["item.field_kit"]).toBeGreaterThanOrEqual(1); // give_item
+    expect(w.flags[FlagId.parse("flag.clinic_training_resolved")]).toBe(true);
+  });
+
   // SPEC-69 — the neutral medic ("treats both, tells neither") reacts to the player's faction standing.
   it("the medic reacts to faction standing (joined Syndicate / Varga's inner circle), default otherwise", () => {
     const controller = new DialogueController(registries, new InkNarrative());

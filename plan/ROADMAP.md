@@ -4,9 +4,10 @@
 > **Cycle 2 (v2026.05) authored AND EXECUTED 2026-05-29** — SPEC-16…26 all **Done** (one local
 > commit each, `pnpm verify` green throughout; final: 185 tests / 40 files, audit clean, HEAD 499c77c).
 > See [§7 below](#7-cycle-2-v202605--the-next-wave).
-> **Cycle 3 (v2026.05-c3) authored 2026-05-30** — SPEC-27…33 (Todo); dependency theme now exhausted, so
-> Cycle 3 pivots to **quality-depth + features** (tsgo accelerator, mutation testing, model-based PBT,
-> drama-manager, new content). See [§8 below](#8-cycle-3-v202605-c3--quality-depth--features).
+> **Cycle 3 (v2026.05-c3) authored AND EXECUTED 2026-05-30** — SPEC-27…33 all **Done** (one local commit
+> each, `pnpm verify` green throughout; final: 195 tests / 42 files, audit clean, mutation baseline 73.31%,
+> HEAD 0677e38). tsgo accelerator, Stryker mutation testing, model-based PBT, drama-manager salience, new
+> Drip Market pack. See [§8 below](#8-cycle-3-v202605-c3--quality-depth--features).
 > Source-of-truth for this initiative is the `/plan/` folder. Subordinate to [docs/GOAL.md](../docs/GOAL.md).
 > Every item honors the **locked decisions** (GOAL §3) and **engineering invariants** (GOAL §5). If any
 > spec conflicts with GOAL.md, GOAL.md wins.

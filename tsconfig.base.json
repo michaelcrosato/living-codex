@@ -18,15 +18,14 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
     "paths": {
-      "@codex/engine-core": ["packages/engine-core/src/index.ts"],
-      "@codex/content-schema": ["packages/content-schema/src/index.ts"],
-      "@codex/content-loader": ["packages/content-loader/src/index.ts"],
-      "@codex/narrative-ink": ["packages/narrative-ink/src/index.ts"],
-      "@codex/render-pixi": ["packages/render-pixi/src/index.ts"],
-      "@codex/persistence": ["packages/persistence/src/index.ts"],
-      "@codex/pipeline": ["tools/pipeline/src/index.ts"]
+      "@codex/engine-core": ["./packages/engine-core/src/index.ts"],
+      "@codex/content-schema": ["./packages/content-schema/src/index.ts"],
+      "@codex/content-loader": ["./packages/content-loader/src/index.ts"],
+      "@codex/narrative-ink": ["./packages/narrative-ink/src/index.ts"],
+      "@codex/render-pixi": ["./packages/render-pixi/src/index.ts"],
+      "@codex/persistence": ["./packages/persistence/src/index.ts"],
+      "@codex/pipeline": ["./tools/pipeline/src/index.ts"]
     }
   }
 }

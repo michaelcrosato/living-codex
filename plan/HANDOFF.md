@@ -10,13 +10,19 @@ bugs, added three reachability/hygiene **guards** + a determinism fuzz, **upgrad
 ran a full REPLENISH research pass. Everything is green and committed **on a branch**
 (`spec/SPEC-50-syndicate-offer`); nothing pushed (push human-gated).
 
-## What shipped (SPEC-50 … SPEC-62, 13 specs)
+## What shipped (SPEC-50 … SPEC-66, 17 specs)
 - **Toolchain** — **SPEC-61 Vite 7→8 (Rolldown, ~10× faster builds)**: the deferred major became unblocked
   (Vite 8.0 stable + Vitest 4.1.7 support). Repo used none of v8's breaking-change config surfaces → no config
   edit; verify/build/e2e green. Bundle now one ~280 kB-gz chunk (was 190 kB + split renderers) — cache-once
   perf note in BACKLOG, not chased (ARCH §8).
-- **SPEC-62** — integrated the now-reachable Archivist into the drive thread (a storylet paying off her
-  designed "wants the drive" hook, without editing the generated pack).
+- **SPEC-62, 63** — integrated the two hook-bearing patrons (Archivist→drive, dockhand→warehouse lead) into
+  the thread (storylets keyed on the flags their Ink sets; no edit to the generated pack).
+- **SPEC-64, 66** — the **faction-standing rep-quest pair**: `quest.varga_trust` (varga_crew ≥ 15) and
+  `quest.syndicate_recruit` (ashfall_syndicate ≥ 12) pay off the loyalty/Syndicate paths as actual gameplay —
+  the first quests to use `reputation_at_least`. (The pair is the complete set; Kestrel's standing pays off via
+  her reactions.)
+- **SPEC-65** — Vite-8 cleanup: dropped `vite-tsconfig-paths` for native `resolve.tsconfigPaths`, clearing a
+  dependency + the tsconfck→TS peer warning.
 
 - **New content + a complete arc** — SPEC-50 `pack.syndicate_offer` (the Syndicate gets an NPC face + a
   3-branch drive quest, chaining off the warehouse); SPEC-54 decrypt-path payoff storylet. Every branch of the
@@ -33,10 +39,10 @@ ran a full REPLENISH research pass. Everything is green and committed **on a bra
   full-content `fc.commands` determinism fuzz over the live pack set (replay-exact at every step, 0 divergence).
 
 ## Verification (all green)
-- `pnpm verify` → **266 tests / 48 files** (Vitest 4.1.7 on **Vite 8**) · `pnpm e2e` → **4 passed** ·
-  `pnpm audit` → clean · `content:verify` → 7 packs / 8 storylets canon-consistent, **0 hygiene warnings**
-  (0 orphan, 0 unspawnable) · pipeline golden-master **untouched** · deps current (only `@types/node` 25
-  deferred-to-runtime). All 7 locations reachable; no dead items/dialogues/NPCs.
+- `pnpm verify` → **272 tests / 48 files** (Vitest 4.1.7 on **Vite 8**) · `pnpm e2e` → **4 passed** ·
+  `pnpm audit` → clean · `pnpm peers check` → clean · `content:verify` → 8 packs / 7 quests / 9 storylets
+  canon-consistent, **0 hygiene warnings** (0 orphan, 0 unspawnable) · pipeline golden-master **untouched** ·
+  deps current (only `@types/node` 25 deferred-to-runtime). All 7 locations reachable; no dead content.
 
 ## REPLENISH research (this cycle — confirmed no other unblocked gaps)
 - **PWA/offline:** NOT a gap — GOAL §3 mandates "no install"; "offline-capable" (no runtime network) already
@@ -46,7 +52,7 @@ ran a full REPLENISH research pass. Everything is green and committed **on a bra
   rest (LLM-judge at scale) is real-model-gated. Repo is at the unblocked frontier. (ROADMAP §11.3.)
 
 ## Git state
-- Branch **`spec/SPEC-50-syndicate-offer`**, **27 commits ahead of `origin/main`, UNPUSHED** (push human-gated
+- Branch **`spec/SPEC-50-syndicate-offer`**, **~37 commits ahead of `origin/main`, UNPUSHED** (push human-gated
   by `.claude/settings.json` + BLOCKED.md; an automated `--ff-only` merge to main was also denied by policy).
   Working tree clean (only untracked `CLAUDE.md`, pre-existing). `main` still ≡ `origin/main`.
 

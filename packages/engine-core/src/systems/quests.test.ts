@@ -285,4 +285,43 @@ describe("quest runtime", () => {
     expect(w.quests[MEETQ]?.status).toBe("completed");
     expect(w.quests[MEETQ]?.completedBranchId).toBe("talk");
   });
+
+  it("a set_flag objective resolves exactly when the world flag matches (last objective kind)", () => {
+    const SIGQ = QuestId.parse("quest.signal");
+    const SIG = FlagId.parse("flag.signal_sent");
+    const q = Quest.parse({
+      id: "quest.signal",
+      title: "Signal",
+      summary: "Resolve once the signal flag is set.",
+      offerWhen: [],
+      branches: [
+        {
+          id: "wait",
+          label: "Wait",
+          objectives: [{ kind: "set_flag", flag: "flag.signal_sent", to: true }],
+          onComplete: [{ kind: "set_flag", flag: "flag.signal_ack", to: true }],
+        },
+      ],
+      rewards: {},
+    });
+    const map = new Map([[SIGQ, q]]);
+
+    let w = applyEvents(world(), questSystem(map)(world(), 0)); // ActivateQuest
+    expect(w.quests[SIGQ]?.status).toBe("active");
+
+    // flag not yet set -> objective must NOT resolve (kills `===`->`!==`)
+    w = applyEvents(w, questSystem(map)(w, 0));
+    expect(w.quests[SIGQ]?.objectiveProgress["wait#0"]?.done).toBeFalsy();
+    expect(w.quests[SIGQ]?.status).toBe("active");
+
+    // set the matching flag -> objective resolves -> branch completes
+    w = applyEvent(w, { type: "SetFlag", flag: SIG, to: true });
+    for (let t = 0; t < 4 && w.quests[SIGQ]?.status === "active"; t++) {
+      const evs = questSystem(map)(w, 0);
+      if (evs.length === 0) break;
+      w = applyEvents(w, evs);
+    }
+    expect(w.quests[SIGQ]?.status).toBe("completed");
+    expect(w.flags[FlagId.parse("flag.signal_ack")]).toBe(true);
+  });
 });

@@ -106,6 +106,12 @@ export const Npc = z.object({
     secrets: z.array(z.string().max(240)).max(5).default([]),
   }),
   dialogueId: DialogueId,              // entry-point Ink story for talking to them
+  // Optional combat stats — present only for NPCs that can be the target of a `defeat`
+  // objective. Additive/optional so existing packs and saves stay valid (SCHEMA.md §10).
+  combat: z.object({ hp: z.number().int().positive() }).optional(),
+  // Where this NPC lives; the app spawns it there on entry. Decouples placement from the
+  // location definition, so a pack can place its NPCs without the location listing them.
+  homeLocationId: LocationId.optional(),
   // Reactivity: lines/behaviors that change based on world state.
   reactsTo: z.array(z.object({
     when: z.array(Condition).min(1),
@@ -298,6 +304,7 @@ export const ContentPack = z.object({
   factions: z.array(Faction).default([]),
   items: z.array(ItemTemplate).default([]),
   dialogues: z.array(DialogueAsset).default([]),  // compiled Ink, referenced by DialogueId
+  storylets: z.array(Storylet).default([]),       // quality-based reactive content units (SPEC-11; see below)
   assertions: z.array(CanonAssertion).default([]),// structured canon facts (CONTENT_PIPELINE §6)
 });
 export type ContentPack = z.infer<typeof ContentPack>;
@@ -306,6 +313,8 @@ export type ContentPack = z.infer<typeof ContentPack>;
 `content-loader` loads packs in dependency order, validates each with Zod, then runs a **referential-integrity pass**: every `NpcId`/`QuestId`/`ItemId`/`LocationId`/`FactionId`/`DialogueId` referenced anywhere must resolve to a defined entity. Any dangling reference fails the load with a precise error. This is how an AI-authored pack can never silently break the game.
 
 **Canon assertions** (`assertion.ts`, additive + ENGINE-IGNORED) are structured facts — `subject → predicate → (object | status state)`, with an optional `since` epoch for status-over-time. The simulation never reads them; the offline **canon assertion graph** (`CONTENT_PIPELINE.md §6`) queries them to catch *semantic* contradictions the ID-level check can't (a broke patron who funds a faction, a dead NPC still placed in the world, allies who are also enemies). Predicates: `member_of`, `allied_with`, `enemy_of`, `funds`, `located_in`, `status`, `fact`.
+
+**Storylets** (`storylet.ts`, SPEC-11 — additive, salience-selected) are quality-based content units: `preconditions` (a `Condition[]`, §7), an integer `salience`, `tags`, `content` (`{ dialogueId? | ambient? }`), and `effects` (§6). The engine's `storyletSystem` filters storylets whose preconditions hold, ranks them by `salience`, and emits the highest-salience candidates as a `TriggerStorylet` event (ties broken by the seeded RNG **inside** `applyEvent`, so selection stays replay-deterministic). Design rule: salience drives **reactive/ambient** content (barks, flavor that responds to state); **main-plot beats stay gated behind explicit quest flags, never salience** — this avoids a player incidentally satisfying a dramatic beat's preconditions out of order.
 
 ---
 

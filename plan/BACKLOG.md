@@ -66,7 +66,9 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
 - **Miniplex → maintained ECS (bitECS / Koota) behind `ecs/registry.ts`** — Miniplex (2.0.0) is unmaintained
   (RISK_REGISTER R8). Only act if it actually breaks under a TS/Node bump; the existing adapter makes the
   swap local (no engine-logic change). Not urgent (audit clean, derived layer).
-_(Promoted to specs 2026-05-29: **Vitest 3→4 → [SPEC-21]**; **Doc-sync SCHEMA §3 (NPC) → [SPEC-17]**.)_
+_(Promoted to specs 2026-05-29: **Vitest 3→4 → [SPEC-21]**. **Resolved 2026-05-29 (SPEC-17 shipped):**
+Doc-sync SCHEMA §3 (NPC) — added `combat`/`homeLocationId` to §3, the missing `storylets` field to the §8
+`ContentPack`, and a `Storylet` shape subsection. Drift sweep also confirmed `assertions` was documented.)_
 _(Resolved 2026-05-29: e2e port robustness — Playwright preview moved to a dedicated port 4319 so a
 foreign server on Vite's default 4173/5173 can't be silently reused. See `playwright.config.ts`.)_
 

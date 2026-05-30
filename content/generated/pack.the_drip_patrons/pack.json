@@ -35,7 +35,8 @@
         "secrets": []
       },
       "dialogueId": "dialogue.drip_bartender",
-      "reactsTo": []
+      "reactsTo": [],
+      "homeLocationId": "location.the_drip"
     },
     {
       "id": "npc.drip_rumor",
@@ -54,7 +55,8 @@
         "secrets": []
       },
       "dialogueId": "dialogue.drip_rumor",
-      "reactsTo": []
+      "reactsTo": [],
+      "homeLocationId": "location.the_drip"
     },
     {
       "id": "npc.drip_pell",
@@ -73,7 +75,8 @@
         "secrets": []
       },
       "dialogueId": "dialogue.drip_pell",
-      "reactsTo": []
+      "reactsTo": [],
+      "homeLocationId": "location.the_drip"
     },
     {
       "id": "npc.drip_wren",
@@ -93,7 +96,8 @@
         "secrets": []
       },
       "dialogueId": "dialogue.drip_wren",
-      "reactsTo": []
+      "reactsTo": [],
+      "homeLocationId": "location.the_drip"
     },
     {
       "id": "npc.drip_bex",
@@ -113,7 +117,8 @@
         "secrets": []
       },
       "dialogueId": "dialogue.drip_bex",
-      "reactsTo": []
+      "reactsTo": [],
+      "homeLocationId": "location.the_drip"
     },
     {
       "id": "npc.drip_sull",
@@ -132,7 +137,8 @@
         "secrets": []
       },
       "dialogueId": "dialogue.drip_sull",
-      "reactsTo": []
+      "reactsTo": [],
+      "homeLocationId": "location.the_drip"
     },
     {
       "id": "npc.drip_yi",
@@ -151,7 +157,8 @@
         "secrets": []
       },
       "dialogueId": "dialogue.drip_yi",
-      "reactsTo": []
+      "reactsTo": [],
+      "homeLocationId": "location.the_drip"
     },
     {
       "id": "npc.drip_halo",
@@ -170,7 +177,8 @@
         "secrets": []
       },
       "dialogueId": "dialogue.drip_halo",
-      "reactsTo": []
+      "reactsTo": [],
+      "homeLocationId": "location.the_drip"
     },
     {
       "id": "npc.drip_grin",
@@ -190,7 +198,8 @@
         "secrets": []
       },
       "dialogueId": "dialogue.drip_grin",
-      "reactsTo": []
+      "reactsTo": [],
+      "homeLocationId": "location.the_drip"
     },
     {
       "id": "npc.the_archivist",
@@ -209,7 +218,8 @@
         "secrets": []
       },
       "dialogueId": "dialogue.the_archivist",
-      "reactsTo": []
+      "reactsTo": [],
+      "homeLocationId": "location.the_drip"
     }
   ],
   "quests": [],

@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "pnpm --filter @codex/app-web dev",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.dom.json",
+    "typecheck:fast": "tsgo --noEmit -p tsconfig.json && tsgo --noEmit -p tsconfig.dom.json",
     "lint": "eslint .",
     "format": "prettier --check .",
     "format:write": "prettier --write .",
@@ -43,6 +44,7 @@
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.60.0",
     "@types/node": "^24.12.4",
+    "@typescript/native-preview": "7.0.0-dev.20260527.2",
     "@vitest/coverage-v8": "4.1.7",
     "dependency-cruiser": "^17.4.2",
     "eslint": "^10.4.0",

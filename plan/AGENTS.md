@@ -35,6 +35,8 @@ replace the root [AGENTS.md](../AGENTS.md) (the project's standing law) or [docs
   → `lint` (eslint) → `deps:check` (dependency-cruiser) → `test` (vitest, 143+ tests) →
   `content:validate` → `content:verify` → `replay:verify`.
 - Targeted: `pnpm --filter @codex/<pkg> test` · `pnpm typecheck` · `pnpm lint`.
+- Fast typecheck (SPEC-29): `pnpm typecheck:fast` runs **tsgo** (TS 7 native, ~10×) on both tsconfigs —
+  a local/inner-loop accelerator. **`tsc` (via `pnpm typecheck`/`pnpm verify`) stays the authoritative gate.**
 - Content: `pnpm content:validate` (schema+refs) · `pnpm content:verify` (solvable+reachable+canon) ·
   `pnpm content:compile-ink` (recompile `.ink` → pack `compiled`).
 - Pipeline (offline): `pnpm pipeline:export` · `pnpm pipeline:cycle --brief "…"` (StubProvider demo

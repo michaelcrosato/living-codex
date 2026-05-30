@@ -6,10 +6,18 @@ in [PROGRESS.md](PROGRESS.md); the closeout + next-frontier plan in [ROADMAP.md]
 ## TL;DR
 Cycle 7 turned to the genuinely-**unblocked** frontier (the real-model leap is still gated on you): it built
 a complete, consequential **Syndicate-drive + rival storyline**, fixed two real **authored-but-unreachable**
-bugs, and added three reachability/hygiene **guards** + a determinism fuzz. Everything is green and committed
-**on a branch** (`spec/SPEC-50-syndicate-offer`); nothing pushed (push human-gated).
+bugs, added three reachability/hygiene **guards** + a determinism fuzz, **upgraded to Vite 8 (Rolldown)**, and
+ran a full REPLENISH research pass. Everything is green and committed **on a branch**
+(`spec/SPEC-50-syndicate-offer`); nothing pushed (push human-gated).
 
-## What shipped (SPEC-50 … SPEC-60, 11 specs)
+## What shipped (SPEC-50 … SPEC-62, 13 specs)
+- **Toolchain** — **SPEC-61 Vite 7→8 (Rolldown, ~10× faster builds)**: the deferred major became unblocked
+  (Vite 8.0 stable + Vitest 4.1.7 support). Repo used none of v8's breaking-change config surfaces → no config
+  edit; verify/build/e2e green. Bundle now one ~280 kB-gz chunk (was 190 kB + split renderers) — cache-once
+  perf note in BACKLOG, not chased (ARCH §8).
+- **SPEC-62** — integrated the now-reachable Archivist into the drive thread (a storylet paying off her
+  designed "wants the drive" hook, without editing the generated pack).
+
 - **New content + a complete arc** — SPEC-50 `pack.syndicate_offer` (the Syndicate gets an NPC face + a
   3-branch drive quest, chaining off the warehouse); SPEC-54 decrypt-path payoff storylet. Every branch of the
   drive choice now has a visible consequence.
@@ -25,12 +33,20 @@ bugs, and added three reachability/hygiene **guards** + a determinism fuzz. Ever
   full-content `fc.commands` determinism fuzz over the live pack set (replay-exact at every step, 0 divergence).
 
 ## Verification (all green)
-- `pnpm verify` → **264 tests / 48 files** · `pnpm e2e` → **4 passed** · `pnpm audit` → clean ·
-  `content:verify` → 7 packs canon-consistent, **0 hygiene warnings** (0 orphan, 0 unspawnable) · pipeline
-  golden-master **untouched**. All 7 locations reachable; no dead items/dialogues/NPCs.
+- `pnpm verify` → **266 tests / 48 files** (Vitest 4.1.7 on **Vite 8**) · `pnpm e2e` → **4 passed** ·
+  `pnpm audit` → clean · `content:verify` → 7 packs / 8 storylets canon-consistent, **0 hygiene warnings**
+  (0 orphan, 0 unspawnable) · pipeline golden-master **untouched** · deps current (only `@types/node` 25
+  deferred-to-runtime). All 7 locations reachable; no dead items/dialogues/NPCs.
+
+## REPLENISH research (this cycle — confirmed no other unblocked gaps)
+- **PWA/offline:** NOT a gap — GOAL §3 mandates "no install"; "offline-capable" (no runtime network) already
+  holds. An installable PWA would contradict the pillar. Deliberately out of scope.
+- **AI-content validation:** the 2026 best-practice stack's deterministic parts are all implemented (schema-
+  governed gen, grounding SPEC-14, repair SPEC-12, contradiction detection SPEC-40, rubric judge SPEC-15); the
+  rest (LLM-judge at scale) is real-model-gated. Repo is at the unblocked frontier. (ROADMAP §11.3.)
 
 ## Git state
-- Branch **`spec/SPEC-50-syndicate-offer`**, **21 commits ahead of `origin/main`, UNPUSHED** (push human-gated
+- Branch **`spec/SPEC-50-syndicate-offer`**, **27 commits ahead of `origin/main`, UNPUSHED** (push human-gated
   by `.claude/settings.json` + BLOCKED.md; an automated `--ff-only` merge to main was also denied by policy).
   Working tree clean (only untracked `CLAUDE.md`, pre-existing). `main` still ≡ `origin/main`.
 

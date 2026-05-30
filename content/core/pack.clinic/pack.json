@@ -1,0 +1,262 @@
+{
+  "id": "pack.clinic",
+  "version": "0.1.0",
+  "title": "The Patch-Up",
+  "dependsOn": [
+    "pack.opening"
+  ],
+  "provenance": {
+    "authoredBy": "human",
+    "models": [],
+    "curatedBy": "michael.crosato",
+    "approvedAt": "2026-05-30T00:00:00.000Z"
+  },
+  "factions": [],
+  "items": [],
+  "locations": [],
+  "npcs": [
+    {
+      "id": "npc.clinic_medic",
+      "name": "Sister Vane",
+      "appearance": {
+        "bodyColor": "#c7d2cc",
+        "accentColor": "#5ad0c0",
+        "silhouette": "humanoid"
+      },
+      "bio": {
+        "role": "back-alley medic",
+        "backstory": "Trained somewhere that issued real licenses, once. Now she stitches dockhands and fixers in a room that smells of bleach, asks no questions, and keeps a ledger of who still owes her. Nobody's medic but her own.",
+        "wants": "to be paid what she's owed, and to keep the lights on for the people no clinic uptown will touch",
+        "fears": "owing anyone — the one debt she can't write off",
+        "voice": "dry, unhurried, kind in a way that costs her something",
+        "secrets": [
+          "She treats Varga's crew and the Syndicate both, and tells neither."
+        ]
+      },
+      "dialogueId": "dialogue.clinic_medic",
+      "homeLocationId": "location.ashfall_clinic",
+      "reactsTo": []
+    }
+  ],
+  "dialogues": [
+    {
+      "id": "dialogue.clinic_medic",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "0c4c53cba88a16",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "ev",
+            true,
+            "/ev",
+            {
+              "VAR=": "met_medic",
+              "re": true
+            },
+            "^The medic doesn't look up from the tray she's sterilizing. \"Sit if you're bleeding. Talk if you're not.\" She finally meets your eyes — tired, sharp, unafraid. \"You look like someone who collects debts. I've got one that won't collect itself. A supplier took my coin and left me dry. Interested, or just browsing?\"",
+            "\n",
+            "ev",
+            "str",
+            "^Tell me about the debt.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^I patch up, I don't collect.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-1",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^Not my problem.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-2",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "^\"Mendez. Runs cut supply out of the undermarket. Took payment for a shipment that never came. I want what I paid for, or the coin back. Don't much care which.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-1": [
+                "\n",
+                "^\"Pity. The patching's free if you ever do change your mind. Door's open.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-2": [
+                "\n",
+                "^\"No. Most things aren't, until they are.\" She turns back to the tray.",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          {
+            "global decl": [
+              "ev",
+              false,
+              {
+                "VAR=": "met_medic"
+              },
+              "/ev",
+              "end",
+              null
+            ]
+          }
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": [
+        "met_medic"
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "quest.clinic_debt",
+      "title": "Bad Blood",
+      "giverNpcId": "npc.clinic_medic",
+      "summary": "The clinic's supplier, Mendez, took payment for a shipment that never came. Sister Vane wants her coin or her supplies back. Lean on him, talk him down, or decide it isn't your fight.",
+      "offerWhen": [
+        {
+          "kind": "flag_is",
+          "flag": "flag.met_medic",
+          "equals": true
+        }
+      ],
+      "branches": [
+        {
+          "id": "lean_on",
+          "label": "Lean on Mendez",
+          "objectives": [
+            {
+              "kind": "talk_to",
+              "npcId": "npc.clinic_medic"
+            },
+            {
+              "kind": "reach",
+              "locationId": "location.drip_market"
+            },
+            {
+              "kind": "skill_check",
+              "skill": "force",
+              "dc": 12,
+              "onFail": [
+                {
+                  "kind": "show_text",
+                  "text": "Mendez has muscle of his own, and today they're paying attention. You leave with less than you came for."
+                }
+              ]
+            }
+          ],
+          "onComplete": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.clinic_debt_forced",
+              "to": true
+            }
+          ]
+        },
+        {
+          "id": "talk_down",
+          "label": "Talk Mendez into paying",
+          "objectives": [
+            {
+              "kind": "talk_to",
+              "npcId": "npc.clinic_medic"
+            },
+            {
+              "kind": "reach",
+              "locationId": "location.drip_market"
+            },
+            {
+              "kind": "skill_check",
+              "skill": "persuade",
+              "dc": 12,
+              "onFail": [
+                {
+                  "kind": "show_text",
+                  "text": "Mendez smiles, agrees to everything, and means none of it. You'll be back."
+                }
+              ]
+            }
+          ],
+          "onComplete": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.clinic_debt_settled",
+              "to": true
+            }
+          ]
+        }
+      ],
+      "onAnyComplete": [
+        {
+          "kind": "set_flag",
+          "flag": "flag.clinic_debt_resolved",
+          "to": true
+        }
+      ],
+      "rewards": {
+        "credits": 90,
+        "items": [],
+        "reputation": []
+      }
+    }
+  ],
+  "storylets": [],
+  "assertions": [
+    {
+      "predicate": "located_in",
+      "subject": "npc.clinic_medic",
+      "object": "location.ashfall_clinic"
+    },
+    {
+      "predicate": "status",
+      "subject": "npc.clinic_medic",
+      "state": "alive"
+    },
+    {
+      "predicate": "fact",
+      "subject": "npc.clinic_medic",
+      "note": "A neutral back-alley medic who patches all comers and keeps a ledger of debts owed."
+    }
+  ]
+}

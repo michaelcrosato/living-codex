@@ -122,6 +122,16 @@ Re-run `pnpm mutation` after adding tests; consider a score *ratchet* spec once 
 ## UX (deferred — not over-engineering, GOAL §3)
 - **Data-driven HUD consequence journal.** `hud.ts` renders consequence lines from a hardcoded flag→line list (extended for the arc in SPEC-56). If the list keeps growing, promote it to content metadata (a flag→journal-line map authored in packs) so new content surfaces in the HUD without an app edit. Only worth it once the list is long enough to be a maintenance burden; today the curated list is fine.
 
+## Playability-gate guards (extend staticPlayabilityCheck when a real case warrants)
+- **Auto-completing branch shadows siblings (found in SPEC-67).** `questSystem` completes any active branch
+  whose objectives are ALL done; a branch whose objectives are all trivially/immediately satisfiable (e.g.
+  only a `talk_to` on the giver, which the offer interaction already satisfies) will auto-complete and make
+  its sibling branches unselectable. A static check could flag a multi-branch quest where some branch's
+  objectives are a strict subset of (or weaker than) another's, or contains no player-gated objective
+  (skill_check/reach/defeat/retrieve). Deferred until a 2nd real case appears (one occurrence fixed in-content
+  by removing the branch) — promote to a spec then. Parallels the orphan-dialogue (SPEC-53) / unspawnable-NPC
+  (SPEC-60) guards.
+
 ## Notes
 Every item above was considered and *deliberately deferred* during the 2026-05-29 planning pass. The
 reasons (paid/blocked, profile-gated, redesign-scale, or convenience-only) are why they are **not** in

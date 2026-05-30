@@ -10,6 +10,7 @@ import dripMarket from "../../../content/core/pack.drip_market/pack.json";
 import syndicateOffer from "../../../content/core/pack.syndicate_offer/pack.json";
 import kestrel from "../../../content/core/pack.kestrel/pack.json";
 import vargaTrust from "../../../content/core/pack.varga_trust/pack.json";
+import clinic from "../../../content/core/pack.clinic/pack.json";
 import dripPatrons from "../../../content/generated/pack.the_drip_patrons/pack.json";
 import { GameSession } from "./session";
 import { drawScene } from "./scene";
@@ -44,6 +45,7 @@ async function main(): Promise<void> {
     syndicateOffer,
     kestrel,
     vargaTrust,
+    clinic,
     dripPatrons,
   ]);
   // Best-effort: keep saves from being evicted under storage pressure (no-op if unsupported).

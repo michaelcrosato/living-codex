@@ -22,6 +22,28 @@ export function locationAnnouncement(
   return `Entered ${name}.`;
 }
 
+/**
+ * Screen-reader announcements for quest-status changes (SPEC-82, extends SPEC-81). Returns one line per quest
+ * whose status changed since `previous` ("Quest started/completed: …") plus the new status map for the shell
+ * to hold — deduped, so each transition is spoken once, not per frame. Pure + unit-testable.
+ */
+export function questAnnouncements(
+  previous: Readonly<Record<string, string>>,
+  world: World,
+  registries: Registries,
+): { lines: string[]; statuses: Record<string, string> } {
+  const lines: string[] = [];
+  const statuses: Record<string, string> = {};
+  for (const [questId, rt] of Object.entries(world.quests)) {
+    statuses[questId] = rt.status;
+    if (previous[questId] === rt.status) continue;
+    const title = registries.quests.get(questId as never)?.title ?? questId;
+    if (rt.status === "active") lines.push(`Quest started: ${title}.`);
+    else if (rt.status === "completed") lines.push(`Quest completed: ${title}.`);
+  }
+  return { lines, statuses };
+}
+
 export function renderHud(
   el: HTMLElement,
   world: World,

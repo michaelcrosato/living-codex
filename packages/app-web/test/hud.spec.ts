@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import type { Registries } from "@codex/content-loader";
 import { LocationId, type FlagId } from "@codex/content-schema";
 import { createWorld, applyEvent, type World } from "@codex/engine-core";
-import { renderHud, locationAnnouncement } from "../src/hud";
+import { renderHud, locationAnnouncement, questAnnouncements } from "../src/hud";
 
 /**
  * SPEC-56 — first test for renderHud. Pins the consequence-journal contract: each arc consequence
@@ -123,6 +123,15 @@ describe("renderHud surfaces active quest summary (SPEC-75)", () => {
   const QID = QuestId.parse("quest.demo");
   const questObj = { id: "quest.demo", title: "Demo Quest", summary: "Find the thing and decide its fate.", branches: [], offerWhen: [], onAnyComplete: [], rewards: { credits: 0, items: [], reputation: [] } };
   const regs: Registries = { ...emptyRegistries, quests: new Map([[QID, questObj as never]]) };
+
+  it("announces quest-status changes once (SPEC-82) and is silent when unchanged", () => {
+    let world: World = createWorld({ seed: "q", startLocationId: START });
+    world = applyEvent(world, { type: "ActivateQuest", questId: QID, branchIds: ["b"] });
+    const first = questAnnouncements({}, world, regs);
+    expect(first.lines).toContain("Quest started: Demo Quest.");
+    // re-running with the returned statuses → no repeat announcement (deduped)
+    expect(questAnnouncements(first.statuses, world, regs).lines).toEqual([]);
+  });
 
   it("shows the summary while the quest is active", () => {
     let world: World = createWorld({ seed: "q", startLocationId: START });

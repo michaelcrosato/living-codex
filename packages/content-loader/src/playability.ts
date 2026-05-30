@@ -1,4 +1,4 @@
-import type { Effect, Objective, Quest } from "@codex/content-schema";
+import type { Condition, Effect, Objective, Quest } from "@codex/content-schema";
 import type { Registries } from "./registries";
 import { unsatisfiablePreconditions } from "./storylet-check";
 
@@ -20,7 +20,8 @@ export interface PlayabilityReport {
  *   - no dialogue is orphaned (defined but referenced by nothing — warned, SPEC-53);
  *   - no NPC is unspawnable (no homeLocationId and in no location's npcSpawns — warned, SPEC-60);
  *   - no multi-branch quest has a branch whose objectives are all `talk_to` the giver (it auto-completes at
- *     offer and shadows siblings — warned, SPEC-68).
+ *     offer and shadows siblings — warned, SPEC-68);
+ *   - no `flag_is` gate reads a flag that nothing sets (unsatisfiable — content can't trigger — warned, SPEC-70).
  *
  * Pure over `registries` so it is unit-testable; the `content:verify` script is the thin CLI that
  * loads packs, runs this plus `auditCanon`, and reports (errors → exit 1).
@@ -205,6 +206,55 @@ export function staticPlayabilityCheck(registries: Registries): PlayabilityRepor
           `${quest.id}.branches.${branch.id}: every objective is talk_to the quest giver — it auto-completes when the offer is taken and shadows the other branches; add a skill_check/reach/defeat/retrieve.`,
         );
       }
+    }
+  }
+
+  // Unsatisfiable flag gates (SPEC-70): every flag is content-driven — set only by `set_flag` effects,
+  // `reactsTo.setsFlags`, or an Ink `declaredVars` name mirrored to `flag.<var>` (dialogue.ts). A flag READ
+  // in a `flag_is` gate (offerWhen / storylet precondition / reactsTo when / exit requires) but SET by
+  // nothing can never become true — the content behind that gate can never trigger. Warn (advisory; like the
+  // other playability hygiene warnings — a subset load could legitimately set the flag in another pack).
+  const setFlags = new Set<string>();
+  const readFlags = new Set<string>();
+  const noteEffectFlags = (effects: readonly Effect[]): void => {
+    for (const e of effects) if (e.kind === "set_flag") setFlags.add(e.flag);
+  };
+  const noteConditionFlags = (cond: Condition): void => {
+    if (cond.kind === "flag_is") readFlags.add(cond.flag);
+    else if (cond.kind === "not") noteConditionFlags(cond.of);
+    else if (cond.kind === "all" || cond.kind === "any") cond.of.forEach(noteConditionFlags);
+  };
+  for (const d of registries.dialogues.values()) for (const v of d.declaredVars) setFlags.add(`flag.${v}`);
+  for (const npc of registries.npcs.values()) {
+    for (const r of npc.reactsTo) {
+      r.when.forEach(noteConditionFlags);
+      for (const fe of r.setsFlags) setFlags.add(fe.flag);
+    }
+  }
+  for (const s of registries.storylets.values()) {
+    s.preconditions.forEach(noteConditionFlags);
+    noteEffectFlags(s.effects);
+  }
+  for (const loc of registries.locations.values()) {
+    for (const ex of loc.exits) ex.requires.forEach(noteConditionFlags);
+  }
+  for (const quest of registries.quests.values()) {
+    quest.offerWhen.forEach(noteConditionFlags);
+    noteEffectFlags(quest.onAnyComplete);
+    for (const b of quest.branches) {
+      noteEffectFlags(b.onComplete);
+      noteEffectFlags(b.onFail);
+      for (const o of b.objectives) {
+        if (o.kind === "set_flag") setFlags.add(o.flag);
+        if (o.kind === "skill_check") noteEffectFlags(o.onFail);
+      }
+    }
+  }
+  for (const flag of readFlags) {
+    if (!setFlags.has(flag)) {
+      warnings.push(
+        `flag gate "${flag}" is read (flag_is) but set by nothing — the content gated on it can never trigger.`,
+      );
     }
   }
 

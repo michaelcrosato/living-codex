@@ -218,6 +218,39 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
     expect(warnings.filter((w) => w.includes("auto-completes when the offer is taken"))).toEqual([]);
   });
 
+  // SPEC-70 — unsatisfiable flag gate: a flag_is gate reading a flag nothing sets can never trigger.
+  it("warns when a flag_is gate reads a flag that no effect / declaredVar sets", () => {
+    const { errors, warnings } = check({
+      npcs: [npc({ homeLocationId: "location.start" })],
+      dialogues: [dialogue("dialogue.used")],
+      quests: [quest({ offerWhen: [{ kind: "flag_is", flag: "flag.never_set", equals: true }] })],
+    });
+    expect(errors).toEqual([]);
+    expect(warnings.some((w) => w.includes('flag.never_set') && w.includes("set by nothing"))).toBe(true);
+  });
+
+  it("does NOT warn when the gated flag is set by a set_flag effect", () => {
+    const { warnings } = check({
+      npcs: [npc({ homeLocationId: "location.start" })],
+      dialogues: [dialogue("dialogue.used")],
+      quests: [
+        quest({ id: "quest.setter", offerWhen: [], onAnyComplete: [{ kind: "set_flag", flag: "flag.x", to: true }] }),
+        quest({ id: "quest.reader", giverNpcId: "npc.t", offerWhen: [{ kind: "flag_is", flag: "flag.x", equals: true }] }),
+      ],
+    });
+    expect(warnings.filter((w) => w.includes("set by nothing"))).toEqual([]);
+  });
+
+  it("does NOT warn when the gated flag is set by an Ink declaredVar (mirrored to flag.<var>)", () => {
+    const dlg = { ...dialogue("dialogue.met"), declaredVars: ["met_x"] };
+    const { warnings } = check({
+      npcs: [npc({ dialogueId: "dialogue.met", homeLocationId: "location.start" })],
+      dialogues: [dlg],
+      quests: [quest({ offerWhen: [{ kind: "flag_is", flag: "flag.met_x", equals: true }] })],
+    });
+    expect(warnings.filter((w) => w.includes("set by nothing"))).toEqual([]);
+  });
+
   it("does NOT warn on an NPC placed via a location's npcSpawns", () => {
     const spawnLoc = { ...baseLocation, npcSpawns: [{ npcId: "npc.t", at: { x: 1, y: 1 } }] };
     const { warnings } = check({

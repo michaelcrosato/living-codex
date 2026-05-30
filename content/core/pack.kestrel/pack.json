@@ -46,7 +46,30 @@
       },
       "dialogueId": "dialogue.kestrel",
       "homeLocationId": "location.ashfall_district",
-      "reactsTo": []
+      "reactsTo": [
+        {
+          "when": [
+            {
+              "kind": "flag_is",
+              "flag": "flag.sided_with_kestrel",
+              "equals": true
+            }
+          ],
+          "setsFlags": [],
+          "overrideDialogueId": "dialogue.kestrel_sided"
+        },
+        {
+          "when": [
+            {
+              "kind": "flag_is",
+              "flag": "flag.refused_kestrel",
+              "equals": true
+            }
+          ],
+          "setsFlags": [],
+          "overrideDialogueId": "dialogue.kestrel_refused"
+        }
+      ]
     }
   ],
   "dialogues": [
@@ -159,6 +182,119 @@
       "declaredVars": [
         "met_kestrel"
       ]
+    },
+    {
+      "id": "dialogue.kestrel_sided",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "047cecc9c7dd96",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "^Kestrel actually smiles when she sees you — brief, but real. \"My kind of mistake. Varga's still counting what you cost her.\" She tips two fingers off her brow. \"Stick around. The work only gets better from here.\"",
+            "\n",
+            "ev",
+            "str",
+            "^I'm listening.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^Don't get comfortable.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-1",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "^\"Good. Patience pays, in this line.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-1": [
+                "\n",
+                "^\"Wouldn't dream of it. That's your job, not mine.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          null
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": []
+    },
+    {
+      "id": "dialogue.kestrel_refused",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "03568008e56db5",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "^She doesn't bother with the smile this time. \"Loyalty. Cute.\" A thin exhale of smoke. \"Expensive, too — you just haven't seen the bill yet. Varga always lets it run a while before she hands it over.\"",
+            "\n",
+            "ev",
+            "str",
+            "^Suits me.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "^\"It always does. Right up until it doesn't. Door's behind you.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          null
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": []
     }
   ],
   "quests": [

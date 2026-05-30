@@ -4,7 +4,14 @@ import { resolve } from "node:path";
 import { loadPacks } from "@codex/content-loader";
 import { NpcId, FactionId, QuestId, FlagId, DialogueId, LocationId } from "@codex/content-schema";
 import { InkNarrative } from "@codex/narrative-ink";
-import { createWorld, applyEvent, applyEvents, questSystem } from "@codex/engine-core";
+import {
+  createWorld,
+  applyEvent,
+  applyEvents,
+  questSystem,
+  reactionsSystem,
+} from "@codex/engine-core";
+import { DialogueController } from "../src/dialogue-controller";
 
 /**
  * SPEC-13 — the hand-curated rival-fixer pack loads through the IDENTICAL content-loader path as
@@ -69,5 +76,32 @@ describe("rival-fixer pack: same-path load + play (SPEC-13)", () => {
     expect(w.flags[FlagId.parse("flag.sided_with_kestrel")]).toBe(true);
     expect(w.flags[FlagId.parse("flag.rival_resolved")]).toBe(true); // onAnyComplete
     expect(w.reputation[VARGA_CREW]).toBe(-10); // siding with the rival costs Varga rep
+  });
+});
+
+/**
+ * SPEC-55 — Kestrel reacts to the loyalty choice (the rival's POV). After the quest, talking to her
+ * gives a warm follow-up if you took her job, a cold one if you refused, and the default offer line
+ * otherwise. The two triggers are mutually exclusive quest outcomes, so there is no ordering ambiguity.
+ */
+describe("Kestrel's follow-up changes by the loyalty choice (SPEC-55)", () => {
+  const controller = new DialogueController(registries, new InkNarrative());
+  const afterFlag = (flag?: string) => {
+    let world = createWorld({ seed: "k", startLocationId: DISTRICT });
+    if (flag) world = applyEvent(world, { type: "SetFlag", flag: FlagId.parse(flag), to: true });
+    world = applyEvents(world, reactionsSystem(registries.npcs)(world, 0));
+    return controller.openFor(world, "npc.kestrel")!;
+  };
+
+  it("sided with Kestrel -> the warm follow-up", () => {
+    expect(afterFlag("flag.sided_with_kestrel").dialogueId).toBe("dialogue.kestrel_sided");
+  });
+
+  it("refused Kestrel -> the cold follow-up", () => {
+    expect(afterFlag("flag.refused_kestrel").dialogueId).toBe("dialogue.kestrel_refused");
+  });
+
+  it("before deciding -> the default offer line", () => {
+    expect(afterFlag().dialogueId).toBe("dialogue.kestrel");
   });
 });

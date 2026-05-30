@@ -16,7 +16,7 @@ import dripPatrons from "../../../content/generated/pack.the_drip_patrons/pack.j
 import { GameSession } from "./session";
 import { drawScene } from "./scene";
 import { InputController } from "./input";
-import { renderHud } from "./hud";
+import { renderHud, locationAnnouncement } from "./hud";
 import { DialogueController } from "./dialogue-controller";
 import { DialogueView } from "./dialogue-view";
 import { beats } from "./beats";
@@ -54,6 +54,8 @@ async function main(): Promise<void> {
   void requestPersistentStorage();
   const canvas = document.getElementById("game") as HTMLCanvasElement;
   const hud = document.getElementById("hud") as HTMLElement;
+  const announcer = document.getElementById("announcer") as HTMLElement;
+  let announcedLocation: string | undefined; // SPEC-81: last location announced to screen readers
   const viewport = { w: canvas.width, h: canvas.height };
   const { renderer } = await createPixiRenderer({ canvas, width: viewport.w, height: viewport.h });
 
@@ -159,6 +161,12 @@ async function main(): Promise<void> {
     mark("codex:draw:start");
     drawScene(renderer, session.world, registries, viewport);
     renderHud(hud, session.world, registries, lastBark);
+    // SPEC-81: announce location changes to screen readers (deduped — only on change, not per frame).
+    const announcement = locationAnnouncement(announcedLocation, session.world, registries);
+    if (announcement) {
+      announcer.textContent = announcement;
+      announcedLocation = session.world.locationId;
+    }
     measure("codex:draw", "codex:draw:start");
 
     // render / refresh the accessible dialogue panel from current world state

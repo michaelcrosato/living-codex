@@ -7,6 +7,21 @@ import { beatsLine } from "./beats";
  * `bark` is the latest salient ambient storylet line (SPEC-24) — transient view state captured
  * from the TriggerStorylet event stream, not World (ShowText is a replay-exact no-op on World).
  */
+/**
+ * Screen-reader announcement for a location change (SPEC-81 a11y). The HUD div re-renders every frame, so
+ * it can't be a live region (it would spam). Instead the shell tracks the last-announced location and feeds
+ * a polite aria-live region only when it changes. Pure: returns the announcement, or null if unchanged.
+ */
+export function locationAnnouncement(
+  previousLocationId: string | undefined,
+  world: World,
+  registries: Registries,
+): string | null {
+  if (world.locationId === previousLocationId) return null;
+  const name = registries.locations.get(world.locationId)?.name ?? world.locationId;
+  return `Entered ${name}.`;
+}
+
 export function renderHud(
   el: HTMLElement,
   world: World,

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import type { Registries } from "@codex/content-loader";
 import { LocationId, type FlagId } from "@codex/content-schema";
 import { createWorld, applyEvent, type World } from "@codex/engine-core";
-import { renderHud } from "../src/hud";
+import { renderHud, locationAnnouncement } from "../src/hud";
 
 /**
  * SPEC-56 — first test for renderHud. Pins the consequence-journal contract: each arc consequence
@@ -30,6 +30,13 @@ function hud(flags: readonly string[]): string {
 }
 
 describe("renderHud consequence journal (SPEC-56)", () => {
+  it("announces a location change for screen readers, and nothing when unchanged (SPEC-81)", () => {
+    const world: World = createWorld({ seed: "a", startLocationId: START });
+    // empty registries -> name falls back to the id
+    expect(locationAnnouncement(undefined, world, emptyRegistries)).toBe("Entered location.start.");
+    expect(locationAnnouncement("location.start", world, emptyRegistries)).toBeNull(); // unchanged -> silent
+  });
+
   it("shows the player's skill sheet (SPEC-76)", () => {
     const world: World = createWorld({ seed: "hud", startLocationId: START, skills: { persuade: 5, force: 2 } });
     const el = { textContent: "" } as unknown as HTMLElement;

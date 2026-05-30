@@ -113,6 +113,18 @@
       body.dyslexia #dialogue {
         line-height: 1.7;
       }
+      /* Visually hidden but screen-reader announced (SPEC-81 location announcer). */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+        border: 0;
+      }
       /* Transient, screen-reader-announced status toast (e.g. a save failure). */
       .toast {
         position: fixed;
@@ -155,6 +167,7 @@
       </div>
     </div>
     <div id="hud">Loading…</div>
+    <div id="announcer" class="sr-only" role="status" aria-live="polite"></div>
     <div id="controls">
       <button id="font-toggle" type="button" aria-pressed="false">Aa Dyslexia-friendly font</button>
     </div>

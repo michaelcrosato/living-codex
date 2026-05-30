@@ -1,7 +1,18 @@
 # SPEC-27 — Minor dep hygiene + `erasableSyntaxOnly`
 
-- **Status:** Todo · **Pillar:** Future-proofing · **Wave:** Cycle-3 Phase 0 (Quick Wins & Safety) · **P=10**
-- **I**=2 **F**=5 **R**=1 **Ft**=4 · **LOW risk — config only; verified no enum/namespace usage.**
+- **Status:** Done (scope reduced) · **Pillar:** Future-proofing · **Wave:** Cycle-3 Phase 0 · **P=10**
+- **I**=2 **F**=5 **R**=1 **Ft**=4 · **LOW risk.**
+
+> **Outcome (2026-05-30):** Shipped the `vite-tsconfig-paths` 5→6 bump. **`erasableSyntaxOnly` was
+> evaluated and DEFERRED** — the original premise was incomplete: the flag also bans **parameter
+> properties** (constructor `readonly`/`private` params), which the codebase uses idiomatically in
+> **6 files** (`session.ts`, `render-pixi/renderer.ts`, `dialogue-controller.ts`, `dialogue-view.ts`,
+> `llm/stub.ts`, `llm/openrouter.ts`, `llm/adapter.ts`). Crucially, the project **emits via Vite/esbuild,
+> not a type-stripping runtime**, so the flag's only benefit (type-strip compatibility) does not apply
+> here — enabling it would force a 6-file refactor of clean DI constructors for zero functional gain,
+> violating "don't refactor without cause" (GOAL §7 / AGENTS). The flag fires correctly (verified via a
+> planted `enum` → TS1294); the decision is cost/benefit, not capability. Re-evaluate only if a
+> type-stripping runtime (`node --strip-types`) is ever adopted. Logged to BACKLOG.
 
 ## Description & expected impact
 After Cycle 2, `pnpm outdated` shows only two minor items. Close the trivial gap and add one TS-7-forward

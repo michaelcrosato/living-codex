@@ -55,7 +55,11 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
 - **Vite 7 → 8** — major; do *after* any 7.x patch line is exhausted. Rolldown not yet 1.0. (Vitest 4 runs
   fine on Vite 7, so no forcing function.) Still deferred.
 - **~~`fc.commands` model-based test suite~~ → PROMOTED to [SPEC-31] (Cycle 3)** now fast-check 4 (SPEC-22) landed.
-- **~~`tsconfig` `erasableSyntaxOnly`~~ → folded into [SPEC-27] (Cycle 3)** (verified: no enum/namespace exists).
+- **`tsconfig` `erasableSyntaxOnly` — DEFERRED (evaluated in SPEC-27, 2026-05-30).** It bans not just
+  enums/namespaces (none exist) but **parameter properties**, used idiomatically in 6 DI constructors
+  (`session.ts`, `render-pixi/renderer.ts`, `dialogue-controller.ts`, `dialogue-view.ts`, `llm/{stub,openrouter,adapter}.ts`).
+  The project emits via **Vite/esbuild (not type-stripping)**, so the flag's benefit is moot while its cost is
+  a 6-file refactor — net-negative. Revisit ONLY if a `node --strip-types`-style runtime is adopted.
 - **web-vitals reporting sink** — if/when a backend exists; until then SPEC-08 buffers locally only
   (offline-first). Don't add network telemetry that breaks the offline guarantee.
 - **Miniplex → maintained ECS (bitECS / Koota) behind `ecs/registry.ts`** — Miniplex (2.0.0) is unmaintained

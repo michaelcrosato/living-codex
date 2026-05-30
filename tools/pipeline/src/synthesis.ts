@@ -1,4 +1,9 @@
-import { ContentPack, type ContentPack as Pack, type Quest } from "@codex/content-schema";
+import {
+  ContentPack,
+  type ContentPack as Pack,
+  type Quest,
+  type Storylet,
+} from "@codex/content-schema";
 import { compileInk } from "@codex/narrative-ink";
 import { hashValue } from "@codex/content-loader";
 import type { ArcSkeleton, DramatistOutput, ReferenceSet } from "./schemas/proposals";
@@ -20,6 +25,8 @@ export interface SynthesisInput {
   dramatist: DramatistOutput;
   /** Optional — patron-only briefs (budget.quests = 0) produce a pack with no quest. */
   quest?: Quest;
+  /** Optional — reactive/ambient storylets (SPEC-26); empty unless budget.storylets > 0. */
+  storylets?: readonly Storylet[];
   models: readonly string[];
   dependsOn?: readonly string[];
 }
@@ -65,6 +72,7 @@ export function synthesize(input: SynthesisInput): Pack {
     npcs,
     quests: input.quest ? [input.quest] : [],
     dialogues,
+    storylets: input.storylets ? [...input.storylets] : [],
   };
 
   return ContentPack.parse(candidate);

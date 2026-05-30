@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Npc, NpcId, FactionId, LocationId, ItemId } from "@codex/content-schema";
+import { Npc, NpcId, FactionId, LocationId, ItemId, Storylet } from "@codex/content-schema";
 
 /**
  * Intermediate sub-task outputs (CONTENT_PIPELINE.md §4). NOT shipped content — the structured
@@ -42,6 +42,13 @@ export type GeneratedNpc = z.infer<typeof GeneratedNpc>;
 
 export const DramatistOutput = z.object({ npcs: z.array(GeneratedNpc).min(1).max(12) });
 export type DramatistOutput = z.infer<typeof DramatistOutput>;
+
+/**
+ * Dramatist (storylet arrow, SPEC-26): proposed REACTIVE/AMBIENT storylets — the real `Storylet`
+ * treaty schema, so a proposal is wrong the same way shipped content would be. Capped by budget.
+ */
+export const StoryletProposals = z.object({ storylets: z.array(Storylet).max(12).default([]) });
+export type StoryletProposals = z.infer<typeof StoryletProposals>;
 
 export const Scorecard = z.object({
   canonConsistency: z.number().int().min(1).max(5),

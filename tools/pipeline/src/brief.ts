@@ -10,6 +10,7 @@ export const Brief = z.object({
       npcs: z.number().int().nonnegative().default(0),
       quests: z.number().int().nonnegative().default(0),
       locations: z.number().int().nonnegative().default(0),
+      storylets: z.number().int().nonnegative().default(0),
     })
     // Zod 4: `.default({})` would require {} to match the OUTPUT type; `.prefault({})` applies the
     // empty object as INPUT so the inner field defaults fill in (the intended v3 behavior). (SPEC-16)

@@ -42,7 +42,7 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 | SPEC-23 | `skill_at_least` condition | 8 | Done | main | (see log) | green | new content-schema/skill.ts `SkillName` (SSOT); condition + evaluator arm; effect.ts modify_skill + engine SkillId now derive from SkillName; integrity no-ref case; SCHEMA §7; +2 tests incl. SKILLS≡SkillName.options assertion (176); fingerprint + golden-master unchanged |
 | SPEC-24 | Storylet pack + ambient barks | 8 | Done | main | (see log) | green | new content/core/pack.district_barks (3 fire-once ambient storylets, distinct salience, gated on flag/skill_at_least/quest); discovered storyletSystem+TriggerStorylet→ShowText already wired (SPEC-11); added thin HUD bark surfacing (main.ts captures from event stream — ShowText is a no-op on World, engine untouched); +1 spec (2 tests, 178); **e2e bark assertion PASSES in chromium**; 5 packs, fingerprint 1ffc4746 |
 | SPEC-25 | content:verify storylets | 8 | Done | main | (see log) | green | new content-loader/storylet-check.ts `unsatisfiablePreconditions` (flattens `all`, catches contradictory flag_is + condition∧¬condition; documented heuristic limits) + 5 unit tests; content-verify loops storylets (error on unsat, non-fatal hygiene warning for no-precond+salience-0); refs already enforced at load (integrity.ts); planted-bad fixture proved both fire (then reverted); 183 tests |
-| SPEC-26 | Pipeline emits storylets | 9 | Todo | — | — | — | StubProvider; golden-master churn; HARD after SPEC-16 |
+| SPEC-26 | Pipeline emits storylets | 9 | Done | main | (see log) | green | brief budget.storylets (default 0) + StoryletProposals schema + [TASK:STORYLETS] dramatist arrow (fires only when budget>0; reactive/ambient guardrail in prompt) + synthesis includes them + Critic sees them + demo fixture emits storylet.sable_watching; **golden-master deliberately updated** (0cba→0716 default — budget.storylets enters promptHash; storylet path 0b638312); +2 cycle tests; hermetic StubProvider; verify green |
 
 ## Wave gates
 - [x] **Wave 0 complete** (2026-05-29) — SPEC-01/07/03/06 shipped; `pnpm verify` green; `pnpm audit` clean. Re-baseline before Wave 1.
@@ -54,14 +54,14 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
   - 2026-05-29 — SPEC-13 new curated pack: hand-curated `content/core/pack.kestrel` — a rival fixer (Kestrel + `faction.kestrel_outfit`, rival of Varga's crew) with a **3-branch** intro quest (take-job / play-both / stay-loyal), real Ink dialogue (compiled via `content:compile-ink`), and grounded canon assertions. `content:validate` (4 packs/14 npcs/3 quests) + `content:verify` (solvable, reachable, **canon-clean**) pass. New `rival-fixer.spec.ts` proves same-path load alongside hand-authored + generated packs, cross-pack faction refs resolve, the Ink plays, and the quest completes end-to-end through the real engine (exercising the SPEC-02 `talk_to` wiring on authored content). +4 tests (168). Golden-master untouched (no pipeline change). `pnpm verify` green. **Wave 2 complete.** Found+filed SCHEMA §3 doc-drift (combat/homeLocationId) in BACKLOG.
 - [x] **Wave 3 complete** (2026-05-29) — SPEC-11/14/15 shipped (storylet layer, retrieval-grounded canon,
   rubric judge); 174 tests; `pnpm verify` green. Content depth + pipeline intelligence landed.
-- [ ] **Wave 4 / 6 — Zod 4 (SPEC-16)** landed in isolation; golden-master updated; recursive-ref warning gone.
+- [x] **Wave 4 / 6 — Zod 4 (SPEC-16)** (2026-05-29) landed in isolation; native `z.toJSONSchema`; recursive-ref warning gone; golden-master byte-stable at the time (later updated by SPEC-26's brief field).
 
 ### Cycle-2 wave gates (Waves 5–9)
 - [x] **Wave 5 complete** (2026-05-29) — SPEC-17 (docs) + SPEC-19 (depcruise 17/@types/node 24) + SPEC-18 (eslint 10); `pnpm verify` green (174 tests) after each. Re-baseline before Wave 6.
 - [x] **Wave 6 complete** (2026-05-29) — SPEC-16 (Zod 4 + native JSON Schema) + SPEC-20 (TS 6) shipped; recursive-ref warnings gone; engine purity re-proven; golden-master byte-stable; `pnpm verify` green (174 tests). Re-baseline before Wave 7.
 - [x] **Wave 7 complete** (2026-05-29) — SPEC-21 (Vitest 4, coverage re-baselined 75.13%/65.14%/76.14%/76.93%) + SPEC-22 (fast-check 4); determinism fuzz + `replay:verify` green; 174 tests. All Cycle-2 dep modernization (Waves 5–7) landed. Re-baseline before Wave 8.
-- [ ] **Wave 8 complete** — SPEC-23 (`skill_at_least`) + SPEC-24 (storylet content + barks) + SPEC-25 (verify storylets).
-- [ ] **Wave 9 complete** — SPEC-26 (pipeline emits storylets); golden-master reconciled; offline/hermetic.
+- [x] **Wave 8 complete** (2026-05-29) — SPEC-23 (`skill_at_least` passive checks) + SPEC-24 (storylet content pack + HUD barks, e2e-verified in chromium) + SPEC-25 (content:verify storylet unsatisfiability + hygiene); `pnpm verify` green (183 tests / 40 files). Re-baseline before Wave 9.
+- [x] **Wave 9 complete** (2026-05-29) — SPEC-26 (pipeline emits storylets); golden-master reconciled deliberately (default 0716d252, storylet-path 0b638312); StubProvider-hermetic; `pnpm verify` green (185 tests / 40 files). **All Cycle-2 specs (SPEC-16…26) done.**
 
 ## Changelog (append-only; newest last)
 - 2026-05-29 — `/plan/` authored from the 2026 baseline + 4-agent research pass. No code changed yet.

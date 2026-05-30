@@ -6,10 +6,16 @@ import {
   renderAssertionRecord,
   type Registries,
 } from "@codex/content-loader";
-import { Quest, ContentPack } from "@codex/content-schema";
+import { Quest, ContentPack, type Storylet } from "@codex/content-schema";
 import type { ModelProvider } from "../llm/adapter";
 import { generateStructured } from "../llm/adapter";
-import { ArcSkeleton, ReferenceSet, DramatistOutput, Scorecard } from "../schemas/proposals";
+import {
+  ArcSkeleton,
+  ReferenceSet,
+  DramatistOutput,
+  Scorecard,
+  StoryletProposals,
+} from "../schemas/proposals";
 import { buildCanonIndex, renderCanon, type CanonIndex } from "../canon";
 import { ROLE_SYSTEM_PROMPTS, buildUserPrompt, type Role } from "../prompts";
 import type { Brief } from "../brief";
@@ -29,6 +35,7 @@ export interface CurationBundle {
     references: ReferenceSet;
     npcs: DramatistOutput;
     quest?: z.infer<typeof Quest>;
+    storylets?: z.infer<typeof Storylet>[];
   };
   scorecard: Scorecard;
   candidate: z.infer<typeof ContentPack>;
@@ -125,12 +132,29 @@ export async function runCycle(args: RunCycleArgs): Promise<CurationBundle> {
           `${base}\n\n# Arc\n${JSON.stringify(arc)}\n# New NPC ids\n${JSON.stringify(dramatist.npcs.map((n) => n.id))}`,
         )
       : undefined;
+  // Storylet arrow (SPEC-26): budget-driven, like the quest arrow. Reactive/ambient flavor only —
+  // a [TASK:STORYLETS] marker routes the stub deterministically (the same Dramatist role, new task).
+  const storylets =
+    args.brief.budget.storylets > 0
+      ? (
+          await callRole(
+            args.provider,
+            "dramatist",
+            "STORYLETS",
+            StoryletProposals,
+            `${base}\n\n# Arc\n${JSON.stringify(arc)}\n\n# Storylet task\n` +
+              `Propose up to ${args.brief.budget.storylets} REACTIVE/AMBIENT storylet(s): short barks/flavor ` +
+              `gated on world state (flags, reputation, skill_at_least, quest_completed). NEVER gate a main-plot ` +
+              `beat on salience. Make each fire-once: include an effect that sets a flag a precondition excludes.`,
+          )
+        ).storylets
+      : [];
   const scorecard = await callRole(
     args.provider,
     "critic",
     "SCORECARD",
     Scorecard,
-    `${base}\n\n# Proposal\n${JSON.stringify({ arc, quest })}`,
+    `${base}\n\n# Proposal\n${JSON.stringify(storylets.length ? { arc, quest, storylets } : { arc, quest })}`,
   );
 
   const candidate = synthesize({
@@ -143,6 +167,7 @@ export async function runCycle(args: RunCycleArgs): Promise<CurationBundle> {
     models: args.models ?? [args.provider.name],
     dependsOn: args.packIds ?? [],
     ...(quest ? { quest } : {}),
+    ...(storylets.length ? { storylets } : {}),
   });
 
   // Query the canon assertion graph for semantic contradictions (the candidate against existing
@@ -174,7 +199,13 @@ export async function runCycle(args: RunCycleArgs): Promise<CurationBundle> {
   return {
     brief: args.brief,
     canon,
-    proposals: { arc, references, npcs: dramatist, ...(quest ? { quest } : {}) },
+    proposals: {
+      arc,
+      references,
+      npcs: dramatist,
+      ...(quest ? { quest } : {}),
+      ...(storylets.length ? { storylets } : {}),
+    },
     scorecard,
     candidate,
     flagged: [...scorecard.contradictions, ...canonContradictions, ...rubricFlags],

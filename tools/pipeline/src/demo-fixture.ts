@@ -101,11 +101,35 @@ const SCORECARD = {
   notes: "Solid three-branch structure; grounds cleanly in the Ashfall district.",
 };
 
+// Reactive/ambient storylet (SPEC-26): a fire-once bark gated on the quest's `heard_sable` flag.
+// Salience drives flavor only — never a main-plot beat (which stays behind explicit quest flags).
+const STORYLETS = {
+  storylets: [
+    {
+      id: "storylet.sable_watching",
+      preconditions: [
+        { kind: "flag_is", flag: "flag.heard_sable", equals: true },
+        {
+          kind: "not",
+          of: { kind: "flag_is", flag: "flag.bark_sable_watching_seen", equals: true },
+        },
+      ],
+      salience: 15,
+      tags: ["ambient", "rival"],
+      content: {
+        ambient: "Across the district, Sable is already telling your story their way.",
+      },
+      effects: [{ kind: "set_flag", flag: "flag.bark_sable_watching_seen", to: true }],
+    },
+  ],
+};
+
 export const DEMO_RESPONSES: Record<string, string> = {
   "TASK:ARC": JSON.stringify(ARC),
   "TASK:REFERENCES": JSON.stringify(REFERENCES),
   "TASK:NPCS": JSON.stringify(NPCS),
   "TASK:QUEST": JSON.stringify(QUEST),
+  "TASK:STORYLETS": JSON.stringify(STORYLETS),
   "TASK:SCORECARD": JSON.stringify(SCORECARD),
 };
 

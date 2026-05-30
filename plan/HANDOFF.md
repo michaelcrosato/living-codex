@@ -45,7 +45,7 @@ ran a full REPLENISH research pass. Everything is green and committed **on a bra
   full-content `fc.commands` determinism fuzz over the live pack set (replay-exact at every step, 0 divergence).
 
 ## Verification (all green)
-- `pnpm verify` → **308 tests / 48 files** (Vitest 4.1.7 on **Vite 8**) · `pnpm e2e` → **4 passed** ·
+- `pnpm verify` → **312 tests / 49 files** (Vitest 4.1.7 on **Vite 8**) · `pnpm e2e` → **4 passed** ·
   `pnpm audit` → clean · `pnpm peers check` → clean · `content:verify` → 9 packs / 8 quests / 9 storylets / 8 locations
   canon-consistent, **0 hygiene warnings** (0 orphan, 0 unspawnable) · pipeline golden-master **untouched** ·
   deps current (only `@types/node` 25 deferred-to-runtime). All 8 locations reachable; no dead content.
@@ -58,7 +58,7 @@ ran a full REPLENISH research pass. Everything is green and committed **on a bra
   rest (LLM-judge at scale) is real-model-gated. Repo is at the unblocked frontier. (ROADMAP §11.3.)
 
 ## Git state
-- Branch **`spec/SPEC-50-syndicate-offer`**, **~89 commits ahead of `origin/main`, UNPUSHED** (push human-gated
+- Branch **`spec/SPEC-50-syndicate-offer`**, **~98 commits ahead of `origin/main`, UNPUSHED** (push human-gated
   by `.claude/settings.json` + BLOCKED.md; an automated `--ff-only` merge to main was also denied by policy).
   Working tree clean (only untracked `CLAUDE.md`, pre-existing). `main` still ≡ `origin/main`.
 

@@ -9,7 +9,7 @@
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { loadPacks, validatePack, auditCanon } from "@codex/content-loader";
+import { loadPacks, validatePack, auditCanon, unsatisfiablePreconditions } from "@codex/content-loader";
 import type { Effect, Objective, Quest } from "@codex/content-schema";
 
 const contentRoot = resolve(process.cwd(), "content");
@@ -40,6 +40,7 @@ const raw = files.map((f) => JSON.parse(readFileSync(f, "utf8")) as unknown);
 const { registries } = loadPacks(raw);
 const packs = raw.map((r, i) => validatePack(r, `#${i}`));
 const errors: string[] = [];
+const warnings: string[] = [];
 
 // Canon assertion graph (CONTENT_PIPELINE.md §6): semantic contradictions the ID-level index
 // can't see — a broke patron who funds a faction, a dead NPC still placed in the world, allies
@@ -140,6 +141,28 @@ for (const quest of registries.quests.values()) {
   checkOfferWhen(quest);
 }
 
+// Storylets (SPEC-25): the loader already proved their refs resolve (integrity.ts). Here we catch
+// DEAD storylets — preconditions that can never simultaneously hold, so the storylet would never
+// fire — plus a non-fatal hygiene warning for always-on noise (no preconditions AND salience 0).
+for (const storylet of registries.storylets.values()) {
+  const reason = unsatisfiablePreconditions(storylet.preconditions);
+  if (reason) {
+    errors.push(`${storylet.id}: unsatisfiable preconditions — ${reason}.`);
+  }
+  if (storylet.preconditions.length === 0 && storylet.salience === 0) {
+    warnings.push(
+      `${storylet.id}: no preconditions and salience 0 — always-on ambient noise; gate it or raise salience.`,
+    );
+  }
+}
+
+if (warnings.length > 0) {
+  console.warn(
+    `[content:verify] ${warnings.length} warning(s):\n` +
+      warnings.map((w) => `  - ${w}`).join("\n"),
+  );
+}
+
 if (errors.length > 0) {
   console.error(
     `[content:verify] FAILED (${errors.length} issue(s)):\n` +
@@ -149,6 +172,6 @@ if (errors.length > 0) {
 }
 console.log(
   `[content:verify] OK — ${registries.quests.size} quest(s) solvable & reachable, ` +
-    `${registries.locations.size} locations, all unlock_exit indices in range, ` +
-    `no contradictory gates, canon assertion graph consistent.`,
+    `${registries.locations.size} locations, ${registries.storylets.size} storylet(s) satisfiable, ` +
+    `all unlock_exit indices in range, no contradictory gates, canon assertion graph consistent.`,
 );

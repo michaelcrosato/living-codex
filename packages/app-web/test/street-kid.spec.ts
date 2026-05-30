@@ -3,7 +3,9 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadPacks } from "@codex/content-loader";
 import { NpcId, QuestId, FlagId, LocationId } from "@codex/content-schema";
-import { createWorld, applyEvent, applyEvents, questSystem } from "@codex/engine-core";
+import { createWorld, applyEvent, applyEvents, questSystem, reactionsSystem } from "@codex/engine-core";
+import { DialogueController } from "./../src/dialogue-controller";
+import { InkNarrative } from "@codex/narrative-ink";
 
 /**
  * SPEC-87 — "Someone's Brother": a human, non-faction, non-combat beat (tonal range for a slice that's
@@ -44,5 +46,15 @@ describe("street-kid human-moment beat (SPEC-87)", () => {
     expect(w.quests[QID]?.completedBranchId).toBe("search");
     expect(w.flags[FlagId.parse("flag.searched_for_tomas")]).toBe(true);
     expect(w.flags[FlagId.parse("flag.lost_brother_resolved")]).toBe(true);
+  });
+
+  it("after the search, facing the kid delivers the news (reactsTo) and latches told_the_kid (SPEC-88)", () => {
+    const controller = new DialogueController(registries, new InkNarrative());
+    let w = createWorld({ seed: "kid", startLocationId: DISTRICT });
+    expect(controller.openFor(w, "npc.street_kid")!.dialogueId).toBe("dialogue.street_kid"); // before
+    w = applyEvent(w, { type: "SetFlag", flag: FlagId.parse("flag.searched_for_tomas"), to: true });
+    w = applyEvents(w, reactionsSystem(registries.npcs)(w, 0));
+    expect(controller.openFor(w, "npc.street_kid")!.dialogueId).toBe("dialogue.street_kid_after"); // after
+    expect(w.flags[FlagId.parse("flag.told_the_kid")]).toBe(true);
   });
 });

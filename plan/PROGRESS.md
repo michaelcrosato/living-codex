@@ -26,6 +26,7 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 
 | Spec | Title | Wave | Status | Branch/worktree | Commit | Verify | Notes |
 |------|-------|------|--------|-----------------|--------|--------|-------|
+| SPEC-104 | retrieve item-source playability guard | C10-P0 | Done | spec/SPEC-104-retrieve-item-source-guard | 2b2a358 | green | Cycle-10 REPLENISH: closed the last gap in the unwinnability-detection family. `retrieve` was the only objective kind whose semantic unwinnability the gate missed (only checked count>0). The engine adds items ONLY via GiveItem (give_item + rewards; start inventory empty, no combat drops) → a retrieve on an item granted by nothing is uncollectable. New warning-level pass (extrinsic/subset-safe like SPEC-60/70): builds obtainable-item set (give_item sites + rewards.items + rewards.credits→item.credits) then flags retrieve outside it. 0 occurrences on real packs (no retrieve content yet — clean regression guard, parallel SPEC-53/60). playability.test +5 (341). content:verify 0 new warnings, fingerprint unchanged 01a3d1f9d1cee0. golden untouched, audit clean. |
 | SPEC-01 | Doc-sync | 0 | Done | main | 67a2ea2 | green | bribe_faction + credits_at_least + v2 World fields |
 | SPEC-03 | CI coverage + doctor | 0 | Done | main | 47d769d | green | @vitest/coverage-v8 + test:coverage + CI doctor/coverage; report-only; supersedes TICKET005 |
 | SPEC-06 | CI supply-chain hardening | 0 | Done | main | a4a6056 | green | SHA-pinned actions + least-priv permissions + --ignore-scripts |

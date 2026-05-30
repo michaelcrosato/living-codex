@@ -4,6 +4,9 @@
 > **Cycle 2 (v2026.05) authored AND EXECUTED 2026-05-29** — SPEC-16…26 all **Done** (one local
 > commit each, `pnpm verify` green throughout; final: 185 tests / 40 files, audit clean, HEAD 499c77c).
 > See [§7 below](#7-cycle-2-v202605--the-next-wave).
+> **Cycle 3 (v2026.05-c3) authored 2026-05-30** — SPEC-27…33 (Todo); dependency theme now exhausted, so
+> Cycle 3 pivots to **quality-depth + features** (tsgo accelerator, mutation testing, model-based PBT,
+> drama-manager, new content). See [§8 below](#8-cycle-3-v202605-c3--quality-depth--features).
 > Source-of-truth for this initiative is the `/plan/` folder. Subordinate to [docs/GOAL.md](../docs/GOAL.md).
 > Every item honors the **locked decisions** (GOAL §3) and **engineering invariants** (GOAL §5). If any
 > spec conflicts with GOAL.md, GOAL.md wins.
@@ -220,3 +223,64 @@ model-gated); a Miniplex→bitECS swap behind the existing `ecs/registry.ts` ada
 **Note:** the old "unified (flat) quality vector" idea is now **contraindicated** by 2026 design practice
 (Kennedy's resource-narrative critique) — prefer the *segmented/typed* condition language (SPEC-23 is the
 first step). See [BACKLOG.md](BACKLOG.md).
+
+---
+
+## 8. CYCLE 3 (v2026.05-c3) — quality-depth + features
+
+Authored 2026-05-30 from a fresh post-Cycle-2 audit + targeted research. **The dependency-modernization theme
+is exhausted** (`pnpm outdated` shows only `@types/node` 24→25 — deliberately pinned to the Node-24 runtime —
+and a minor `vite-tsconfig-paths` bump). All files are healthy (largest 348 lines). `pnpm verify` green (185
+tests), `pnpm audit --prod` clean. So Cycle 3 pivots from version bumps to **test-quality depth, a faster gate,
+and narrative depth** — all honoring GOAL §3/§5 (no runtime LLM, determinism mandatory, engine-core pure,
+content is data).
+
+### 8.1 Research that seeded these specs
+- **tsgo (TS 7 native)** is production-ready for `--noEmit` type checking (mid-2026; >98% tsc-compatible,
+  ~10× faster). This repo's `tsc` is **noEmit-only** (Vite emits) → ideal, low-risk accelerator → **SPEC-29**.
+- **Mutation testing (Stryker):** "coverage lies; mutation score tells the truth." GOAL §5.8 makes tests the
+  contract → measure whether they actually catch regressions on the determinism-critical core → **SPEC-30**.
+- **fast-check `fc.commands`** model-based testing (now that fast-check 4 is in) → richer state-machine
+  determinism fuzz → **SPEC-31**.
+- Storylets are now real (SPEC-11/24/26) → a deterministic **drama-manager salience policy** is unblocked
+  (design-note-gated) → **SPEC-32**; and **more curated content** is the thesis's core lever → **SPEC-33**.
+
+### 8.2 Execution waves
+```
+PHASE 0  (Quick Wins & Safety; parallel-safe)
+  SPEC-27 tsconfig hygiene + erasableSyntaxOnly
+  SPEC-28 coverage non-regression floor            (CI; serialize w/ SPEC-30 on verify.yml)
+
+PHASE 1  (Core Upgrades — tooling/quality depth; mostly parallel)
+  SPEC-29 tsgo typecheck accelerator               (tsc stays authoritative)
+  SPEC-30 Stryker mutation testing (engine-core)   (report-only; CI job → serialize w/ SPEC-28)
+  SPEC-31 fc.commands model-based determinism suite
+
+PHASE 2  (Major Features — narrative depth)
+  SPEC-33 new hand-authored content pack           (exercises skill_at_least + storylets)
+  SPEC-32 drama-manager waypoint  ──needs design note; soft-after──► SPEC-31
+```
+
+> **Collision map:** `.github/workflows/verify.yml` (SPEC-28, SPEC-30 — serialize) ·
+> `engine-core/src/systems/storylet.ts` (SPEC-32 — solo). Everything else parallelizes.
+
+### 8.3 Cycle-3 priority matrix
+**P = I+F+Ft−R** (1–5 each; R lower = better). Wave reflects the DAG.
+
+| Spec | Title | Pillar | I | F | R | Ft | P | Phase |
+|------|-------|--------|---|---|---|----|---|-------|
+| [SPEC-29](specs/SPEC-29-tsgo-typecheck-accelerator.md) | tsgo typecheck accelerator | Future-proof/DX | 4 | 4 | 2 | 5 | **11** | 1 |
+| [SPEC-27](specs/SPEC-27-tsconfig-hygiene.md) | tsconfig hygiene + erasableSyntaxOnly | Future-proof | 2 | 5 | 1 | 4 | **10** | 0 |
+| [SPEC-30](specs/SPEC-30-mutation-testing-engine-core.md) | Stryker mutation testing (engine-core) | Quality | 4 | 3 | 2 | 5 | **10** | 1 |
+| [SPEC-31](specs/SPEC-31-fastcheck-model-based-suite.md) | fc.commands model-based suite | Quality/Determinism | 4 | 3 | 2 | 5 | **10** | 1 |
+| [SPEC-33](specs/SPEC-33-new-content-pack-depth.md) | New content pack (depth) | Experience/Pipeline | 4 | 3 | 2 | 5 | **10** | 2 |
+| [SPEC-28](specs/SPEC-28-coverage-floor.md) | Coverage non-regression floor | Quality | 3 | 4 | 2 | 4 | **9** | 0 |
+| [SPEC-32](specs/SPEC-32-drama-manager-waypoint.md) | Drama-manager waypoint salience | Experience | 4 | 2 | 3 | 4 | **7** | 2 |
+
+### 8.4 Sequencing recommendation (autonomous)
+**Phase 0** (SPEC-27, SPEC-28 — fast safety) → **Phase 1** (SPEC-29 accelerator; SPEC-30 + SPEC-31 quality, the
+mutation baseline often *informs* where tests are weak) → **Phase 2** (SPEC-33 content; then SPEC-32 with its
+design note first). Re-baseline (`pnpm verify`, `pnpm outdated`, mutation score) at each phase. Discoveries →
+[BACKLOG.md](BACKLOG.md). Still **deferred** (not specs): Vite 7→8, WebGPU, Miniplex→bitECS swap (no driver —
+contained behind `ecs/registry.ts`), persona critics + multi-hop contradiction detection (real-model-gated),
+`@types/node` 25 (ahead of runtime).

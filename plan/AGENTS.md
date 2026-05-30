@@ -88,7 +88,22 @@ replace the root [AGENTS.md](../AGENTS.md) (the project's standing law) or [docs
   stays behind explicit quest flags (avoids the "accidental precondition" failure mode).
 - **Golden-master churn (SPEC-26):** emitting storylets changes the candidate-pack bytes — update the
   `cycle.test.ts` hash deliberately and note the reason in the commit (R2). Never weaken the assertion.
-- **`tsgo`/TS 7 is BACKLOG, not a spec:** keep `tsc` authoritative; SPEC-20 stops at TS 6.
+- **SPEC-20 stops at TS 6;** TS 7 / `tsgo` adoption is now **SPEC-29** (Cycle 3) as an accelerator — `tsc` stays authoritative.
+
+## Cycle-3 gotchas (Phases 0–2 — quality-depth + features)
+- **Dependency theme is exhausted** — do NOT chase version bumps (only `vite-tsconfig-paths` 5→6 in SPEC-27;
+  `@types/node` stays **24** to match the runtime — never 25). Cycle 3 is quality + content, not upgrades.
+- **`tsc` stays the gate (SPEC-29):** `tsgo` is a *fast* `typecheck:fast`; `pnpm verify` still runs `tsc`.
+  Prove `typecheck:fast` agrees with `typecheck` before trusting it (tsgo has ~74 known intentional diffs vs tsc).
+- **Mutation testing (SPEC-30) is report-only:** record the baseline score; file surviving mutants to BACKLOG;
+  do **not** fix them all (scope creep) and do **not** block `verify`/CI on the score yet.
+- **Coverage floor (SPEC-28):** set thresholds ~3pt UNDER the measured baseline (72/60/72/72) — tight floors
+  flake CI. Baseline = 75.13/65.14/76.14/76.93 (stmts/branch/funcs/lines).
+- **Drama-manager (SPEC-32) is the riskiest item:** design note FIRST; keep the salience policy a PURE function
+  over `World` (no globals), ties via the seeded RNG in the fold, main-plot excluded by tag, replay-invariant +
+  SPEC-31 model-based suite green. Revert-friendly (additive).
+- **New content (SPEC-33) uses existing verbs:** if authoring reveals a real need for a new verb, file a
+  Recipe-5 spec — don't add one speculatively (GOAL §3).
 
 ## Autonomous vs ask
 - **Proceed without asking** for: in-scope edits/tests/refactors, doc updates, local commits, running any

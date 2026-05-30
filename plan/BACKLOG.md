@@ -41,26 +41,21 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
   `progress_is` etc. only when content demands (the bribe pattern). Do **not** collapse into one map.
   (Research: [Kennedy: QBN→resource narratives](https://weatherfactory.biz/qbn-to-resource-narratives/),
   [emshort QBN](https://emshort.blog/2016/04/12/beyond-branching-quality-based-and-salience-based-narrative-structures/).)
-- **Drama-manager "waypoint" guidance** — soft-steer player input back toward authored beats via salience
-  weighting (salience as a planning step-cost). Long-game coherence feature; depends on a mature storylet
-  layer (SPEC-24 must land + prove out first). Must stay deterministic & offline (a static ranking policy,
-  not a runtime planner). (Research: [Ware 2022 salience planning](https://cs.uky.edu/~sgware/reading/papers/ware2022salience.pdf).)
+- **~~Drama-manager "waypoint" guidance~~ → PROMOTED to [SPEC-32] (Cycle 3 Phase 2).** SPEC-24 landed
+  (storylet content proven), so it's unblocked — but kept design-note-gated and MED-HIGH risk (touches the
+  storylet selector + replay). Must stay a deterministic, offline, static ranking policy (no runtime planner).
+  (Research: [Ware 2022 salience planning](https://cs.uky.edu/~sgware/reading/papers/ware2022salience.pdf).)
 - **Authoring-time branch visualizer** (Twine-style) for the curation review page — a quality-of-life tool
   for human curators, not engine work.
 
 ## Toolchain (do when convenient, not urgent)
-- **TS 7 / `tsgo` (Go-native) as a local typecheck accelerator** — stable Jan 2026, ~10× faster type
-  checking (the dual-tsconfig typecheck is the long pole of `pnpm verify`, which the AFK loop runs often).
-  Adopt as an **opt-in local accelerator** *after* SPEC-20 (TS 6) lands; **keep `tsc` authoritative in CI**
-  until `tsgo` is proven byte-identical on this repo's diagnostics. MED-HIGH risk; needs its own spec +
-  design note. (Research: [TS 7.0 beta](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0-beta/).)
+- **~~TS 7 / `tsgo` accelerator~~ → PROMOTED to [SPEC-29] (Cycle 3).** Mid-2026 research confirms tsgo is
+  production-ready for `--noEmit` (this repo's only tsc use) — de-risked from MED-HIGH to LOW-MED; tsc stays
+  authoritative.
 - **Vite 7 → 8** — major; do *after* any 7.x patch line is exhausted. Rolldown not yet 1.0. (Vitest 4 runs
-  fine on Vite 7, so no forcing function.)
-- **`fc.commands` model-based test suite** — fast-check's command/model PBT (run commands against the real
-  GameSession *and* a reference model, invariant per command, auto-shrink). The 2026 best-practice for
-  fuzzing a state machine; richer than SPEC-05's session fuzz. Promote after SPEC-22 (fast-check 4) lands.
-- **`tsconfig` `erasableSyntaxOnly`** — bans enums/namespaces (we build with Vite, not tsc). Tiny, additive;
-  could fold into SPEC-20 or a standalone hygiene commit.
+  fine on Vite 7, so no forcing function.) Still deferred.
+- **~~`fc.commands` model-based test suite~~ → PROMOTED to [SPEC-31] (Cycle 3)** now fast-check 4 (SPEC-22) landed.
+- **~~`tsconfig` `erasableSyntaxOnly`~~ → folded into [SPEC-27] (Cycle 3)** (verified: no enum/namespace exists).
 - **web-vitals reporting sink** — if/when a backend exists; until then SPEC-08 buffers locally only
   (offline-first). Don't add network telemetry that breaks the offline guarantee.
 - **Miniplex → maintained ECS (bitECS / Koota) behind `ecs/registry.ts`** — Miniplex (2.0.0) is unmaintained

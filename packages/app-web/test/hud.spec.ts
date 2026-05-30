@@ -30,6 +30,15 @@ function hud(flags: readonly string[]): string {
 }
 
 describe("renderHud consequence journal (SPEC-56)", () => {
+  it("shows the player's skill sheet (SPEC-76)", () => {
+    const world: World = createWorld({ seed: "hud", startLocationId: START, skills: { persuade: 5, force: 2 } });
+    const el = { textContent: "" } as unknown as HTMLElement;
+    renderHud(el, world, emptyRegistries);
+    expect(el.textContent ?? "").toContain("⚔");
+    expect(el.textContent ?? "").toContain("persuade 5");
+    expect(el.textContent ?? "").toContain("force 2");
+  });
+
   it("renders the location line and no consequence lines for a clean world", () => {
     const text = hud([]);
     expect(text).toContain("location.start"); // name falls back to id with empty registries

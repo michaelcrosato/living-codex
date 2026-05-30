@@ -22,6 +22,11 @@ export function renderHud(
   if (ambient.length > 0) lines.push(`~ ${ambient[Math.floor(world.tick / 600) % ambient.length]}`);
   lines.push(beatsLine(world));
   if (bark) lines.push(`» ${bark}`);
+  // The player's skill sheet (SPEC-76): branch choices gate on skill_check vs these, so show them.
+  const skillLine = Object.entries(world.player.skills)
+    .map(([name, value]) => `${name} ${value}`)
+    .join(" · ");
+  if (skillLine) lines.push(`⚔ ${skillLine}`);
   for (const [questId, quest] of registries.quests) {
     const rt = world.quests[questId];
     if (!rt || rt.status === "unoffered") continue;

@@ -459,3 +459,30 @@ Per the loop's REPLENISH mandate (re-run A+B for the next frontier), a fresh aud
 content-validation at-frontier. The next high-value leap stays human-gated (real-model generation, §10). The
 loop continues by harvesting genuine product depth (curated content — the thesis's core lever) and any real
 gap a future audit surfaces; it does not manufacture churn (SPEC-30 / GOAL §3).
+
+## 12. CYCLE 8 (v2026.05-afk cont.) — content depth + unsurfaced-content + save/load
+
+Ran under the perpetual loop (re-issued goal: never stop until human interrupt). Shipped **SPEC-71…79 (9 specs)**:
+- **New content threads / depth:** SPEC-73 the amnesia/identity thread ("What You Forgot" — pays off the
+  cold-open hook via npc.stranger); SPEC-77 clinic training quest (skill progression — exercises modify_skill
+  + has_item, both previously unexercised by content).
+- **"Authored but unsurfaced" UX fixes** (a productive audit class): SPEC-71 location ambientText in the HUD;
+  SPEC-74 NPC bodyColor/accentColor in the scene; SPEC-75 active-quest summary; SPEC-76 the player skill sheet.
+- **Save story completed:** SPEC-78 in-app load (GameSession.restore — was save-without-load, a real defect);
+  SPEC-79 file import (export/import symmetry). Now: K save / O load / L export / I import.
+- **Playability guard:** SPEC-72 defeat-requires-combat (tightened objectiveSatisfiable — a defeat on a
+  non-combat NPC is unwinnable). Brings the playability gate to 5 guards (53/60/68/70/72).
+
+State at Cycle-8 progress: `pnpm verify` green **299 tests / 48 files** (Vite 8), e2e 4 passed, audit + peers
+clean, content:verify 10 packs / 19 NPCs / 10 quests / 10 storylets / 8 locations · 0 hygiene warnings,
+coverage ~80%, golden untouched. ~72 commits ahead of origin/main (unpushed, human-gated).
+
+### 12.1 Next wave (candidates — execute when reached; promote from BACKLOG)
+- **Amnesia-payoff destination:** a new location (the player's old safehouse) reachable from the hub via an
+  exit gated by `requires:[flag_is learned_origin]` (exercises conditional `exit.requires`), with evocative
+  (now-surfaced) ambientText + a small reveal — a place the SPEC-73 thread leads to. NOT speculative: the
+  amnesia thread genuinely demands a destination.
+- **Unused-verb content** (GOAL §3 — only as a genuine beat demands): `retrieve` (a fetch quest),
+  `unlock_exit` (a quest that opens a locked path), `start_quest` (a quest that triggers another),
+  `set_npc_dialogue` (a quest that permanently changes an NPC's line). Each validates the verb end-to-end.
+- **Real-model generation (human-gated):** still the highest-value leap (ROADMAP §10).

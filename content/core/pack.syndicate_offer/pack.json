@@ -380,6 +380,44 @@
           "to": true
         }
       ]
+    },
+    {
+      "id": "storylet.warehouse_rumor_lead",
+      "preconditions": [
+        {
+          "kind": "flag_is",
+          "flag": "flag.heard_warehouse_rumor",
+          "equals": true
+        },
+        {
+          "kind": "not",
+          "of": {
+            "kind": "flag_is",
+            "flag": "flag.has_drive",
+            "equals": true
+          }
+        },
+        {
+          "kind": "not",
+          "of": {
+            "kind": "flag_is",
+            "flag": "flag.bark_rumor_lead_seen",
+            "equals": true
+          }
+        }
+      ],
+      "salience": 4,
+      "tags": [],
+      "content": {
+        "ambient": "The dockhand's rumor keeps turning over in your head: something worth taking, sitting in the Ashfall warehouse, and not for much longer. Varga would want to hear it — or maybe she already knows."
+      },
+      "effects": [
+        {
+          "kind": "set_flag",
+          "flag": "flag.bark_rumor_lead_seen",
+          "to": true
+        }
+      ]
     }
   ],
   "assertions": [

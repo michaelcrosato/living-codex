@@ -171,3 +171,38 @@ describe("Archivist drive-payoff storylet (SPEC-62)", () => {
     expect(hasStorylet(triggerOf(session.step([])), "storylet.archivist_knows")).toBe(false);
   });
 });
+
+/**
+ * SPEC-63 — the dockhand's warehouse rumor (flag.heard_warehouse_rumor) lands as an actionable lead
+ * BEFORE the warehouse is done (¬has_drive), and is gated off afterward. Fires once through the real
+ * session path; replay stays deterministic.
+ */
+describe("warehouse rumor lead storylet (SPEC-63)", () => {
+  const mk = (seed: string, flags: string[]): GameSession => {
+    const { registries: regs, fingerprint } = loadPacks([opening, syndicate]);
+    return new GameSession(regs, fingerprint, new InkNarrative(), {
+      seed,
+      startLocationId: DISTRICT,
+      startPos: { x: 50, y: 50 },
+      seedEvents: flags.map((f) => ({ type: "SetFlag", flag: FlagId.parse(f), to: true })),
+    });
+  };
+
+  it("fires once when the rumor is heard and the drive isn't taken yet; replays identically", () => {
+    const session = mk("rumor", ["flag.heard_warehouse_rumor"]);
+    expect(hasStorylet(triggerOf(session.step([])), "storylet.warehouse_rumor_lead")).toBe(true);
+    expect(hasStorylet(triggerOf(session.step([])), "storylet.warehouse_rumor_lead")).toBe(false); // fire-once
+    const { fingerprint } = loadPacks([opening, syndicate]);
+    const replayed = replay(
+      createWorld({ seed: "rumor", startLocationId: DISTRICT, startPos: { x: 50, y: 50 } }),
+      session.log,
+      { against: fingerprint },
+    );
+    expect(hash(replayed)).toBe(hash(session.world));
+  });
+
+  it("does NOT fire once the drive is taken (the lead is moot)", () => {
+    const session = mk("rumor2", ["flag.heard_warehouse_rumor", "flag.has_drive"]);
+    expect(hasStorylet(triggerOf(session.step([])), "storylet.warehouse_rumor_lead")).toBe(false);
+  });
+});

@@ -65,8 +65,12 @@ describe("rng", () => {
     expect(nextInt(frozen, 1, 100).value).toBe(nextInt(state, 1, 100).value);
   });
 
-  it("rejects malformed serialized state", () => {
-    expect(() => deserializeRng("[1,2,3]")).toThrow();
-    expect(() => deserializeRng('"nope"')).toThrow();
+  it("rejects malformed serialized state (every validation arm — corrupt-save boundary)", () => {
+    expect(() => deserializeRng('"nope"')).toThrow(); // not an array
+    expect(() => deserializeRng("[1,2,3]")).toThrow(); // wrong length (3 ≠ 4)
+    expect(() => deserializeRng("[1,2,3,4,5]")).toThrow(); // wrong length (5 ≠ 4)
+    expect(() => deserializeRng('[1,2,3,"x"]')).toThrow(); // a non-number element
+    expect(() => deserializeRng("[1,2,3,null]")).toThrow(); // null is typeof "object", not number
+    expect(() => deserializeRng("[1,2,3,1e999]")).toThrow(); // parses to Infinity → not finite
   });
 });

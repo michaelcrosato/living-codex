@@ -316,10 +316,14 @@ Engine-core mutation **re-measured this cycle** (SPEC-30 baseline 73.31% → Cyc
 **69.83%** — the drop vs. Cycle-5 reflects new code added in Cycles 4–6 generating fresh mutants, not a
 regression. The re-measure earned its keep: it surfaced `combat.ts` still at **50%** (SPEC-34 hardened the
 damage/HP side, but the *target-selection predicate* was unpinned) — a genuine gameplay gap, **not**
-low-risk — now closed by **SPEC-44 (combat.ts 50%→100%)**. `quests.ts` rose to 77.23% (SPEC-36/37). The
-only remaining lower surfaces are the BACKLOG-flagged low-risk ones (`snapshot.ts` hashing 43.75%,
-`world.ts` 60%, `rng.ts` 64%) — **do-not-chase** per SPEC-30 (hash collisions improbable; RNG bounds and
-world transitions are exercised by the fuzz + every system test).
+low-risk — now closed by **SPEC-44 (combat.ts 50%→100%)**. `quests.ts` rose to 77.23% (SPEC-36/37). `rng.ts` got the
+same scrutiny: its sfc32 *arithmetic* survivors are correctly low-value (determinism is the tested contract;
+exact PRNG values would be brittle golden-value chasing), but its `deserializeRng` *validation* — the
+corrupt-save boundary (SPEC-10 loads a persisted RNG state) — was a genuine gap, now closed by **SPEC-45
+(rng.ts 64%→78%)**. After 44+45 the engine-core residual is **verified low-risk by inspecting the actual
+survivors** (not by trusting a label — the lesson combat taught): `snapshot.ts` hashing (43.75% — the hash
+still distinguishes states; exact values brittle), the sfc32 arithmetic, and `world.ts`'s `defId` label +
+the player's initial `alive` flag (both unobservable). These are genuinely **do-not-chase** per SPEC-30.
 
 ### 9.3 The Cycle-7 frontier (honest assessment)
 The highest-value remaining leap is **real multi-model generation** end-to-end (Architect/Loremaster/

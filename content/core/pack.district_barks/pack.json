@@ -1,0 +1,46 @@
+{
+  "id": "pack.district_barks",
+  "version": "1.0.0",
+  "title": "Ashfall District — Ambient Barks",
+  "dependsOn": ["pack.opening"],
+  "provenance": {
+    "authoredBy": "human",
+    "models": [],
+    "curatedBy": "SPEC-24"
+  },
+  "storylets": [
+    {
+      "id": "storylet.bark_known_face",
+      "preconditions": [
+        { "kind": "flag_is", "flag": "flag.met_varga", "equals": true },
+        { "kind": "not", "of": { "kind": "flag_is", "flag": "flag.bark_known_face_seen", "equals": true } }
+      ],
+      "salience": 10,
+      "tags": ["ambient", "reputation"],
+      "content": { "ambient": "Word travels fast in Ashfall — people clock your face now." },
+      "effects": [{ "kind": "set_flag", "flag": "flag.bark_known_face_seen", "to": true }]
+    },
+    {
+      "id": "storylet.bark_sneak_read",
+      "preconditions": [
+        { "kind": "skill_at_least", "skill": "sneak", "value": 3 },
+        { "kind": "not", "of": { "kind": "flag_is", "flag": "flag.bark_sneak_read_seen", "equals": true } }
+      ],
+      "salience": 20,
+      "tags": ["ambient", "skill"],
+      "content": { "ambient": "Old habits: you've already mapped the alley's blind spots and exits." },
+      "effects": [{ "kind": "set_flag", "flag": "flag.bark_sneak_read_seen", "to": true }]
+    },
+    {
+      "id": "storylet.bark_aftermath",
+      "preconditions": [
+        { "kind": "quest_completed", "questId": "quest.the_warehouse" },
+        { "kind": "not", "of": { "kind": "flag_is", "flag": "flag.bark_aftermath_seen", "equals": true } }
+      ],
+      "salience": 30,
+      "tags": ["ambient", "aftermath"],
+      "content": { "ambient": "The warehouse job is already a story they tell in the bars." },
+      "effects": [{ "kind": "set_flag", "flag": "flag.bark_aftermath_seen", "to": true }]
+    }
+  ]
+}

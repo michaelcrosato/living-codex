@@ -5,6 +5,7 @@ import { createPixiRenderer } from "@codex/render-pixi";
 import { InkNarrative } from "@codex/narrative-ink";
 import { exportSave, saveGame, requestPersistentStorage } from "@codex/persistence";
 import openingPack from "../../../content/core/pack.opening/pack.json";
+import districtBarks from "../../../content/core/pack.district_barks/pack.json";
 import dripPatrons from "../../../content/generated/pack.the_drip_patrons/pack.json";
 import { GameSession } from "./session";
 import { drawScene } from "./scene";
@@ -32,7 +33,7 @@ function toast(message: string): void {
 }
 
 async function main(): Promise<void> {
-  const { registries, fingerprint } = loadPacks([openingPack, dripPatrons]);
+  const { registries, fingerprint } = loadPacks([openingPack, districtBarks, dripPatrons]);
   // Best-effort: keep saves from being evicted under storage pressure (no-op if unsupported).
   void requestPersistentStorage();
   const canvas = document.getElementById("game") as HTMLCanvasElement;
@@ -75,6 +76,9 @@ async function main(): Promise<void> {
 
   // app-only UI state: which NPC's dialogue is open (by def id), if any
   let openNpcId: string | null = null;
+  // app-only UI state: the latest salient ambient bark (SPEC-24). ShowText is a no-op on World
+  // (replay-exact), so the bark is captured from the TriggerStorylet event stream, not from state.
+  let lastBark: string | undefined;
   const closeDialogue = (): void => {
     openNpcId = null;
     input.closeDialogue();
@@ -95,6 +99,10 @@ async function main(): Promise<void> {
         if (ev.type === "Interacted") {
           const entity = session.world.entities[ev.entityId];
           if (entity) openNpcId = entity.defId;
+        } else if (ev.type === "TriggerStorylet") {
+          // Surface the salient ambient bark (highest-salience candidate) in the HUD.
+          const bark = ev.candidates[0]?.content.ambient;
+          if (bark) lastBark = bark;
         }
       }
     }
@@ -102,7 +110,7 @@ async function main(): Promise<void> {
 
     mark("codex:draw:start");
     drawScene(renderer, session.world, registries, viewport);
-    renderHud(hud, session.world, registries);
+    renderHud(hud, session.world, registries, lastBark);
     measure("codex:draw", "codex:draw:start");
 
     // render / refresh the accessible dialogue panel from current world state

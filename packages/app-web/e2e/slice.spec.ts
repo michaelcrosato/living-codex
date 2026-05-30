@@ -59,4 +59,8 @@ test("first light plays in the browser", async ({ page }) => {
   // beat instrumentation + replay log are wired
   expect(await page.evaluate(() => window.__codex.beats().acceptedQuest)).toBe(true);
   expect(await page.evaluate(() => window.__codex.log().entries.length)).toBeGreaterThan(0);
+
+  // SPEC-24: a salient ambient storylet bark surfaces in the HUD (the "» " line). The session
+  // seeds flag.met_varga and sneak 3, so a fire-once bark from pack.district_barks triggers early.
+  await expect(page.locator("#hud")).toContainText("»", { timeout: 5_000 });
 });

@@ -58,6 +58,16 @@ describe("Drip Market pack: same-path load + play (SPEC-33)", () => {
     ]);
   });
 
+  it("is reachable from the opening district (SPEC-35: geography in the base pack)", () => {
+    // The Drip Market locations live in pack.opening (base-world geography); the content overlays
+    // from pack.drip_market. So ashfall_district carries an ungated exit straight into the market.
+    const ashfall = registries.locations.get(LocationId.parse("location.ashfall_district"));
+    const toMarket = ashfall?.exits.find((e) => e.toLocationId === "location.drip_market");
+    expect(toMarket).toBeDefined();
+    expect(toMarket?.requires).toEqual([]); // ungated walk-in
+    expect(registries.locations.has(LocationId.parse("location.drip_backroom"))).toBe(true);
+  });
+
   it("the force-gated exit is a real skill_at_least passive check (SPEC-23 in content)", () => {
     const gatedExit = registries.locations.get(MARKET)?.exits[1];
     expect(gatedExit?.toLocationId).toBe("location.drip_backroom");

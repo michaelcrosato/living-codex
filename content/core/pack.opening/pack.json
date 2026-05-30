@@ -114,6 +114,19 @@
           },
           "label": "the Drip",
           "requires": []
+        },
+        {
+          "at": {
+            "x": 50,
+            "y": 50
+          },
+          "toLocationId": "location.drip_market",
+          "spawnAt": {
+            "x": 400,
+            "y": 300
+          },
+          "label": "down to the undermarket",
+          "requires": []
         }
       ],
       "npcSpawns": [
@@ -305,6 +318,136 @@
       "npcSpawns": [],
       "ambientText": [
         "Somewhere, a fan turns over."
+      ]
+    },
+    {
+      "id": "location.drip_market",
+      "name": "The Drip Market",
+      "mood": "A flooded undermarket lit by salvaged signage; water beads from the ceiling and ticks into a hundred buckets.",
+      "bounds": {
+        "w": 800,
+        "h": 600
+      },
+      "art": [
+        {
+          "kind": "rect",
+          "at": {
+            "x": 0,
+            "y": 0
+          },
+          "w": 800,
+          "h": 600,
+          "fill": "#0c1014"
+        },
+        {
+          "kind": "rect",
+          "at": {
+            "x": 60,
+            "y": 420
+          },
+          "w": 680,
+          "h": 120,
+          "fill": "#161d24",
+          "stroke": "#2a3640"
+        },
+        {
+          "kind": "circle",
+          "at": {
+            "x": 400,
+            "y": 300
+          },
+          "r": 40,
+          "fill": "#1d2730"
+        }
+      ],
+      "exits": [
+        {
+          "at": {
+            "x": 40,
+            "y": 300
+          },
+          "toLocationId": "location.ashfall_district",
+          "spawnAt": {
+            "x": 760,
+            "y": 300
+          },
+          "label": "Back up to Ashfall Street",
+          "requires": []
+        },
+        {
+          "at": {
+            "x": 760,
+            "y": 300
+          },
+          "toLocationId": "location.drip_backroom",
+          "spawnAt": {
+            "x": 60,
+            "y": 300
+          },
+          "label": "Shove through the collapsed wall",
+          "requires": [
+            {
+              "kind": "skill_at_least",
+              "skill": "force",
+              "value": 3
+            }
+          ]
+        }
+      ],
+      "npcSpawns": [],
+      "ambientText": [
+        "Somewhere a bucket overflows.",
+        "A vendor haggles in three languages at once."
+      ]
+    },
+    {
+      "id": "location.drip_backroom",
+      "name": "The Back Room",
+      "mood": "Past the rebar: a dry pocket of crates and a ledger nobody admits to keeping.",
+      "bounds": {
+        "w": 400,
+        "h": 400
+      },
+      "art": [
+        {
+          "kind": "rect",
+          "at": {
+            "x": 0,
+            "y": 0
+          },
+          "w": 400,
+          "h": 400,
+          "fill": "#0a0d10"
+        },
+        {
+          "kind": "rect",
+          "at": {
+            "x": 140,
+            "y": 160
+          },
+          "w": 120,
+          "h": 90,
+          "fill": "#1a232b"
+        }
+      ],
+      "exits": [
+        {
+          "at": {
+            "x": 40,
+            "y": 300
+          },
+          "toLocationId": "location.drip_market",
+          "spawnAt": {
+            "x": 740,
+            "y": 300
+          },
+          "label": "Back to the market",
+          "requires": []
+        }
+      ],
+      "npcSpawns": [],
+      "ambientText": [
+        "The drip doesn't reach here."
       ]
     }
   ],

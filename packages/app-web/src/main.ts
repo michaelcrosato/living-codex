@@ -6,6 +6,7 @@ import { InkNarrative } from "@codex/narrative-ink";
 import { exportSave, saveGame, requestPersistentStorage } from "@codex/persistence";
 import openingPack from "../../../content/core/pack.opening/pack.json";
 import districtBarks from "../../../content/core/pack.district_barks/pack.json";
+import dripMarket from "../../../content/core/pack.drip_market/pack.json";
 import dripPatrons from "../../../content/generated/pack.the_drip_patrons/pack.json";
 import { GameSession } from "./session";
 import { drawScene } from "./scene";
@@ -33,7 +34,7 @@ function toast(message: string): void {
 }
 
 async function main(): Promise<void> {
-  const { registries, fingerprint } = loadPacks([openingPack, districtBarks, dripPatrons]);
+  const { registries, fingerprint } = loadPacks([openingPack, districtBarks, dripMarket, dripPatrons]);
   // Best-effort: keep saves from being evicted under storage pressure (no-op if unsupported).
   void requestPersistentStorage();
   const canvas = document.getElementById("game") as HTMLCanvasElement;

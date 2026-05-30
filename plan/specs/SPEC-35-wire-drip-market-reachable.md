@@ -1,12 +1,15 @@
 # SPEC-35 — Make the Drip Market reachable in the live app
 
-- **Status:** [!] BLOCKED (2026-05-30) · **Pillar:** Player Experience · **Wave:** Cycle-4 P2 · **Cycle:** 4
+- **Status:** Done (2026-05-30, Cycle 5) · **Pillar:** Player Experience · **Wave:** Cycle-4→5 · **Cycle:** 5
 
-> **BLOCKED — design issue (see BLOCKED.md).** The loader validates `exit.toLocationId`, so an exit in
-> `pack.opening` → `location.drip_market` makes `pack.opening` un-loadable in isolation (dependency
-> inversion). It breaks every test that loads `pack.opening` alone (replay-fuzz/model-based/cycle/…).
-> Reverted cleanly. Needs a reachability-design decision first (Cycle 5): fold drip_market *locations* into
-> the base pack, OR a world-graph cross-pack-exit assembly layer. Then exit + `met_marrow` trigger are clean.
+> **RESOLVED via master/plugin layering (option a).** Root cause: the loader validates `exit.toLocationId`,
+> so a pack.opening→drip_market exit broke isolated loading of pack.opening (dependency inversion).
+> Fix: **geography is base-world layer** — `location.drip_market` + `location.drip_backroom` moved INTO
+> pack.opening; the *content* (npcs/quest/storylets/dialogues) stays in pack.drip_market as an overlay
+> (it dependsOn opening). The ashfall→drip_market exit + target now live in the same (base) pack, so
+> pack.opening loads in isolation cleanly (replay-fuzz green). `main.ts` loads pack.drip_market; a
+> reachability test asserts the exit. Remaining follow-up (→ BACKLOG): the `flag.met_marrow` quest-offer
+> Ink trigger so `quest.market_debt` offers when the player talks to Marrow.
 
 ## Description & impact
 SPEC-33 shipped `pack.drip_market` (validated, tested, playable-when-entered) but it isn't reachable in the

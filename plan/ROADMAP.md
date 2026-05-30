@@ -412,3 +412,28 @@ models at a known cost.
 One **capped, single-pack** real cycle (e.g., a new patron via `pipeline:cycle`), reviewed through the
 curation bundle, **not baked until human-approved**. Validates the real-model path end-to-end at minimal
 cost/risk. Only then promote 10.5 to executable specs + a Cycle-7 execution wave.
+
+## 11. CYCLE 7 (v2026.05-afk cont.) — unblocked product depth (real-model frontier still human-gated)
+
+Cycle-6 closed with the conclusion that the *hardening* frontier is exhausted and the *highest-value* leap
+(real multi-model generation + persona critics + multi-hop contradiction detection) is **BLOCKED on a paid
+`OPENROUTER_API_KEY` + human spend authorization** (§10, BLOCKED.md). The perpetual loop does not stop on
+that — it continues on genuine, **non-churn, unblocked** value. An incremental Phase-A audit confirmed the
+"vendor glue" packages (narrative-ink, persistence) have no hidden logic gap (the replay-critical Ink-state
+capture/restore is already tested; persistence's migration lives in the 100%-mutation-tested engine-core).
+So Cycle 7 turns to **the product itself** — curated content depth, the ROADMAP's stated "core lever",
+which needs no API key and exercises the full engine through real play.
+
+### 11.1 What shipped (SPEC-50…)
+- **SPEC-50 — pack.syndicate_offer ("The City's Cut").** Gave `faction.ashfall_syndicate` (the established
+  "runs the city" power) its first NPC face — a broker at the existing `location.the_drip` — and made the
+  warehouse drive *matter*: a 3-branch quest (sell / decrypt / leverage) gated on `flag.has_drive`, chaining
+  off `quest.the_warehouse`, each branch a distinct `skill_check` with a distinct faction consequence. Plus a
+  faction-tagged ambient storylet + canon assertions. Authored with existing verbs only (no engine/schema
+  change); wired live; same-path load+play tested; `pnpm verify` green (242), e2e 4 passed, audit clean.
+
+### 11.2 The line we hold
+Per SPEC-30 / GOAL §3 the loop will **not** manufacture churn (mutation-number chasing, speculative verbs,
+network telemetry that breaks offline-first). Cycle-7 work is genuine product/canon depth and any real
+correctness gap an audit surfaces. The real-model enhancements (§10.5) promote to specs only once a human
+unblocks the key and run #1 validates the baseline.

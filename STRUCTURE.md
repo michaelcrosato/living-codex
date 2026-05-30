@@ -13,6 +13,13 @@ living-codex/
 │   │   ├── pack.opening/
 │   │   ├── pack.district_barks/
 │   │   ├── pack.drip_market/
+│   │   ├── pack.syndicate_offer/
+│   │   ├── pack.kestrel/
+│   │   ├── pack.varga_trust/
+│   │   ├── pack.clinic/
+│   │   ├── pack.lost_thread/
+│   │   ├── pack.street_kid/
+│   │   ├── pack.bribe_demo/
 │   │   └── README.md
 │   └── generated/
 │       ├── pack.the_drip_patrons/
@@ -110,7 +117,7 @@ living-codex/
 ## Source tree (built)
 
 - `packages/` — the workspaces from `ARCHITECTURE.md §2`. `engine-core/src/` holds the §3 modules (`time, state, ecs, systems, events, conditions, ports`). Each package has a one-paragraph `README.md` stating its job and public API.
-- Default browser content: `content/core/pack.opening`, `content/core/pack.district_barks`, `content/core/pack.drip_market`, and `content/generated/pack.the_drip_patrons`. Keep this synchronized with `content/PACKS.md` and `packages/app-web/src/main.ts`.
+- Default browser content (10 packs, in load order): `content/core/pack.opening`, `pack.district_barks`, `pack.drip_market`, `pack.syndicate_offer`, `pack.kestrel`, `pack.varga_trust`, `pack.clinic`, `pack.lost_thread`, `pack.street_kid`, and `content/generated/pack.the_drip_patrons`. Keep this synchronized with `content/PACKS.md` and `packages/app-web/src/main.ts`.
 - `tools/pipeline/` — offline content pipeline, never shipped. `tools/migrate/` — schema/save migrations. `tools/scripts/` — the `pnpm` CLI bodies.
 - Root config: `package.json` (the `pnpm verify` gate), `pnpm-workspace.yaml`, `tsconfig.base.json` + `tsconfig.json` + `tsconfig.dom.json`, `eslint.config.js`, `.dependency-cruiser.cjs`, `vitest.config.ts`, `.prettierrc.json`. CI in `.github/workflows/verify.yml`.
 

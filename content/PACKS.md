@@ -17,7 +17,23 @@ The browser app currently loads these packs in `packages/app-web/src/main.ts`, i
 | 1 | `content/core/pack.opening` | First Light base geography, principal slice entities, initial quest content. | Hand-authored core pack |
 | 2 | `content/core/pack.district_barks` | Ambient/reactive district storylets and flavor. | Hand-authored core pack |
 | 3 | `content/core/pack.drip_market` | The Drip/market overlay content. | Hand-authored core pack |
-| 4 | `content/generated/pack.the_drip_patrons` | Pipeline-authored patrons and related social density for The Drip. | Generated/curated pack |
+| 4 | `content/core/pack.syndicate_offer` | The Syndicate recruitment arc — broker & cleaner NPCs, recruit/contract quests, decrypt & leverage payoff storylets, and the fully-Syndicate convergence. | Hand-authored core pack |
+| 5 | `content/core/pack.kestrel` | Kestrel rival-loyalty thread — the sided-with / refused / played-both reactions and their payoffs. | Hand-authored core pack |
+| 6 | `content/core/pack.varga_trust` | Reputation-gated Varga follow-up quest and the fully-Varga convergence storylet. | Hand-authored core pack |
+| 7 | `content/core/pack.clinic` | Ashfall clinic — debt-resolution quest, medic faction reactions, skill-training progression. | Hand-authored core pack |
+| 8 | `content/core/pack.lost_thread` | The amnesia/origin thread — recovering who the player was before Ashfall. | Hand-authored core pack |
+| 9 | `content/core/pack.street_kid` | The "Someone's Brother" thread — the street kid and its truth/payoff beat. | Hand-authored core pack |
+| 10 | `content/generated/pack.the_drip_patrons` | Pipeline-authored patrons and related social density for The Drip. | Generated/curated pack |
+
+---
+
+## Non-default packs
+
+Committed but **not** in the default browser set above:
+
+| Pack path | Role |
+|---|---|
+| `content/core/pack.bribe_demo` | Minimal demo exercising the `bribe_faction` effect; loaded only by its tests, not the browser app. |
 
 ---
 

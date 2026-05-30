@@ -1,6 +1,6 @@
 # content/core
 
-Hand-authored 'vanilla' content packs (the control). pack.opening holds the vertical-slice content. Loaded through the identical path as generated content.
+Hand-authored 'vanilla' content packs (the control). pack.opening holds the vertical-slice base; the narrative-thread packs (`syndicate_offer`, `kestrel`, `varga_trust`, `clinic`, `lost_thread`, `street_kid`) overlay quests, dialogues, storylets, and reactions onto its geography, and `district_barks`/`drip_market` add ambient and market content. Loaded through the identical path as generated content. The authoritative load order is `content/PACKS.md`.
 
 ## Pack layering (geography vs. content)
 

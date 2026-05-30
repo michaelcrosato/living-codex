@@ -1,5 +1,12 @@
 # HANDOFF — Cycle 8 (2026-05-30)
 
+> **UPDATE 2026-05-30 — MERGED TO MAIN.** The human authorized the merge: `spec/SPEC-50-syndicate-offer`
+> (129 commits, SPEC-50…103) was pushed and merged into `main` (no conflicts), combining cleanly with main's
+> doc work (GOAL/ROADMAP/PACKS/PR-template). Prettier was applied repo-wide and wired into the `verify` gate;
+> the merged tree re-passed `pnpm verify` (336 tests green) and `origin/main` was pushed. The "review + merge +
+> push" item below is **done**. Catalog docs (PACKS.md, STRUCTURE.md, content/core/README.md) re-synced to the
+> 10-pack default set in the same pass.
+
 A scannable review-guide for your return. (Agent resume-log lives in [JOURNAL.md](JOURNAL.md); status board
 in [PROGRESS.md](PROGRESS.md); the closeout + next-frontier plan in [ROADMAP.md](ROADMAP.md) §9–§11.)
 

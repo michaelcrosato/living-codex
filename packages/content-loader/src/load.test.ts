@@ -232,6 +232,94 @@ describe("content-loader", () => {
         ghost: /faction\.ghost/,
         mut: (p) => ((p.factions as { rivals?: string[] }[])[0]!.rivals = ["faction.ghost"]),
       },
+      {
+        name: "faction.allies",
+        ghost: /faction\.ghost/,
+        mut: (p) => ((p.factions as { allies?: string[] }[])[0]!.allies = ["faction.ghost"]),
+      },
+      {
+        name: "condition reputation_at_least (offerWhen)",
+        ghost: /faction\.ghost/,
+        mut: (p) =>
+          ((p.quests as { offerWhen: unknown[] }[])[0]!.offerWhen = [
+            { kind: "reputation_at_least", factionId: "faction.ghost", value: 1 },
+          ]),
+      },
+      {
+        name: "objective talk_to (npc)",
+        ghost: /npc\.ghost/,
+        mut: (p) =>
+          ((p.quests as { branches: { objectives: unknown[] }[] }[])[0]!.branches[0]!.objectives = [
+            { kind: "talk_to", npcId: "npc.ghost" },
+          ]),
+      },
+      {
+        name: "objective retrieve (item)",
+        ghost: /item\.ghost/,
+        mut: (p) =>
+          ((p.quests as { branches: { objectives: unknown[] }[] }[])[0]!.branches[0]!.objectives = [
+            { kind: "retrieve", itemId: "item.ghost", count: 1 },
+          ]),
+      },
+      {
+        name: "effect unlock_exit (location)",
+        ghost: /location\.ghost/,
+        mut: (p) =>
+          ((p.quests as { onAnyComplete: unknown[] }[])[0]!.onAnyComplete = [
+            { kind: "unlock_exit", locationId: "location.ghost", exitIndex: 0 },
+          ]),
+      },
+      {
+        name: "effect start_quest (quest)",
+        ghost: /quest\.ghost/,
+        mut: (p) =>
+          ((p.quests as { onAnyComplete: unknown[] }[])[0]!.onAnyComplete = [
+            { kind: "start_quest", questId: "quest.ghost" },
+          ]),
+      },
+      {
+        name: "effect set_npc_dialogue (npc)",
+        ghost: /npc\.ghost/,
+        mut: (p) =>
+          ((p.quests as { onAnyComplete: unknown[] }[])[0]!.onAnyComplete = [
+            { kind: "set_npc_dialogue", npcId: "npc.ghost", dialogueId: "dialogue.varga_intro" },
+          ]),
+      },
+      {
+        name: "effect bribe_faction (faction)",
+        ghost: /faction\.ghost/,
+        mut: (p) =>
+          ((p.quests as { onAnyComplete: unknown[] }[])[0]!.onAnyComplete = [
+            { kind: "bribe_faction", factionId: "faction.ghost", cost: 1, standing: 1 },
+          ]),
+      },
+      {
+        name: "npc.reactsTo overrideDialogueId",
+        ghost: /dialogue\.ghost/,
+        mut: (p) =>
+          ((p.npcs as { reactsTo?: unknown[] }[])[0]!.reactsTo = [
+            {
+              when: [{ kind: "flag_is", flag: "flag.x", equals: true }],
+              setsFlags: [],
+              overrideDialogueId: "dialogue.ghost",
+            },
+          ]),
+      },
+      {
+        name: "storylet content.dialogueId",
+        ghost: /dialogue\.ghost/,
+        mut: (p) =>
+          ((p.storylets = [
+            {
+              id: "storylet.x",
+              preconditions: [],
+              salience: 0,
+              tags: [],
+              content: { dialogueId: "dialogue.ghost" },
+              effects: [],
+            },
+          ]) as unknown as void),
+      },
     ];
     for (const c of cases) {
       const p = validPack();

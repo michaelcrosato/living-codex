@@ -5,6 +5,7 @@ import type {
   FlagId,
   QuestId,
   DialogueId,
+  SkillName,
 } from "@codex/content-schema";
 import { seedRng, serializeRng } from "../time/rng";
 
@@ -17,7 +18,10 @@ import { seedRng, serializeRng } from "../time/rng";
 
 /** A runtime entity-instance id (distinct from a static NpcId definition). */
 export type EntityId = string;
-export type SkillId = "persuade" | "sneak" | "force" | "tech";
+// SkillId is an alias of content-schema's `SkillName` (the single source of truth), so the schema
+// (`skill_at_least`/`modify_skill`) and the engine can never disagree about the skill set. `SKILLS`
+// below is asserted identical to `SkillName.options` in conditions.test.ts.
+export type SkillId = SkillName;
 
 // v2: added npcDialogue + unlockedExits (NPC reactions / set_npc_dialogue / unlock_exit).
 export const WORLD_VERSION = 2;

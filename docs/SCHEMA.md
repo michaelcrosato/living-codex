@@ -248,6 +248,7 @@ export const Condition: z.ZodType<Condition> = z.lazy(() =>
     z.object({ kind: z.literal("has_item"), itemId: ItemId, count: z.number().int().positive().default(1) }),
     z.object({ kind: z.literal("quest_completed"), questId: QuestId }),
     z.object({ kind: z.literal("credits_at_least"), amount: z.number().int().nonnegative() }),
+    z.object({ kind: z.literal("skill_at_least"), skill: SkillName, value: z.number().int() }),
     z.object({ kind: z.literal("not"), of: Condition }),
     z.object({ kind: z.literal("all"), of: z.array(Condition).min(1) }),
     z.object({ kind: z.literal("any"), of: z.array(Condition).min(1) }),
@@ -259,6 +260,7 @@ export type Condition =
   | { kind: "has_item"; itemId: ItemId; count: number }
   | { kind: "quest_completed"; questId: QuestId }
   | { kind: "credits_at_least"; amount: number }
+  | { kind: "skill_at_least"; skill: SkillName; value: number } // a passive check (Disco-Elysium style): gates content on World.player.skills
   | { kind: "not"; of: Condition }
   | { kind: "all"; of: Condition[] }
   | { kind: "any"; of: Condition[] };

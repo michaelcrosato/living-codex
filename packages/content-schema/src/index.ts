@@ -3,6 +3,7 @@
 // sides (runtime Zod validation + JSON Schema export for the offline pipeline).
 
 export * from "./ids";
+export * from "./skill";
 export * from "./condition";
 export * from "./assertion";
 export * from "./effect";

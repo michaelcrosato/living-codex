@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { FlagId, FactionId, ItemId, QuestId, LocationId, NpcId, DialogueId } from "./ids";
+import { SkillName } from "./skill";
 
 /**
  * Effects (SCHEMA.md §5): the ONLY ways content can change the world. Each maps 1:1 to an
@@ -27,7 +28,7 @@ export const Effect = z.discriminatedUnion("kind", [
   }),
   z.object({
     kind: z.literal("modify_skill"),
-    skill: z.enum(["persuade", "sneak", "force", "tech"]),
+    skill: SkillName,
     delta: z.number().int(),
   }),
   z.object({ kind: z.literal("start_quest"), questId: QuestId }),

@@ -39,6 +39,7 @@ function collectConditionRefs(cond: Condition, where: string, out: Ref[]): void 
       break;
     case "flag_is":
     case "credits_at_least":
+    case "skill_at_least":
       break;
   }
 }

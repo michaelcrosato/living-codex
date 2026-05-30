@@ -18,6 +18,8 @@ export function evaluate(world: World, condition: Condition): boolean {
       return world.quests[condition.questId]?.status === "completed";
     case "credits_at_least":
       return ((world.inventory as Record<string, number>)["item.credits"] ?? 0) >= condition.amount;
+    case "skill_at_least":
+      return (world.player.skills[condition.skill] ?? 0) >= condition.value;
     case "not":
       return !evaluate(world, condition.of);
     case "all":

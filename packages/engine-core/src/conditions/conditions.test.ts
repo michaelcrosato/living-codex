@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import type { Condition } from "@codex/content-schema";
-import { FlagId, FactionId, ItemId, LocationId, QuestId } from "@codex/content-schema";
-import { createWorld, type World, type QuestRuntimeState } from "../state/world";
+import { FlagId, FactionId, ItemId, LocationId, QuestId, SkillName } from "@codex/content-schema";
+import { createWorld, SKILLS, type World, type QuestRuntimeState } from "../state/world";
 import { applyEvent } from "../events/apply";
 import { evaluate, evaluateAll } from "./conditions";
 
@@ -48,6 +48,32 @@ describe("evaluate (condition language)", () => {
     expect(evaluate(w, { kind: "quest_completed", questId: QuestId.parse("quest.other") })).toBe(
       false,
     );
+  });
+
+  it("skill_at_least (passive check)", () => {
+    const ws = createWorld({ seed: "s", startLocationId: START, skills: { persuade: 3 } });
+    expect(evaluate(ws, { kind: "skill_at_least", skill: "persuade", value: 3 })).toBe(true);
+    expect(evaluate(ws, { kind: "skill_at_least", skill: "persuade", value: 2 })).toBe(true);
+    expect(evaluate(ws, { kind: "skill_at_least", skill: "persuade", value: 4 })).toBe(false);
+    // an unset skill defaults to 0
+    expect(evaluate(ws, { kind: "skill_at_least", skill: "sneak", value: 1 })).toBe(false);
+    // composes under not/all/any
+    expect(evaluate(ws, { kind: "not", of: { kind: "skill_at_least", skill: "force", value: 1 } })).toBe(
+      true,
+    );
+    expect(
+      evaluate(ws, {
+        kind: "all",
+        of: [
+          { kind: "skill_at_least", skill: "persuade", value: 3 },
+          { kind: "flag_is", flag, equals: true },
+        ],
+      }),
+    ).toBe(false); // ws has no flags set
+  });
+
+  it("engine SKILLS matches content-schema SkillName.options (single source of truth)", () => {
+    expect([...SKILLS].sort()).toEqual([...SkillName.options].sort());
   });
 
   it("not / all / any (including nesting)", () => {

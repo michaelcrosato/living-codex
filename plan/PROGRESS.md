@@ -39,7 +39,7 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 | SPEC-20 | TypeScript 6 | 6 | Done | main | (see log) | green | typescript 5.9.3→6.0.3; removed deprecated `baseUrl`, relativized `paths` (TS7-ready, no `ignoreDeprecations` suppression); purity re-proven (planted `document` errors under pure tsconfig.json, TS2584); ts-eslint 8.60 supports TS6 (no warning); 174 tests |
 | SPEC-21 | Vitest 4 | 7 | Done | main | (see log) | green | vitest+coverage-v8 3.2.4→4.1.7 (on Vite 7.3.3); vitest.config.ts unchanged (no workspace/poolOptions to migrate); no mocks in suite (zero mock-semantics risk); replay:verify still tag-selects + green; **coverage baseline (v8 remap): 75.13% stmts / 65.14% branch / 76.14% funcs / 76.93% lines** (report-only, no floor); 174 tests |
 | SPEC-22 | fast-check 4 | 7 | Done | main | (see log) | green | fast-check 3.23.2→4.8.0; no spec edits (oneof/record/constant/integer/constantFrom/array/assert/property all v4-stable); seeds still pinned (0xc0de, numRuns 60); no new divergence surfaced; 174 tests |
-| SPEC-23 | `skill_at_least` condition | 8 | Todo | — | — | — | additive verb (Recipe 5); HARD after SPEC-16 |
+| SPEC-23 | `skill_at_least` condition | 8 | Done | main | (see log) | green | new content-schema/skill.ts `SkillName` (SSOT); condition + evaluator arm; effect.ts modify_skill + engine SkillId now derive from SkillName; integrity no-ref case; SCHEMA §7; +2 tests incl. SKILLS≡SkillName.options assertion (176); fingerprint + golden-master unchanged |
 | SPEC-24 | Storylet pack + ambient barks | 8 | Todo | — | — | — | prove SPEC-11 end-to-end; salience = reactive only |
 | SPEC-25 | content:verify storylets | 8 | Todo | — | — | — | reference + unsatisfiability + hygiene checks |
 | SPEC-26 | Pipeline emits storylets | 9 | Todo | — | — | — | StubProvider; golden-master churn; HARD after SPEC-16 |
@@ -59,7 +59,7 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 ### Cycle-2 wave gates (Waves 5–9)
 - [x] **Wave 5 complete** (2026-05-29) — SPEC-17 (docs) + SPEC-19 (depcruise 17/@types/node 24) + SPEC-18 (eslint 10); `pnpm verify` green (174 tests) after each. Re-baseline before Wave 6.
 - [x] **Wave 6 complete** (2026-05-29) — SPEC-16 (Zod 4 + native JSON Schema) + SPEC-20 (TS 6) shipped; recursive-ref warnings gone; engine purity re-proven; golden-master byte-stable; `pnpm verify` green (174 tests). Re-baseline before Wave 7.
-- [ ] **Wave 7 complete** — SPEC-21 (Vitest 4, coverage re-baselined) + SPEC-22 (fast-check 4); determinism gate green.
+- [x] **Wave 7 complete** (2026-05-29) — SPEC-21 (Vitest 4, coverage re-baselined 75.13%/65.14%/76.14%/76.93%) + SPEC-22 (fast-check 4); determinism fuzz + `replay:verify` green; 174 tests. All Cycle-2 dep modernization (Waves 5–7) landed. Re-baseline before Wave 8.
 - [ ] **Wave 8 complete** — SPEC-23 (`skill_at_least`) + SPEC-24 (storylet content + barks) + SPEC-25 (verify storylets).
 - [ ] **Wave 9 complete** — SPEC-26 (pipeline emits storylets); golden-master reconciled; offline/hermetic.
 

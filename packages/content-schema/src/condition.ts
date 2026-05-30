@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { FlagId, FactionId, ItemId, QuestId } from "./ids";
+import { SkillName } from "./skill";
 
 /**
  * Conditions (SCHEMA.md §7): a tiny, safe, typed expression language that gates quests,
@@ -12,6 +13,7 @@ export type Condition =
   | { kind: "has_item"; itemId: ItemId; count: number }
   | { kind: "quest_completed"; questId: QuestId }
   | { kind: "credits_at_least"; amount: number }
+  | { kind: "skill_at_least"; skill: SkillName; value: number }
   | { kind: "not"; of: Condition }
   | { kind: "all"; of: Condition[] }
   | { kind: "any"; of: Condition[] };
@@ -38,6 +40,7 @@ export const Condition: z.ZodType<Condition, unknown> = z.lazy(() =>
     }),
     z.object({ kind: z.literal("quest_completed"), questId: QuestId }),
     z.object({ kind: z.literal("credits_at_least"), amount: z.number().int().nonnegative() }),
+    z.object({ kind: z.literal("skill_at_least"), skill: SkillName, value: z.number().int() }),
     z.object({ kind: z.literal("not"), of: Condition }),
     z.object({ kind: z.literal("all"), of: z.array(Condition).min(1) }),
     z.object({ kind: z.literal("any"), of: z.array(Condition).min(1) }),

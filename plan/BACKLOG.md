@@ -84,6 +84,13 @@ tests just to chase the number. Hotspots (lowest score first):
   transitions and RNG bounds; the highest-value targeted tests live here (quests is the biggest surface).
 Re-run `pnpm mutation` after adding tests; consider a score *ratchet* spec once the baseline stabilizes.
 
+## Content follow-ups
+- **Wire `location.ashfall_district` → `location.drip_market`** (SPEC-33, 2026-05-30): the Drip Market pack
+  is valid, tested, and playable when entered, but is not reachable from the opening district in-game
+  because adding the connecting exit edits `pack.opening`'s location (out of SPEC-33's scope). Add an exit
+  in `pack.opening` (and optionally load `pack.drip_market` in `app-web/main.ts`) to ship it live. Small,
+  deliberate content edit.
+
 ## Notes
 Every item above was considered and *deliberately deferred* during the 2026-05-29 planning pass. The
 reasons (paid/blocked, profile-gated, redesign-scale, or convenience-only) are why they are **not** in

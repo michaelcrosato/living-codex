@@ -1,6 +1,6 @@
 # SPEC-33 — New hand-authored content pack (depth + exercise the new verbs)
 
-- **Status:** Todo · **Pillar:** Player Experience / Pipeline B · **Wave:** Cycle-3 Phase 2 (Major Features) · **P=10**
+- **Status:** Done · **Pillar:** Player Experience / Pipeline B · **Wave:** Cycle-3 Phase 2 (Major Features) · **P=10**
 - **I**=4 **F**=3 **R**=2 **Ft**=5 · **LOW-MED risk — data only, same load path; golden untouched.**
 
 ## Description & expected impact

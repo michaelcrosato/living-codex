@@ -34,7 +34,7 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 | SPEC-15 | Rubric LLM-judge gate | 3 | Done | main | abf39e2 | green | 1-5 integer rubric + rationale CoT prompt + threshold low-score flagging; Html escaping rationales; +3 tests |
 | SPEC-16 | Zod 4 + native JSON Schema | 4/6 | Todo | — | — | — | MED risk; isolate; updates golden hash; HARD-before SPEC-23/26 |
 | SPEC-17 | Doc-sync NPC schema | 5 | Done | main | (see log) | green | §3 +combat/+homeLocationId; §8 ContentPack +storylets; +Storylet subsection; docs-only, 174 tests |
-| SPEC-18 | ESLint 10 + ts-eslint | 5 | Todo | — | — | — | flat config already; serialize w/ SPEC-20 |
+| SPEC-18 | ESLint 10 + ts-eslint | 5 | Done | main | (see log) | green | eslint+@eslint/js 9.39→10, typescript-eslint 8.20→8.60; flat config unchanged (no migration); zero new lint errors; 174 tests |
 | SPEC-19 | depcruise 17 + node types | 5 | Done | main | (see log) | green | dependency-cruiser 16.10→17.4.2, @types/node 22→24.12; config unchanged (v17-compatible); rule-fire re-proven via planted node:fs import (error + exit 1), reverted; 174 tests |
 | SPEC-20 | TypeScript 6 | 6 | Todo | — | — | — | dual-typecheck long pole; keep purity; serialize w/ SPEC-18 |
 | SPEC-21 | Vitest 4 | 7 | Todo | — | — | — | coverage remap + `workspace`→`projects`; re-baseline coverage |

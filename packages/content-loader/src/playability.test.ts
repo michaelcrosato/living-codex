@@ -110,4 +110,61 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
     expect(errors).toEqual([]);
     expect(warnings.some((w) => w.includes("always-on ambient noise"))).toBe(true);
   });
+
+  // SPEC-53 — orphaned-dialogue hygiene: a dialogue referenced by nothing can never be shown.
+  const dialogue = (id: string): Record<string, unknown> => ({
+    id,
+    format: "ink-json",
+    inkVersion: "21",
+    sourceHash: "x",
+    compiled: {},
+    declaredVars: [],
+  });
+  const npc = (over: Record<string, unknown>): Record<string, unknown> => ({
+    id: "npc.t",
+    name: "T",
+    appearance: { bodyColor: "#000", accentColor: "#fff", silhouette: "humanoid" },
+    bio: { role: "r", backstory: "b", wants: "w", fears: "f", voice: "v" },
+    dialogueId: "dialogue.used",
+    ...over,
+  });
+
+  it("warns (non-fatal) on an orphaned dialogue — defined but referenced by nothing", () => {
+    const { errors, warnings } = check({
+      npcs: [npc({})], // references dialogue.used
+      dialogues: [dialogue("dialogue.used"), dialogue("dialogue.orphan")],
+    });
+    expect(errors).toEqual([]);
+    expect(warnings.some((w) => w.includes("dialogue.orphan") && w.includes("orphaned dialogue"))).toBe(true);
+    expect(warnings.some((w) => w.includes("dialogue.used"))).toBe(false); // the referenced one is fine
+  });
+
+  it("does NOT warn when every dialogue is reached via NPC / reaction / storylet / set_npc_dialogue", () => {
+    const { errors, warnings } = check({
+      npcs: [
+        npc({
+          reactsTo: [
+            {
+              when: [{ kind: "flag_is", flag: "flag.x", equals: true }],
+              overrideDialogueId: "dialogue.reaction",
+            },
+          ],
+        }),
+      ],
+      storylets: [
+        { id: "storylet.s", preconditions: [{ kind: "flag_is", flag: "flag.y", equals: true }], salience: 1, tags: [], content: { dialogueId: "dialogue.storylet" }, effects: [] },
+      ],
+      quests: [
+        quest({ onAnyComplete: [{ kind: "set_npc_dialogue", npcId: "npc.t", dialogueId: "dialogue.effect" }] }),
+      ],
+      dialogues: [
+        dialogue("dialogue.used"), // npc.dialogueId
+        dialogue("dialogue.reaction"), // reactsTo.overrideDialogueId
+        dialogue("dialogue.storylet"), // storylet.content.dialogueId
+        dialogue("dialogue.effect"), // set_npc_dialogue effect
+      ],
+    });
+    expect(errors).toEqual([]);
+    expect(warnings.filter((w) => w.includes("orphaned dialogue"))).toEqual([]);
+  });
 });

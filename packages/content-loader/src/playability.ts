@@ -16,7 +16,8 @@ export interface PlayabilityReport {
  *   - every `unlock_exit` effect's exitIndex is within the target location's exits array (the loader
  *     checks the location id exists, but NOT that the index is in range);
  *   - no quest has directly contradictory `flag_is` gates in `offerWhen` (it could never be offered);
- *   - no storylet has unsatisfiable preconditions (it could never fire); always-on noise is warned.
+ *   - no storylet has unsatisfiable preconditions (it could never fire); always-on noise is warned;
+ *   - no dialogue is orphaned (defined but referenced by nothing — warned, SPEC-53).
  *
  * Pure over `registries` so it is unit-testable; the `content:verify` script is the thin CLI that
  * loads packs, runs this plus `auditCanon`, and reports (errors → exit 1).
@@ -115,6 +116,43 @@ export function staticPlayabilityCheck(registries: Registries): PlayabilityRepor
     checkQuest(quest);
     checkReachability(quest);
     checkOfferWhen(quest);
+  }
+
+  // Orphaned dialogues (SPEC-53): a DialogueAsset can be schema-valid + integrity-clean yet referenced
+  // by nothing — dead content that ships but can never be seen (the kestrel-pack hazard, one level down).
+  // Collect every referenced dialogue id, then warn (not error: on a subset load a dialogue referenced
+  // only by a not-yet-loaded pack would look orphaned) on any defined-but-unreferenced dialogue.
+  const referencedDialogues = new Set<string>();
+  const noteEffectDialogues = (effects: readonly Effect[]): void => {
+    for (const effect of effects) {
+      if (effect.kind === "set_npc_dialogue") referencedDialogues.add(effect.dialogueId);
+    }
+  };
+  for (const npc of registries.npcs.values()) {
+    referencedDialogues.add(npc.dialogueId);
+    for (const reaction of npc.reactsTo) {
+      if (reaction.overrideDialogueId) referencedDialogues.add(reaction.overrideDialogueId);
+    }
+  }
+  for (const storylet of registries.storylets.values()) {
+    if (storylet.content.dialogueId) referencedDialogues.add(storylet.content.dialogueId);
+  }
+  for (const quest of registries.quests.values()) {
+    noteEffectDialogues(quest.onAnyComplete);
+    for (const branch of quest.branches) {
+      noteEffectDialogues(branch.onComplete);
+      noteEffectDialogues(branch.onFail);
+      for (const obj of branch.objectives) {
+        if (obj.kind === "skill_check") noteEffectDialogues(obj.onFail);
+      }
+    }
+  }
+  for (const id of registries.dialogues.keys()) {
+    if (!referencedDialogues.has(id)) {
+      warnings.push(
+        `${id}: orphaned dialogue — no NPC, reaction, storylet, or set_npc_dialogue effect references it; it can never be shown.`,
+      );
+    }
   }
 
   // Storylets (SPEC-25): the loader already proved their refs resolve (integrity.ts). Here we catch

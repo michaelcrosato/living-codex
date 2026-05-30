@@ -132,3 +132,42 @@ describe("syndicate decrypt payoff storylet (SPEC-54)", () => {
     expect(hash(replayed)).toBe(hash(session.world));
   });
 });
+
+/**
+ * SPEC-62 — the Archivist (a now-reachable Drip patron whose bio wants "the drive, and the one who
+ * took it") is paid off by a fire-once storylet that fires once the player holds the drive AND has met
+ * her. Proves the designed hook lands through the real GameSession path, and replay stays deterministic.
+ */
+describe("Archivist drive-payoff storylet (SPEC-62)", () => {
+  it("fires once when the player holds the drive and has met the Archivist; replays identically", () => {
+    const { registries: regs, fingerprint } = loadPacks([opening, syndicate]);
+    const opts: GameSessionOptions = {
+      seed: "archivist",
+      startLocationId: DISTRICT,
+      startPos: { x: 50, y: 50 },
+      seedEvents: [
+        { type: "SetFlag", flag: HAS_DRIVE, to: true },
+        { type: "SetFlag", flag: FlagId.parse("flag.met_archivist"), to: true },
+      ],
+    };
+    const session = new GameSession(regs, fingerprint, new InkNarrative(), opts);
+
+    expect(hasStorylet(triggerOf(session.step([])), "storylet.archivist_knows")).toBe(true);
+    expect(hasStorylet(triggerOf(session.step([])), "storylet.archivist_knows")).toBe(false); // fire-once
+
+    const replayed = replay(createWorld(opts), session.log, { against: fingerprint });
+    expect(hash(replayed)).toBe(hash(session.world));
+  });
+
+  it("does NOT fire if the player has the drive but never met the Archivist", () => {
+    const { registries: regs, fingerprint } = loadPacks([opening, syndicate]);
+    const opts: GameSessionOptions = {
+      seed: "archivist2",
+      startLocationId: DISTRICT,
+      startPos: { x: 50, y: 50 },
+      seedEvents: [{ type: "SetFlag", flag: HAS_DRIVE, to: true }], // no met_archivist
+    };
+    const session = new GameSession(regs, fingerprint, new InkNarrative(), opts);
+    expect(hasStorylet(triggerOf(session.step([])), "storylet.archivist_knows")).toBe(false);
+  });
+});

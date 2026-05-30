@@ -345,6 +345,41 @@
           "to": true
         }
       ]
+    },
+    {
+      "id": "storylet.archivist_knows",
+      "preconditions": [
+        {
+          "kind": "flag_is",
+          "flag": "flag.has_drive",
+          "equals": true
+        },
+        {
+          "kind": "flag_is",
+          "flag": "flag.met_archivist",
+          "equals": true
+        },
+        {
+          "kind": "not",
+          "of": {
+            "kind": "flag_is",
+            "flag": "flag.bark_archivist_seen",
+            "equals": true
+          }
+        }
+      ],
+      "salience": 7,
+      "tags": [],
+      "content": {
+        "ambient": "The archivist hasn't stopped watching you since you sat down. Her gaze keeps dropping to the weight in your coat — the drive. 'Keeper of dangerous truths,' they call her. She knows exactly what you took, and she wants it."
+      },
+      "effects": [
+        {
+          "kind": "set_flag",
+          "flag": "flag.bark_archivist_seen",
+          "to": true
+        }
+      ]
     }
   ],
   "assertions": [

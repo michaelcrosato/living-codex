@@ -1,6 +1,12 @@
 # SPEC-35 — Make the Drip Market reachable in the live app
 
-- **Status:** Todo · **Pillar:** Player Experience · **Wave:** Cycle-4 P2 · **Cycle:** 4
+- **Status:** [!] BLOCKED (2026-05-30) · **Pillar:** Player Experience · **Wave:** Cycle-4 P2 · **Cycle:** 4
+
+> **BLOCKED — design issue (see BLOCKED.md).** The loader validates `exit.toLocationId`, so an exit in
+> `pack.opening` → `location.drip_market` makes `pack.opening` un-loadable in isolation (dependency
+> inversion). It breaks every test that loads `pack.opening` alone (replay-fuzz/model-based/cycle/…).
+> Reverted cleanly. Needs a reachability-design decision first (Cycle 5): fold drip_market *locations* into
+> the base pack, OR a world-graph cross-pack-exit assembly layer. Then exit + `met_marrow` trigger are clean.
 
 ## Description & impact
 SPEC-33 shipped `pack.drip_market` (validated, tested, playable-when-entered) but it isn't reachable in the

@@ -50,6 +50,36 @@ describe("evaluate (condition language)", () => {
     );
   });
 
+  // SPEC-111: credits_at_least was entirely untested (a whole condition kind). Cover the boundary with
+  // credits present and the `?? 0` default on an empty inventory.
+  it("credits_at_least", () => {
+    const credits = ItemId.parse("item.credits");
+    const wc = applyEvent(createWorld({ seed: "s", startLocationId: START }), {
+      type: "GiveItem",
+      itemId: credits,
+      count: 100,
+    });
+    expect(evaluate(wc, { kind: "credits_at_least", amount: 100 })).toBe(true);
+    expect(evaluate(wc, { kind: "credits_at_least", amount: 101 })).toBe(false);
+    // empty inventory → `?? 0`: amount 0 is satisfiable, amount 1 is not.
+    const w0 = createWorld({ seed: "s", startLocationId: START });
+    expect(evaluate(w0, { kind: "credits_at_least", amount: 0 })).toBe(true);
+    expect(evaluate(w0, { kind: "credits_at_least", amount: 1 })).toBe(false);
+  });
+
+  // SPEC-111: the `?? 0` defaults for an unmet faction / absent item. The negative-threshold case on an
+  // unmet faction is the genuine correctness behavior the `?? 0` provides (without it, undefined >= -5
+  // would be false). w0 has no factions/items.
+  it("reputation_at_least and has_item default to 0 for an unmet faction / absent item", () => {
+    const w0 = createWorld({ seed: "s", startLocationId: START });
+    const unmet = FactionId.parse("faction.unmet");
+    expect(evaluate(w0, { kind: "reputation_at_least", factionId: unmet, value: 0 })).toBe(true);
+    expect(evaluate(w0, { kind: "reputation_at_least", factionId: unmet, value: -5 })).toBe(true);
+    expect(evaluate(w0, { kind: "reputation_at_least", factionId: unmet, value: 1 })).toBe(false);
+    const absent = ItemId.parse("item.absent");
+    expect(evaluate(w0, { kind: "has_item", itemId: absent, count: 1 })).toBe(false);
+  });
+
   it("skill_at_least (passive check)", () => {
     const ws = createWorld({ seed: "s", startLocationId: START, skills: { persuade: 3 } });
     expect(evaluate(ws, { kind: "skill_at_least", skill: "persuade", value: 3 })).toBe(true);

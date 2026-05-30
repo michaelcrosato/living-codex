@@ -152,7 +152,7 @@ Re-run `pnpm mutation` after adding tests; consider a score *ratchet* spec once 
   unlocks a locked door (`unlock_exit`), a quest that triggers another (`start_quest`). Not speculative churn.
 
 ## a11y follow-up
-- **~~Announce quest-status changes~~ → DONE (SPEC-82).** Consequence-flag announcements remain a smaller follow-up (SPEC-81 follow-up). SPEC-81 announces location changes via the polite #announcer; extend the same deduped pattern to quest activations/completions and new consequence flags (the HUD shows them visually but they are not spoken). Keep it deduped (announce each change once, not per frame).
+- **~~Announce quest-status changes~~ → DONE (SPEC-82).** Consequence-flag announcements DONE (SPEC-83). The a11y announcer now covers location+quest+consequences. SPEC-81 announces location changes via the polite #announcer; extend the same deduped pattern to quest activations/completions and new consequence flags (the HUD shows them visually but they are not spoken). Keep it deduped (announce each change once, not per frame).
 
 ## Notes
 Every item above was considered and *deliberately deferred* during the 2026-05-29 planning pass. The

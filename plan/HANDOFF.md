@@ -1,4 +1,4 @@
-# HANDOFF — Cycle 7 (2026-05-30)
+# HANDOFF — Cycle 8 (2026-05-30)
 
 A scannable review-guide for your return. (Agent resume-log lives in [JOURNAL.md](JOURNAL.md); status board
 in [PROGRESS.md](PROGRESS.md); the closeout + next-frontier plan in [ROADMAP.md](ROADMAP.md) §9–§11.)
@@ -10,7 +10,9 @@ bugs, added three reachability/hygiene **guards** + a determinism fuzz, **upgrad
 ran a full REPLENISH research pass. Everything is green and committed **on a branch**
 (`spec/SPEC-50-syndicate-offer`); nothing pushed (push human-gated).
 
-## What shipped (SPEC-50 … SPEC-68, 19 specs)
+## What shipped (SPEC-50 … SPEC-83, 34 specs)
+- **Cycle 8 (SPEC-71–83):** amnesia thread + safehouse destination; clinic skill-progression; 4 unsurfaced-content UX fixes (ambientText, NPC colors, quest summary, skills); save story completed (load + import); a11y announcer (location/quest/consequences); defeat-combat playability guard.
+
 - **SPEC-67** — a genuinely new NEUTRAL thread: the Ashfall back-alley clinic (new location + medic + debt
   quest); found & fixed a real playability bug (an auto-completing `let_it_go` branch shadowed its siblings).
 - **SPEC-68** — generalized that into a 3rd content-safety guard (branch-shadowing); it immediately caught an
@@ -43,7 +45,7 @@ ran a full REPLENISH research pass. Everything is green and committed **on a bra
   full-content `fc.commands` determinism fuzz over the live pack set (replay-exact at every step, 0 divergence).
 
 ## Verification (all green)
-- `pnpm verify` → **281 tests / 48 files** (Vitest 4.1.7 on **Vite 8**) · `pnpm e2e` → **4 passed** ·
+- `pnpm verify` → **304 tests / 48 files** (Vitest 4.1.7 on **Vite 8**) · `pnpm e2e` → **4 passed** ·
   `pnpm audit` → clean · `pnpm peers check` → clean · `content:verify` → 9 packs / 8 quests / 9 storylets / 8 locations
   canon-consistent, **0 hygiene warnings** (0 orphan, 0 unspawnable) · pipeline golden-master **untouched** ·
   deps current (only `@types/node` 25 deferred-to-runtime). All 8 locations reachable; no dead content.
@@ -56,7 +58,7 @@ ran a full REPLENISH research pass. Everything is green and committed **on a bra
   rest (LLM-judge at scale) is real-model-gated. Repo is at the unblocked frontier. (ROADMAP §11.3.)
 
 ## Git state
-- Branch **`spec/SPEC-50-syndicate-offer`**, **~43 commits ahead of `origin/main`, UNPUSHED** (push human-gated
+- Branch **`spec/SPEC-50-syndicate-offer`**, **~83 commits ahead of `origin/main`, UNPUSHED** (push human-gated
   by `.claude/settings.json` + BLOCKED.md; an automated `--ff-only` merge to main was also denied by policy).
   Working tree clean (only untracked `CLAUDE.md`, pre-existing). `main` still ≡ `origin/main`.
 

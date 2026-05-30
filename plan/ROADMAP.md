@@ -1,8 +1,17 @@
 # /plan/ROADMAP.md — The Living Codex Transformation Roadmap
 
-> **Status:** authored 2026-05-29. Source-of-truth for this initiative is the `/plan/` folder.
-> Subordinate to [docs/GOAL.md](../docs/GOAL.md). Every item here honors the **locked decisions**
-> (GOAL §3) and **engineering invariants** (GOAL §5). If any spec conflicts with GOAL.md, GOAL.md wins.
+> **Status:** Cycle 1 authored 2026-05-29 (SPEC-01…15 **Done**, SPEC-16 carryover).
+> **Cycle 2 (v2026.05) authored 2026-05-29** — see [§7 below](#7-cycle-2-v202605--the-next-wave).
+> Source-of-truth for this initiative is the `/plan/` folder. Subordinate to [docs/GOAL.md](../docs/GOAL.md).
+> Every item honors the **locked decisions** (GOAL §3) and **engineering invariants** (GOAL §5). If any
+> spec conflicts with GOAL.md, GOAL.md wins.
+
+> **Re-baseline (2026-05-29, HEAD `dbb1fd0`):** `pnpm verify` green — **174 tests / 38 files**, 0 dep
+> violations, `pnpm audit --prod` clean, content = **4 packs / 14 NPCs / 3 quests / 5 locations**
+> (fingerprint `1c8d11480b2aa5`), replay invariant holds. The engine thesis (deterministic, pure,
+> vendor-isolated, branching content through one code path) is **proven**. Cycle 2 is **modernization +
+> narrative depth**, not rescue. Sections §0–§6 are the Cycle-1 record (kept for rationale); **§7 is the
+> active plan.**
 
 ## 0. How this relates to what already exists
 
@@ -109,3 +118,103 @@ Do **Wave 0** first (fast wins, green-keeping muscle), then **Wave 1** (locks de
 features churn state), then **Wave 2** (the visible player+ops upgrades), then **Wave 3** (depth), and
 treat **Wave 4 / SPEC-16** as a deliberate, isolated migration with its own commit and the codemod.
 Re-baseline (`pnpm verify`, `git log`) at the start of every wave — this plan ages.
+
+---
+
+## 7. CYCLE 2 (v2026.05) — the next wave
+
+Authored 2026-05-29 from a fresh deep audit + a 4-search stack pass + a competitive/design research agent.
+Cycle 1 left the repo **green and feature-proven**; Cycle 2 has two themes: **(A) dependency modernization**
+(the toolchain has moved — Zod 4, TS 6/7, Vitest 4, ESLint 10, fast-check 4, depcruise 17) and **(B)
+narrative depth** (make the storylet layer SPEC-11 *earn its keep* through real content, a skill-gated
+condition, verifier coverage, and pipeline emission). Everything still honors GOAL §3/§5 — no runtime LLM,
+no procedural gen, determinism mandatory, engine-core pure, content is data.
+
+### 7.1 Audit findings that seeded these specs (ground truth)
+- **Toolchain drift** (`pnpm outdated`): zod 3.25→4.4, typescript 5.9→6.0 (TS 7 Go-native `tsgo` shipped
+  Jan 2026, ~10×), vitest 3.2→4.1, eslint 9.39→10, fast-check 3.23→4, dependency-cruiser 16→17,
+  @types/node 22→24+ (runtime is Node 24). `pnpm audit --prod` is **clean** — these are currency/maintenance
+  upgrades, not CVE firefighting.
+- **`zod-to-json-schema` dead since Nov 2025** → SPEC-16 (carryover) removes it for native `z.toJSONSchema`.
+- **Storylet layer is plumbed but unused:** every shipped pack has `storylets: []`, the app never surfaces
+  a `TriggerStorylet`, the pipeline synthesizes `storylets: []`, and `content:verify` ignores storylets →
+  SPEC-24/25/26.
+- **Condition language can't query skills:** `World.player.skills` exists but no `skill_at_least` condition
+  → SPEC-23 (the Disco-Elysium passive-check pattern; proven + deterministic).
+- **Doc drift:** `SCHEMA.md §3` omits the `Npc.combat`/`homeLocationId` fields that exist in code → SPEC-17.
+- **Miniplex (2.0.0) is effectively unmaintained** (last release ~1yr) — but it is already isolated behind
+  `engine-core/src/ecs/registry.ts` as a *derived* layer, so the risk is contained (RISK_REGISTER R8; no
+  spec — a swap-behind-the-adapter item lives in BACKLOG).
+
+### 7.2 Execution waves (the Cycle-2 DAG)
+Cross-wave edges are soft (ordering) unless **HARD**. Within a wave, items are DAG-independent and may run
+in parallel worktrees **except** where the collision map says otherwise.
+
+```
+WAVE 5  (hygiene + low-risk currency; parallel-safe)
+  SPEC-17 doc-sync NPC schema        (docs only)
+  SPEC-19 depcruise 17 + @types/node (config/types)
+  SPEC-18 eslint 10 + ts-eslint ─────┐  (SPEC-18 & SPEC-20 share the typescript-eslint
+                                      │   peer range → serialize them)
+WAVE 6  (schema/lang core migration; ISOLATE — broad, golden-master churn)
+  SPEC-16 zod 4 + native json-schema  ──HARD──► (all schema-touching specs below)
+  SPEC-20 typescript 6 ───────────────┘ (serialize w/ SPEC-18)
+
+WAVE 7  (test-tooling modernization; isolate; baselines shift)
+  SPEC-21 vitest 4         (coverage re-baseline; verify.yml)
+  SPEC-22 fast-check 4     (keep determinism fuzz green — a new divergence = real bug)
+
+WAVE 8  (narrative depth — the thesis; schema specs require SPEC-16 first)
+  SPEC-23 skill_at_least condition  ──HARD──► (needs SPEC-16) ──soft──► SPEC-24
+  SPEC-24 storylet content pack + ambient barks  ──soft──► SPEC-25
+  SPEC-25 content:verify storylet coverage
+
+WAVE 9  (pipeline intelligence — offline)
+  SPEC-26 pipeline emits storylets   (HARD: after SPEC-16; soft: after SPEC-24/25)
+```
+
+> **Cycle-2 parallel-worktree collision map** (never edit concurrently):
+> the **schema layer** `packages/content-schema/src/*` + `json-schema.ts` + golden-master (SPEC-16,
+> SPEC-23, SPEC-26 — all serialize, SPEC-16 first) · `tools/pipeline/src/pipelines/cycle.ts` + the
+> golden-master `cycle.test.ts` (SPEC-26) · `.github/workflows/verify.yml` (SPEC-21 coverage step) ·
+> the TypeScript/`typescript-eslint` peer pair (SPEC-18, SPEC-20). Parallelize everything else.
+
+### 7.3 Cycle-2 priority matrix
+Scores 1–5. **I**=Impact · **F**=Feasibility (5=easy now) · **R**=Risk (lower is better) · **Ft**=Fit to
+GOAL · **P = I+F+Ft−R**. Wave reflects the DAG, not just P.
+
+| Spec | Title | Pillar | I | F | R | Ft | P | Wave | Reasoning (1 line) |
+|------|-------|--------|---|---|---|----|---|------|--------------------|
+| [SPEC-17](specs/SPEC-17-doc-sync-npc-schema.md) | Doc-sync NPC schema | Fixes | 2 | 5 | 1 | 5 | **11** | 5 | Real drift (combat/homeLocationId); docs are the agent's map; zero code risk. |
+| [SPEC-23](specs/SPEC-23-skill-at-least-condition.md) | `skill_at_least` condition | Experience | 4 | 4 | 2 | 5 | **11** | 8 | Closes a real gap (skills unqueryable); proven passive-check pattern; additive verb. |
+| [SPEC-19](specs/SPEC-19-depcruise17-node-types.md) | depcruise 17 + node types | Future-proof | 2 | 5 | 1 | 4 | **10** | 5 | Keeps the vendor-isolation guard current; re-prove rules fire; cheap. |
+| [SPEC-24](specs/SPEC-24-storylet-content-pack.md) | Storylet pack + ambient barks | Experience | 4 | 3 | 2 | 5 | **10** | 8 | Makes SPEC-11 earn its keep end-to-end; same path as SPEC-13 did for quests. |
+| [SPEC-25](specs/SPEC-25-content-verify-storylets.md) | content:verify storylets | Quality | 3 | 4 | 2 | 5 | **10** | 8 | Stops silently-dead storylets (unreachable/dangling); offline, deterministic. |
+| [SPEC-26](specs/SPEC-26-pipeline-emits-storylets.md) | Pipeline emits storylets | Pipeline | 3 | 3 | 2 | 5 | **9** | 9 | Lets AI-authored packs use the storylet layer; hermetic StubProvider; golden churn. |
+| [SPEC-18](specs/SPEC-18-eslint10-tseslint.md) | ESLint 10 + ts-eslint | Future-proof | 2 | 4 | 2 | 4 | **8** | 5 | Keeps the linter in support; flat config already in place; watch new default rules. |
+| [SPEC-16](specs/SPEC-16-zod4-native-jsonschema.md) | Zod 4 + native JSON Schema | Future-proof | 3 | 3 | 3 | 4 | **7** | 6 | Drops dead dep + the recursive-ref warning; broad (every schema + golden); isolate. |
+| [SPEC-20](specs/SPEC-20-typescript-6.md) | TypeScript 6 | Future-proof | 3 | 3 | 3 | 4 | **7** | 6 | Bridge to TS 7 native; dual-typecheck is verify's long pole; keep purity + tsc gate. |
+| [SPEC-21](specs/SPEC-21-vitest-4.md) | Vitest 4 | Future-proof | 3 | 3 | 3 | 4 | **7** | 7 | Currency; coverage remap + `workspace`→`projects` + mock semantics; re-baseline. |
+| [SPEC-22](specs/SPEC-22-fastcheck-4.md) | fast-check 4 | Quality | 2 | 3 | 3 | 5 | **7** | 7 | Keeps the determinism fuzz current; port, not redesign; bound runs, pin seeds. |
+
+### 7.4 Sequencing recommendation (autonomous)
+1. **Wave 5** first — `SPEC-17` (docs), `SPEC-19` (config), `SPEC-18` (lint). Fast wins; rebuild green-keeping
+   muscle; `SPEC-18`→`SPEC-20` are serialized via typescript-eslint.
+2. **Wave 6** — `SPEC-16` (Zod 4) then `SPEC-20` (TS 6), each on its **own branch**, full diff before merge.
+   **SPEC-16 is HARD-before every schema-touching feature spec (SPEC-23, SPEC-26).**
+3. **Wave 7** — `SPEC-21` + `SPEC-22` (test tooling), separate worktrees; re-baseline coverage; keep the
+   determinism gate green.
+4. **Wave 8** — `SPEC-23` (skill verb) → `SPEC-24` (storylet content) → `SPEC-25` (verifier). The visible
+   narrative-depth payoff.
+5. **Wave 9** — `SPEC-26` (pipeline emits storylets), reconciling the golden-master last.
+- **Re-baseline (`pnpm verify`, `git log`, `pnpm outdated`) at the start of every wave — this plan ages.**
+- A spec is done only at full DoD (see [AGENTS.md](AGENTS.md) + [PROGRESS.md](PROGRESS.md)); discoveries →
+  [BACKLOG.md](BACKLOG.md), never silently absorbed.
+
+### 7.5 Explicitly deferred (in BACKLOG — do not build without a spec)
+TS 7 / `tsgo` as a local typecheck accelerator (keep `tsc` authoritative); Vite 7→8; WebGPU renderer;
+a `fc.commands` model-based test suite; persona-diverse critics + multi-hop contradiction detection (real-
+model-gated); a Miniplex→bitECS swap behind the existing `ecs/registry.ts` adapter; a drama-manager planner.
+**Note:** the old "unified (flat) quality vector" idea is now **contraindicated** by 2026 design practice
+(Kennedy's resource-narrative critique) — prefer the *segmented/typed* condition language (SPEC-23 is the
+first step). See [BACKLOG.md](BACKLOG.md).

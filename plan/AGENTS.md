@@ -71,6 +71,25 @@ replace the root [AGENTS.md](../AGENTS.md) (the project's standing law) or [docs
 - **Windows shell is PowerShell**; the agent `*.sh` scripts need bash on PATH (Git Bash/WSL). `pnpm`
   scripts themselves are cross-platform.
 
+## Cycle-2 gotchas (Waves 5–9 — dependency migrations + storylets)
+- **One dep per spec, on its own branch.** Zod 4 / TS 6 / Vitest 4 / ESLint 10 / fast-check 4 each have
+  breaking changes; bundling them makes a red `verify` un-bisectable. Run `pnpm verify` after each.
+- **Serialize the coupled pairs:** SPEC-18 (ESLint/ts-eslint) ↔ SPEC-20 (TS 6) share the `typescript-eslint`
+  supported-TS range; **SPEC-16 (Zod 4) is HARD-before** every schema-touching feature (SPEC-23, SPEC-26).
+- **Re-baseline numbers deliberately:** Vitest 4 (SPEC-21) remaps V8 coverage — record the *new* coverage
+  baseline in PROGRESS; it's report-only, do **not** add a floor. Vitest 4 also renames `workspace`→`projects`
+  and changes `getMockName()` (was `spy`).
+- **fast-check 4 (SPEC-22):** a *new* fuzz divergence is a **real determinism bug (R1)** — shrink + file +
+  fix or revert; never silence. Keep seeds pinned and `numRuns` bounded.
+- **`SkillName` single source of truth (SPEC-23):** content-schema can't import engine-core (deps rule) —
+  define the skill enum in content-schema and derive engine-core's `SkillId` from it; colocate an assertion
+  that the two lists are identical so they can't drift.
+- **Salience = reactive/ambient only (SPEC-24/26):** never gate a main-plot beat on salience — main plot
+  stays behind explicit quest flags (avoids the "accidental precondition" failure mode).
+- **Golden-master churn (SPEC-26):** emitting storylets changes the candidate-pack bytes — update the
+  `cycle.test.ts` hash deliberately and note the reason in the commit (R2). Never weaken the assertion.
+- **`tsgo`/TS 7 is BACKLOG, not a spec:** keep `tsc` authoritative; SPEC-20 stops at TS 6.
+
 ## Autonomous vs ask
 - **Proceed without asking** for: in-scope edits/tests/refactors, doc updates, local commits, running any
   gate, deleting clearly generated/obsolete files, choosing among libs already locked in docs. When

@@ -6,6 +6,11 @@ Single source of truth for *what's been done*. Update at loop steps 4 (mark `In 
 Baseline at authoring (2026-05-29): `pnpm verify` green — **143 tests / 33 files**, 0 dep violations,
 `pnpm audit` clean. HEAD `029994e`.
 
+**Cycle-2 re-baseline (2026-05-29, HEAD `dbb1fd0`):** `pnpm verify` green — **174 tests / 38 files**, 0 dep
+violations, `pnpm audit --prod` clean, content = 4 packs / 14 NPCs / 3 quests / 5 locations (fingerprint
+`1c8d11480b2aa5`), replay invariant holds. Cycle 1 = SPEC-01…15 **Done**, SPEC-16 carryover. Cycle 2
+(SPEC-16…26, Waves 5–9) is **dependency modernization + narrative depth** — see [ROADMAP §7](ROADMAP.md#7-cycle-2-v202605--the-next-wave).
+
 ## Status board
 
 Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with reason).
@@ -27,7 +32,17 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 | SPEC-11 | Storylet / salience layer | 3 | Done | main | bb10696 | green | minimal additive schema + salience-selected ambient barks system; tie-breaker RNG inside applyEvent fold; +3 tests |
 | SPEC-14 | Retrieval-grounded canon | 3 | Done | main | 816552a | green | subgraph query + cycle prompt grounding + integration spy test |
 | SPEC-15 | Rubric LLM-judge gate | 3 | Done | main | abf39e2 | green | 1-5 integer rubric + rationale CoT prompt + threshold low-score flagging; Html escaping rationales; +3 tests |
-| SPEC-16 | Zod 4 + native JSON Schema | 4 | Todo | — | — | — | MED risk; isolate; updates golden hash |
+| SPEC-16 | Zod 4 + native JSON Schema | 4/6 | Todo | — | — | — | MED risk; isolate; updates golden hash; HARD-before SPEC-23/26 |
+| SPEC-17 | Doc-sync NPC schema | 5 | Todo | — | — | — | docs only (combat/homeLocationId); resolves a BACKLOG item |
+| SPEC-18 | ESLint 10 + ts-eslint | 5 | Todo | — | — | — | flat config already; serialize w/ SPEC-20 |
+| SPEC-19 | depcruise 17 + node types | 5 | Todo | — | — | — | re-prove isolation rules fire; @types/node → 24 |
+| SPEC-20 | TypeScript 6 | 6 | Todo | — | — | — | dual-typecheck long pole; keep purity; serialize w/ SPEC-18 |
+| SPEC-21 | Vitest 4 | 7 | Todo | — | — | — | coverage remap + `workspace`→`projects`; re-baseline coverage |
+| SPEC-22 | fast-check 4 | 7 | Todo | — | — | — | keep determinism fuzz green; new divergence = real bug |
+| SPEC-23 | `skill_at_least` condition | 8 | Todo | — | — | — | additive verb (Recipe 5); HARD after SPEC-16 |
+| SPEC-24 | Storylet pack + ambient barks | 8 | Todo | — | — | — | prove SPEC-11 end-to-end; salience = reactive only |
+| SPEC-25 | content:verify storylets | 8 | Todo | — | — | — | reference + unsatisfiability + hygiene checks |
+| SPEC-26 | Pipeline emits storylets | 9 | Todo | — | — | — | StubProvider; golden-master churn; HARD after SPEC-16 |
 
 ## Wave gates
 - [x] **Wave 0 complete** (2026-05-29) — SPEC-01/07/03/06 shipped; `pnpm verify` green; `pnpm audit` clean. Re-baseline before Wave 1.
@@ -37,8 +52,16 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
   - 2026-05-29 — SPEC-08 offline observability: new `app-web/src/telemetry.ts` — a top-level window `error`/`unhandledrejection` boundary records into a bounded ring (tagged with the current tick), plus no-op-safe User Timing `mark`/`measure` wrappers; `main.ts` installs the boundary, marks sim/draw phases, and exposes `__codex.telemetry()`. NO network/SaaS; engine-core untouched; `beats.ts` stays pure. +5 tests (164). `pnpm verify` green. **Browser-verified:** `pnpm e2e` first failed on `#cold-open not found` — investigated to a **foreign server squatting :4173** (`reuseExistingServer` reused it; build+serve of the real app confirmed correct, `#cold-open` present); the slice walk **PASSES** against a clean server (temp :4199 config). Filed e2e port-robustness in BACKLOG. (7e99f1e)
   - 2026-05-29 — SPEC-09 accessibility: new `app-web/src/dialogue-view.ts` makes the dialogue an ARIA modal — `role=dialog`/`aria-modal`, an `aria-live=polite` text region, real focusable `<button>` choices (rebuilt only on frame change, so the live region/focus don't churn), focus on the first choice, Tab focus-trap, and focus-restore on close; `InputController.choose()` lets buttons drive the existing Choose path (number keys still work). index.html adds the structure + `:focus-visible`, a `prefers-reduced-motion` query, readable type, and a dyslexia-friendly font toggle (`#font-toggle`, aria-pressed). engine-core untouched. 3 committed e2e a11y specs (modal contract, font toggle, **dynamic: open→focus→Esc-restores**) all PASS in chromium (run against a clean :4199 since :4173 was squatted). `pnpm verify` green; 164 unit tests. **Honest note:** structural + interactive a11y machine-verified; not audited with a real screen reader (NVDA/VoiceOver). (8b5eafd)
   - 2026-05-29 — SPEC-13 new curated pack: hand-curated `content/core/pack.kestrel` — a rival fixer (Kestrel + `faction.kestrel_outfit`, rival of Varga's crew) with a **3-branch** intro quest (take-job / play-both / stay-loyal), real Ink dialogue (compiled via `content:compile-ink`), and grounded canon assertions. `content:validate` (4 packs/14 npcs/3 quests) + `content:verify` (solvable, reachable, **canon-clean**) pass. New `rival-fixer.spec.ts` proves same-path load alongside hand-authored + generated packs, cross-pack faction refs resolve, the Ink plays, and the quest completes end-to-end through the real engine (exercising the SPEC-02 `talk_to` wiring on authored content). +4 tests (168). Golden-master untouched (no pipeline change). `pnpm verify` green. **Wave 2 complete.** Found+filed SCHEMA §3 doc-drift (combat/homeLocationId) in BACKLOG.
-- [ ] **Wave 3 complete** — content depth + pipeline intelligence.
-- [ ] **Wave 4 complete** — Zod 4 migration landed in isolation; golden-master updated.
+- [x] **Wave 3 complete** (2026-05-29) — SPEC-11/14/15 shipped (storylet layer, retrieval-grounded canon,
+  rubric judge); 174 tests; `pnpm verify` green. Content depth + pipeline intelligence landed.
+- [ ] **Wave 4 / 6 — Zod 4 (SPEC-16)** landed in isolation; golden-master updated; recursive-ref warning gone.
+
+### Cycle-2 wave gates (Waves 5–9)
+- [ ] **Wave 5 complete** — SPEC-17 (docs) + SPEC-19 (depcruise/types) + SPEC-18 (eslint 10); `pnpm verify` green.
+- [ ] **Wave 6 complete** — SPEC-16 (Zod 4) + SPEC-20 (TS 6) isolated, full diff reviewed; purity preserved.
+- [ ] **Wave 7 complete** — SPEC-21 (Vitest 4, coverage re-baselined) + SPEC-22 (fast-check 4); determinism gate green.
+- [ ] **Wave 8 complete** — SPEC-23 (`skill_at_least`) + SPEC-24 (storylet content + barks) + SPEC-25 (verify storylets).
+- [ ] **Wave 9 complete** — SPEC-26 (pipeline emits storylets); golden-master reconciled; offline/hermetic.
 
 ## Changelog (append-only; newest last)
 - 2026-05-29 — `/plan/` authored from the 2026 baseline + 4-agent research pass. No code changed yet.
@@ -53,4 +76,5 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 - 2026-05-29 — SPEC-11 storylet-layer: added Zod schema, integrity checker, deterministic salience selector system, and TriggerStorylet tie-breaker event handler inside the fold (bb10696); verify green.
 - 2026-05-29 — SPEC-14 retrieval-grounded canon: queried 1-hop relevant subgraph over the S5 graph and injected as stable prompt context grounding (816552a); verify green.
 - 2026-05-29 — SPEC-15 rubric-judge-gate: added locked 1-5 integer rubric, rationale-before-score prompt, advisory threshold flagging, and HTML escaping of rationales (abf39e2); verify green.
+- 2026-05-29 — **Cycle 2 (v2026.05) authored** from a fresh deep audit (HEAD `dbb1fd0`, 174 tests green, audit clean) + a 2026 stack pass + a competitive/design research agent. Added SPEC-17…26 (Waves 5–9): dependency modernization (Zod 4 carryover, TS 6, Vitest 4, ESLint 10, fast-check 4, depcruise 17) + narrative depth (`skill_at_least`, storylet content+barks, content:verify storylet coverage, pipeline emits storylets). Updated ROADMAP §7, RISK_REGISTER, BACKLOG. **No code changed yet.**
 <!-- Append: `YYYY-MM-DD — SPEC-NN <slug>: <what changed> (<commit>); verify <green/red>.` -->

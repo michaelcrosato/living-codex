@@ -13,6 +13,11 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
   correctness. (Research: [OpenRouter caching](https://openrouter.ai/docs/guides/best-practices/prompt-caching).)
 - **Persona-diverse critics (Multi-Agent Reflexion)** — swap the single Critic for 2–3 persona critics.
   Quality upgrade that only pays off with real models; until then it's plumbing on top of StubProvider.
+- **Multi-hop context-context contradiction detection** — 2026 research (MAGIC) shows LLMs miss conflicts
+  where one *source* contradicts another across hops; a dedicated validator pass over the canon graph
+  would catch what the current single-pass `auditCanon` misses. Pays off mainly with real generation;
+  until then the deterministic `auditCanon` + SPEC-25 reference checks are the offline substitute.
+  (Research: [MAGIC arxiv 2507.21544](https://arxiv.org/pdf/2507.21544).)
 
 ## Gated on a profile or a real demand (don't pre-optimize / don't add speculative verbs — GOAL §3, ARCH §8)
 - **Render perf: `GraphicsContext` reuse + app-level culling** in `render-pixi`/`scene`. ARCH §8 requires
@@ -26,27 +31,42 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
   sprite/audio assets land, not for small JSON saves. Storage Buckets is still experimental (WICG).
 
 ## Larger redesigns (need a design doc before a spec)
-- **Unified quality vector** — collapse flags/skills/reputation/progress into one numeric `qualities` map
-  that storylet preconditions query (Fallen London QBN model). Powerful but a cross-cutting state redesign;
-  only sensible *after* SPEC-11 (storylets) proves the selection model. Touches `World`, conditions,
-  migration. (Research: [emshort QBN](https://emshort.blog/2016/04/12/beyond-branching-quality-based-and-salience-based-narrative-structures/).)
+- **~~Unified (flat) quality vector~~ — NOW CONTRAINDICATED (2026 research).** The original idea was to
+  collapse flags/skills/reputation/progress into one numeric `qualities` map (Fallen London QBN model).
+  Alexis Kennedy's 2026 "resource narrative" critique argues a *flat* vector **erases meaningful
+  distinctions** (PC stats == currency == story flags) and recommends **typed/segmented** qualities with
+  kind-appropriate operations. The Living Codex already segments naturally (`skills`/`inventory`/
+  `reputation`/`flags`/`quests`). **Preferred direction instead:** extend the *typed* condition language
+  one verb at a time — **SPEC-23 (`skill_at_least`) is the first step**; add `resource_at_least` /
+  `progress_is` etc. only when content demands (the bribe pattern). Do **not** collapse into one map.
+  (Research: [Kennedy: QBN→resource narratives](https://weatherfactory.biz/qbn-to-resource-narratives/),
+  [emshort QBN](https://emshort.blog/2016/04/12/beyond-branching-quality-based-and-salience-based-narrative-structures/).)
 - **Drama-manager "waypoint" guidance** — soft-steer player input back toward authored beats via salience
-  weighting. Long-game coherence feature; depends on a mature storylet layer.
+  weighting (salience as a planning step-cost). Long-game coherence feature; depends on a mature storylet
+  layer (SPEC-24 must land + prove out first). Must stay deterministic & offline (a static ranking policy,
+  not a runtime planner). (Research: [Ware 2022 salience planning](https://cs.uky.edu/~sgware/reading/papers/ware2022salience.pdf).)
 - **Authoring-time branch visualizer** (Twine-style) for the curation review page — a quality-of-life tool
   for human curators, not engine work.
 
 ## Toolchain (do when convenient, not urgent)
-- **Vitest 3 → 4** — mechanical config breaks (`poolOptions`→top-level, `maxThreads`→`maxWorkers`,
-  `coverage.all` removed, `projects` over workspaces). LOW-MED risk; bundle with a quiet maintenance window.
-- **Vite 7 → 8** — major; do *after* any 7.x patch line is exhausted. Rolldown not yet 1.0.
+- **TS 7 / `tsgo` (Go-native) as a local typecheck accelerator** — stable Jan 2026, ~10× faster type
+  checking (the dual-tsconfig typecheck is the long pole of `pnpm verify`, which the AFK loop runs often).
+  Adopt as an **opt-in local accelerator** *after* SPEC-20 (TS 6) lands; **keep `tsc` authoritative in CI**
+  until `tsgo` is proven byte-identical on this repo's diagnostics. MED-HIGH risk; needs its own spec +
+  design note. (Research: [TS 7.0 beta](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0-beta/).)
+- **Vite 7 → 8** — major; do *after* any 7.x patch line is exhausted. Rolldown not yet 1.0. (Vitest 4 runs
+  fine on Vite 7, so no forcing function.)
+- **`fc.commands` model-based test suite** — fast-check's command/model PBT (run commands against the real
+  GameSession *and* a reference model, invariant per command, auto-shrink). The 2026 best-practice for
+  fuzzing a state machine; richer than SPEC-05's session fuzz. Promote after SPEC-22 (fast-check 4) lands.
 - **`tsconfig` `erasableSyntaxOnly`** — bans enums/namespaces (we build with Vite, not tsc). Tiny, additive;
-  could fold into SPEC-16 or a standalone hygiene commit.
+  could fold into SPEC-20 or a standalone hygiene commit.
 - **web-vitals reporting sink** — if/when a backend exists; until then SPEC-08 buffers locally only
   (offline-first). Don't add network telemetry that breaks the offline guarantee.
-- **Doc-sync SCHEMA §3 (NPC)** — found 2026-05-29 while authoring pack.kestrel: `docs/SCHEMA.md §3`
-  documents the `Npc` shape WITHOUT the additive `combat: { hp }` and `homeLocationId` fields that
-  exist in `content-schema/src/npc.ts`. Same class of drift SPEC-01 fixed for §5/§7/WORLD_STATE §1;
-  a one-paragraph doc edit (no code).
+- **Miniplex → maintained ECS (bitECS / Koota) behind `ecs/registry.ts`** — Miniplex (2.0.0) is unmaintained
+  (RISK_REGISTER R8). Only act if it actually breaks under a TS/Node bump; the existing adapter makes the
+  swap local (no engine-logic change). Not urgent (audit clean, derived layer).
+_(Promoted to specs 2026-05-29: **Vitest 3→4 → [SPEC-21]**; **Doc-sync SCHEMA §3 (NPC) → [SPEC-17]**.)_
 _(Resolved 2026-05-29: e2e port robustness — Playwright preview moved to a dedicated port 4319 so a
 foreign server on Vite's default 4173/5173 can't be silently reused. See `playwright.config.ts`.)_
 

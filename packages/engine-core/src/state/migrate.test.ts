@@ -48,4 +48,15 @@ describe("World save migration (engine-core, runtime-usable)", () => {
     // jump straight to target 3 with no 1->2 step
     expect(() => runMigrations({ version: 1 }, 3, steps, "Thing")).toThrowError(/no migration/);
   });
+
+  it("rejects a non-object input (a corrupt/garbage save)", () => {
+    expect(() => runMigrations("nope", 2, [], "World")).toThrowError(/expected an object/);
+    expect(() => runMigrations(null, 2, [], "World")).toThrowError(/expected an object/);
+    expect(() => runMigrations(42, 2, [], "World")).toThrowError(/expected an object/);
+  });
+
+  it("rejects a migration step that fails to advance the version (a buggy step → no infinite loop)", () => {
+    const stuck: Migration[] = [{ from: 0, to: 1, migrate: (d) => ({ ...d }) }]; // forgot to bump version
+    expect(() => runMigrations({ version: 0 }, 1, stuck, "Thing")).toThrowError(/did not advance/);
+  });
 });

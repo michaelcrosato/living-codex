@@ -324,6 +324,16 @@ corrupt-save boundary (SPEC-10 loads a persisted RNG state) — was a genuine ga
 survivors** (not by trusting a label — the lesson combat taught): `snapshot.ts` hashing (43.75% — the hash
 still distinguishes states; exact values brittle), the sfc32 arithmetic, and `world.ts`'s `defId` label +
 the player's initial `alive` flag (both unobservable). These are genuinely **do-not-chase** per SPEC-30.
+The sweep then extended to the rest of the pure-logic scope (the default `pnpm mutation` target =
+engine-core + content-loader): the deterministic event-fold `apply.ts` 71.55%→84.48% (quest FSM,
+conservation chokepoints, storylet selection — SPEC-47/48), the save-migration `migrate.ts` 67.86%→**100%**
+and the replay envelope `log.ts` 72.34%→89.36% (corrupt-save + buggy-migration + divergence-tail guards —
+SPEC-49). **The pure-logic mutation sweep is complete** — every file inspected, every genuine arm pinned,
+residuals verified low-value by reading the actual survivors. The data-driven approach found genuine gaps in
+combat, rng, snapshot, apply, migrate, and log that the "low-risk" labels had hidden (vindicating
+"measure, don't assume"). Remaining unmeasured packages (render-pixi, narrative-ink, persistence, app-web)
+are vendor-adapter/UI/DOM glue — lower mutation value, covered by integration + e2e tests; the pipeline
+(`tools/pipeline`) is the offline StubProvider generator whose output is safety-netted by the loader gates.
 
 ### 9.3 The Cycle-7 frontier (honest assessment)
 The highest-value remaining leap is **real multi-model generation** end-to-end (Architect/Loremaster/

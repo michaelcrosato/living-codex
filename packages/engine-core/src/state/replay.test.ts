@@ -171,4 +171,27 @@ describe("replay", () => {
     const log = createLog(SEED, FP);
     expect(() => replay(initial, log)).toThrowError(/seed mismatch/);
   });
+
+  it("firstDivergence reports the tail step when one trace is longer than the other", () => {
+    const setFlag: GameEvent = { type: "SetFlag", flag: flags[0]!, to: true };
+    const shortLog = createLog(SEED, FP);
+    appendEvent(shortLog, 0, setFlag);
+    const longLog = createLog(SEED, FP);
+    appendEvent(longLog, 0, setFlag);
+    appendEvent(longLog, 1, setFlag); // idempotent: the shared prefix stays identical
+    const shortTrace = replayTrace(createWorld({ seed: SEED, startLocationId: START }), shortLog); // len 2
+    const longTrace = replayTrace(createWorld({ seed: SEED, startLocationId: START }), longLog); //  len 3
+    const div = firstDivergence(shortTrace, longTrace);
+    expect(div).not.toBeNull();
+    expect(div!.index).toBe(2); // identical prefix, then the longer trace has an extra step
+    expect(div!.a).toBeUndefined(); // the shorter trace ran out
+    expect(div!.b).toBeDefined();
+  });
+
+  it("replayTrace refuses a seed that doesn't match the log", () => {
+    const log = createLog(SEED, FP);
+    expect(() =>
+      replayTrace(createWorld({ seed: "other", startLocationId: START }), log),
+    ).toThrowError(/seed mismatch/);
+  });
 });

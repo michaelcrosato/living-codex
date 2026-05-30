@@ -110,6 +110,57 @@
       }
     }
   ],
-  "storylets": [],
+  "storylets": [
+    {
+      "id": "storylet.fully_varga",
+      "preconditions": [
+        {
+          "kind": "all",
+          "of": [
+            {
+              "kind": "flag_is",
+              "flag": "flag.varga_inner_circle",
+              "equals": true
+            },
+            {
+              "kind": "flag_is",
+              "flag": "flag.refused_kestrel",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "kind": "not",
+          "of": {
+            "kind": "flag_is",
+            "flag": "flag.syndicate_made_member",
+            "equals": true
+          }
+        },
+        {
+          "kind": "not",
+          "of": {
+            "kind": "flag_is",
+            "flag": "flag.bark_fully_varga_seen",
+            "equals": true
+          }
+        }
+      ],
+      "salience": 8,
+      "tags": [
+        "varga_crew"
+      ],
+      "content": {
+        "ambient": "You turned down the rival, did the work nobody else would, and never once took the Syndicate's coin. Varga doesn't say it — she's not built that way — but the crew leaves a chair for you now, and nobody asks where you've been. Loyalty for loyalty. In this city that's either everything or the slowest way to die. Maybe both."
+      },
+      "effects": [
+        {
+          "kind": "set_flag",
+          "flag": "flag.bark_fully_varga_seen",
+          "to": true
+        }
+      ]
+    }
+  ],
   "assertions": []
 }

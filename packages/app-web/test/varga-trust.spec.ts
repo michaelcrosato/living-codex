@@ -3,7 +3,10 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadPacks } from "@codex/content-loader";
 import { QuestId, FactionId, FlagId, DialogueId, LocationId } from "@codex/content-schema";
-import { createWorld, applyEvent, applyEvents, questSystem, type World } from "@codex/engine-core";
+import { createWorld, applyEvent, applyEvents, questSystem, type World, type GameEvent } from "@codex/engine-core";
+import { InkNarrative } from "@codex/narrative-ink";
+import { GameSession } from "../src/session";
+import type { Storylet } from "@codex/content-schema";
 
 /**
  * SPEC-64 â€” the reputation-gated Varga follow-up quest. The loyalty thread accumulates `varga_crew`
@@ -57,5 +60,33 @@ describe("varga-trust reputation-gated quest (SPEC-64)", () => {
     expect(w.flags[FlagId.parse("flag.varga_inner_circle")]).toBe(true); // onComplete
     expect(w.flags[FlagId.parse("flag.varga_trust_resolved")]).toBe(true); // onAnyComplete
     expect(w.reputation[VARGA_CREW]).toBe(20); // 15 + 5 (onComplete bonus)
+  });
+});
+
+
+/**
+ * SPEC-93 — the convergence pair's other half: the player who stayed FULLY Varga's (inner circle + refused
+ * Kestrel + never joined the Syndicate) gets storylet.fully_varga, the mirror of SPEC-92's fully_syndicate.
+ */
+describe("varga convergence storylet (SPEC-93)", () => {
+  const opening2 = JSON.parse(readFileSync(resolve(process.cwd(), "content/core/pack.opening/pack.json"), "utf8"));
+  const vargaTrust = JSON.parse(readFileSync(resolve(process.cwd(), "content/core/pack.varga_trust/pack.json"), "utf8"));
+  const trig = (evs: readonly GameEvent[]): Storylet[] =>
+    (evs.find((e): e is Extract<GameEvent, { type: "TriggerStorylet" }> => e.type === "TriggerStorylet")?.candidates ?? []);
+  const has = (evs: readonly GameEvent[]): boolean => trig(evs).some((s) => (s.id as string) === "storylet.fully_varga");
+  const sess = (flags: string[]) => {
+    const { registries: r, fingerprint } = loadPacks([opening2, vargaTrust]);
+    return new GameSession(r, fingerprint, new InkNarrative(), {
+      seed: "fv", startLocationId: DISTRICT, startPos: { x: 50, y: 50 },
+      seedEvents: flags.map((f) => ({ type: "SetFlag", flag: FlagId.parse(f), to: true })),
+    });
+  };
+
+  it("fires once for the fully-loyal player; not if they also joined the Syndicate", () => {
+    const loyal = sess(["flag.varga_inner_circle", "flag.refused_kestrel"]);
+    expect(has(loyal.step([]))).toBe(true);
+    expect(has(loyal.step([]))).toBe(false); // fire-once
+    const turncoat = sess(["flag.varga_inner_circle", "flag.refused_kestrel", "flag.syndicate_made_member"]);
+    expect(has(turncoat.step([]))).toBe(false); // excluded — they took the Syndicate's coin
   });
 });

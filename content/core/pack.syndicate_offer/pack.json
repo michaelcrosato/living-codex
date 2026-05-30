@@ -1,0 +1,340 @@
+{
+  "id": "pack.syndicate_offer",
+  "version": "0.1.0",
+  "title": "The City's Cut",
+  "dependsOn": [
+    "pack.opening"
+  ],
+  "provenance": {
+    "authoredBy": "human",
+    "models": [],
+    "curatedBy": "michael.crosato",
+    "approvedAt": "2026-05-30T00:00:00.000Z"
+  },
+  "factions": [],
+  "items": [],
+  "locations": [],
+  "npcs": [
+    {
+      "id": "npc.syndicate_broker",
+      "name": "Mireille Tan",
+      "faction": "faction.ashfall_syndicate",
+      "appearance": {
+        "bodyColor": "#7d8694",
+        "accentColor": "#c9b27a",
+        "silhouette": "humanoid"
+      },
+      "bio": {
+        "role": "Syndicate broker",
+        "backstory": "The face the Ashfall Syndicate sends when it would rather buy a problem than break it. She has bought back worse than a stolen drive, from harder people than the player, and she has never once raised her voice.",
+        "wants": "to recover the encrypted drive quietly, before whatever is on it becomes someone else's leverage",
+        "fears": "a loose thread she can't price — a problem that won't take money",
+        "voice": "calm, precise, faintly amused; the patience of someone who already owns the room",
+        "secrets": [
+          "She does not actually know what is on the drive — and that is exactly why the Syndicate wants it back."
+        ]
+      },
+      "dialogueId": "dialogue.syndicate_broker",
+      "homeLocationId": "location.the_drip",
+      "reactsTo": []
+    }
+  ],
+  "dialogues": [
+    {
+      "id": "dialogue.syndicate_broker",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "0db2c697ab3f9e",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "ev",
+            true,
+            "/ev",
+            {
+              "VAR=": "met_broker",
+              "re": true
+            },
+            "^A woman in a grey coat sets down a glass you didn't see her order. \"You've got something that isn't yours to keep,\" she says, not unkindly. \"The Syndicate would like it back. We can be reasonable about how.\"",
+            "\n",
+            "ev",
+            "str",
+            "^Name your price.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^Let me see what's on it first.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-1",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^I think I'll hold onto it.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-2",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "^\"Now you're speaking the city's language. Hand it over, and you'll never have lifted it.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-1": [
+                "\n",
+                "^Her smile doesn't move. \"Curiosity is expensive. But it's yours to spend.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-2": [
+                "\n",
+                "^\"Leverage.\" She says the word like a diagnosis. \"Bold. Varga will be so proud. Do mind the stairs.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          {
+            "global decl": [
+              "ev",
+              false,
+              {
+                "VAR=": "met_broker"
+              },
+              "/ev",
+              "end",
+              null
+            ]
+          }
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": [
+        "met_broker"
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "quest.syndicate_offer",
+      "title": "The City's Cut",
+      "giverNpcId": "npc.syndicate_broker",
+      "summary": "A Syndicate broker wants the drive you pulled from the warehouse. Sell it back, crack it open to see what they're hiding, or keep it and make them sweat.",
+      "offerWhen": [
+        {
+          "kind": "flag_is",
+          "flag": "flag.has_drive",
+          "equals": true
+        }
+      ],
+      "branches": [
+        {
+          "id": "sell",
+          "label": "Sell the drive back to the Syndicate",
+          "objectives": [
+            {
+              "kind": "talk_to",
+              "npcId": "npc.syndicate_broker"
+            },
+            {
+              "kind": "skill_check",
+              "skill": "persuade",
+              "dc": 12,
+              "onFail": [
+                {
+                  "kind": "show_text",
+                  "text": "You name a number. She lets the silence answer for her. The price is hers now, not yours."
+                }
+              ]
+            }
+          ],
+          "onComplete": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.sold_drive",
+              "to": true
+            },
+            {
+              "kind": "adjust_reputation",
+              "factionId": "faction.ashfall_syndicate",
+              "delta": 12
+            },
+            {
+              "kind": "adjust_reputation",
+              "factionId": "faction.varga_crew",
+              "delta": -8
+            }
+          ]
+        },
+        {
+          "id": "decrypt",
+          "label": "Crack it open and see what they're hiding",
+          "objectives": [
+            {
+              "kind": "talk_to",
+              "npcId": "npc.syndicate_broker"
+            },
+            {
+              "kind": "skill_check",
+              "skill": "tech",
+              "dc": 14,
+              "onFail": [
+                {
+                  "kind": "show_text",
+                  "text": "The encryption bites back. Whatever the Syndicate buried, it does not want to be read."
+                }
+              ]
+            }
+          ],
+          "onComplete": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.cracked_drive",
+              "to": true
+            },
+            {
+              "kind": "set_flag",
+              "flag": "flag.knows_syndicate_secret",
+              "to": true
+            }
+          ]
+        },
+        {
+          "id": "leverage",
+          "label": "Keep it — make them sweat",
+          "objectives": [
+            {
+              "kind": "talk_to",
+              "npcId": "npc.syndicate_broker"
+            },
+            {
+              "kind": "skill_check",
+              "skill": "force",
+              "dc": 10,
+              "onFail": [
+                {
+                  "kind": "show_text",
+                  "text": "Your nerve wavers a half-second too long. She files it away for later."
+                }
+              ]
+            }
+          ],
+          "onComplete": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.leveraged_syndicate",
+              "to": true
+            },
+            {
+              "kind": "adjust_reputation",
+              "factionId": "faction.varga_crew",
+              "delta": 8
+            },
+            {
+              "kind": "adjust_reputation",
+              "factionId": "faction.ashfall_syndicate",
+              "delta": -10
+            }
+          ]
+        }
+      ],
+      "onAnyComplete": [
+        {
+          "kind": "set_flag",
+          "flag": "flag.syndicate_resolved",
+          "to": true
+        }
+      ],
+      "rewards": {
+        "credits": 120,
+        "items": [],
+        "reputation": []
+      }
+    }
+  ],
+  "storylets": [
+    {
+      "id": "storylet.broker_watching",
+      "preconditions": [
+        {
+          "kind": "flag_is",
+          "flag": "flag.has_drive",
+          "equals": true
+        },
+        {
+          "kind": "not",
+          "of": {
+            "kind": "flag_is",
+            "flag": "flag.syndicate_resolved",
+            "equals": true
+          }
+        }
+      ],
+      "salience": 6,
+      "tags": [
+        "ashfall_syndicate"
+      ],
+      "content": {
+        "ambient": "A woman in a grey coat has been nursing the same drink for an hour. She hasn't looked at you once. That's how you know she's here for you."
+      },
+      "effects": []
+    }
+  ],
+  "assertions": [
+    {
+      "predicate": "member_of",
+      "subject": "npc.syndicate_broker",
+      "object": "faction.ashfall_syndicate"
+    },
+    {
+      "predicate": "located_in",
+      "subject": "npc.syndicate_broker",
+      "object": "location.the_drip"
+    },
+    {
+      "predicate": "status",
+      "subject": "npc.syndicate_broker",
+      "state": "alive"
+    },
+    {
+      "predicate": "fact",
+      "subject": "npc.syndicate_broker",
+      "note": "The Syndicate's quiet hand, sent to recover the warehouse drive before its contents surface."
+    }
+  ]
+}

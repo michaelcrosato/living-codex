@@ -53,7 +53,11 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
   production-ready for `--noEmit` (this repo's only tsc use) — de-risked from MED-HIGH to LOW-MED; tsc stays
   authoritative.
 - **Vite 7 → 8** — major; do *after* any 7.x patch line is exhausted. Rolldown not yet 1.0. (Vitest 4 runs
-  fine on Vite 7, so no forcing function.) Still deferred.
+  fine on Vite 7, so no forcing function.) Still deferred. _(Re-checked 2026-05-30 Cycle-6: installed 7.3.3 IS
+  the latest 7.x — patch line exhausted; only v8 is newer, still deferred.)_
+- **`@types/node` 24 → 25** — major; types-only, no forcing function (no API we use changed; runtime is
+  Node ≥20, and installed 24.12.4 is the latest 24.x). Defer until the runtime Node major actually moves —
+  bumping ahead of the runtime risks typing APIs that don't exist at run time. (Considered 2026-05-30 Cycle-6.)
 - **~~`fc.commands` model-based test suite~~ → PROMOTED to [SPEC-31] (Cycle 3)** now fast-check 4 (SPEC-22) landed.
 - **`tsconfig` `erasableSyntaxOnly` — DEFERRED (evaluated in SPEC-27, 2026-05-30).** It bans not just
   enums/namespaces (none exist) but **parameter properties**, used idiomatically in 6 DI constructors

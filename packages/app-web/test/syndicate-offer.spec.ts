@@ -278,3 +278,35 @@ describe("syndicate cleaner — leverage payoff (SPEC-86)", () => {
     expect(w.flags[FlagId.parse("flag.cleaner_resolved")]).toBe(true);
   });
 });
+
+/**
+ * SPEC-92 — convergence beat: the player who BOTH sold the drive AND joined the Syndicate (a combination,
+ * not a single flag) gets a "fully crossed over" storylet — choices compounding, fired once.
+ */
+describe("syndicate convergence storylet (SPEC-92)", () => {
+  it("fires once when sold_drive AND syndicate_made_member both hold", () => {
+    const { registries: regs, fingerprint } = loadPacks([opening, syndicate]);
+    const session = new GameSession(regs, fingerprint, new InkNarrative(), {
+      seed: "fully",
+      startLocationId: DISTRICT,
+      startPos: { x: 50, y: 50 },
+      seedEvents: [
+        { type: "SetFlag", flag: FlagId.parse("flag.sold_drive"), to: true },
+        { type: "SetFlag", flag: FlagId.parse("flag.syndicate_made_member"), to: true },
+      ],
+    });
+    expect(hasStorylet(triggerOf(session.step([])), "storylet.fully_syndicate")).toBe(true);
+    expect(hasStorylet(triggerOf(session.step([])), "storylet.fully_syndicate")).toBe(false); // fire-once
+  });
+
+  it("does NOT fire with only one of the two flags", () => {
+    const { registries: regs, fingerprint } = loadPacks([opening, syndicate]);
+    const session = new GameSession(regs, fingerprint, new InkNarrative(), {
+      seed: "half",
+      startLocationId: DISTRICT,
+      startPos: { x: 50, y: 50 },
+      seedEvents: [{ type: "SetFlag", flag: FlagId.parse("flag.sold_drive"), to: true }], // not a member
+    });
+    expect(hasStorylet(triggerOf(session.step([])), "storylet.fully_syndicate")).toBe(false);
+  });
+});

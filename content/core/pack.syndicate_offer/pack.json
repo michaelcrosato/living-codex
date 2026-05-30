@@ -754,6 +754,48 @@
           "to": true
         }
       ]
+    },
+    {
+      "id": "storylet.fully_syndicate",
+      "preconditions": [
+        {
+          "kind": "all",
+          "of": [
+            {
+              "kind": "flag_is",
+              "flag": "flag.sold_drive",
+              "equals": true
+            },
+            {
+              "kind": "flag_is",
+              "flag": "flag.syndicate_made_member",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "kind": "not",
+          "of": {
+            "kind": "flag_is",
+            "flag": "flag.bark_fully_syndicate_seen",
+            "equals": true
+          }
+        }
+      ],
+      "salience": 8,
+      "tags": [
+        "ashfall_syndicate"
+      ],
+      "content": {
+        "ambient": "You sold them the drive, then took their coin to wear their colors. There's no version of this where Varga forgives you — and the Syndicate knows it, which is exactly why they trust you now. You belong to the city's quiet machine. It's warmer in here than you expected. That's the part that should frighten you."
+      },
+      "effects": [
+        {
+          "kind": "set_flag",
+          "flag": "flag.bark_fully_syndicate_seen",
+          "to": true
+        }
+      ]
     }
   ],
   "assertions": [

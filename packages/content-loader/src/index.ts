@@ -6,6 +6,7 @@ export { loadPacks, orderByDependencies } from "./load";
 export { validatePack } from "./validate";
 export { checkIntegrity, type IntegrityError, type RefType } from "./integrity";
 export { unsatisfiablePreconditions } from "./storylet-check";
+export { staticPlayabilityCheck, type PlayabilityReport } from "./playability";
 export {
   buildRegistries,
   fingerprintRegistries,

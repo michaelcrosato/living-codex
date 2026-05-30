@@ -8,6 +8,7 @@ import openingPack from "../../../content/core/pack.opening/pack.json";
 import districtBarks from "../../../content/core/pack.district_barks/pack.json";
 import dripMarket from "../../../content/core/pack.drip_market/pack.json";
 import syndicateOffer from "../../../content/core/pack.syndicate_offer/pack.json";
+import kestrel from "../../../content/core/pack.kestrel/pack.json";
 import dripPatrons from "../../../content/generated/pack.the_drip_patrons/pack.json";
 import { GameSession } from "./session";
 import { drawScene } from "./scene";
@@ -40,6 +41,7 @@ async function main(): Promise<void> {
     districtBarks,
     dripMarket,
     syndicateOffer,
+    kestrel,
     dripPatrons,
   ]);
   // Best-effort: keep saves from being evicted under storage pressure (no-op if unsupported).

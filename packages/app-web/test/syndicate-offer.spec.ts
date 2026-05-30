@@ -3,8 +3,18 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadPacks } from "@codex/content-loader";
 import { NpcId, FactionId, QuestId, FlagId, DialogueId, LocationId } from "@codex/content-schema";
+import type { Storylet } from "@codex/content-schema";
 import { InkNarrative } from "@codex/narrative-ink";
-import { createWorld, applyEvent, applyEvents, questSystem } from "@codex/engine-core";
+import {
+  createWorld,
+  applyEvent,
+  applyEvents,
+  questSystem,
+  hash,
+  replay,
+  type GameEvent,
+} from "@codex/engine-core";
+import { GameSession, type GameSessionOptions } from "../src/session";
 
 /**
  * SPEC-50 — the hand-curated "The City's Cut" pack (the Syndicate's offer) loads through the
@@ -86,5 +96,39 @@ describe("syndicate-offer pack: same-path load + play (SPEC-50)", () => {
     expect(w.flags[FlagId.parse("flag.syndicate_resolved")]).toBe(true); // onAnyComplete
     expect(w.reputation[SYNDICATE]).toBe(12); // selling the data earns Syndicate favor
     expect(w.reputation[VARGA_CREW]).toBe(-8); // ...at Varga's expense
+  });
+});
+
+/**
+ * SPEC-54 — the decrypt branch's consequence (flag.knows_syndicate_secret) pays off via a fire-once
+ * salience storylet that surfaces through the REAL GameSession/tick path (storylet-barks pattern),
+ * and the session still replays to an identical hash (storylet selection stayed deterministic).
+ */
+const DISTRICT = LocationId.parse("location.ashfall_district");
+const triggerOf = (events: readonly GameEvent[]): Storylet[] | undefined =>
+  events.find(
+    (e): e is Extract<GameEvent, { type: "TriggerStorylet" }> => e.type === "TriggerStorylet",
+  )?.candidates;
+const hasStorylet = (cands: Storylet[] | undefined, id: string): boolean =>
+  (cands ?? []).some((s) => (s.id as string) === id);
+
+describe("syndicate decrypt payoff storylet (SPEC-54)", () => {
+  it("fires once when the player knows the secret, then not again; replays identically", () => {
+    const { registries: regs, fingerprint } = loadPacks([opening, syndicate]);
+    const opts: GameSessionOptions = {
+      seed: "secret",
+      startLocationId: DISTRICT,
+      startPos: { x: 50, y: 50 },
+      seedEvents: [{ type: "SetFlag", flag: FlagId.parse("flag.knows_syndicate_secret"), to: true }],
+    };
+    const session = new GameSession(regs, fingerprint, new InkNarrative(), opts);
+
+    // knows_syndicate_secret is set and the bark is unseen -> it is the eligible storylet.
+    expect(hasStorylet(triggerOf(session.step([])), "storylet.knows_secret")).toBe(true);
+    // fire-once: its effect set flag.bark_knows_secret_seen, which a precondition excludes -> no re-fire.
+    expect(hasStorylet(triggerOf(session.step([])), "storylet.knows_secret")).toBe(false);
+
+    const replayed = replay(createWorld(opts), session.log, { against: fingerprint });
+    expect(hash(replayed)).toBe(hash(session.world));
   });
 });

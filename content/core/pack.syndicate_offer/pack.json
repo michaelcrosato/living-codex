@@ -313,6 +313,38 @@
         "ambient": "A woman in a grey coat has been nursing the same drink for an hour. She hasn't looked at you once. That's how you know she's here for you."
       },
       "effects": []
+    },
+    {
+      "id": "storylet.knows_secret",
+      "preconditions": [
+        {
+          "kind": "flag_is",
+          "flag": "flag.knows_syndicate_secret",
+          "equals": true
+        },
+        {
+          "kind": "not",
+          "of": {
+            "kind": "flag_is",
+            "flag": "flag.bark_knows_secret_seen",
+            "equals": true
+          }
+        }
+      ],
+      "salience": 5,
+      "tags": [
+        "ashfall_syndicate"
+      ],
+      "content": {
+        "ambient": "You know what's on the drive now. No one else does — and in this city that is either the safest place to stand or the most dangerous. You haven't decided which."
+      },
+      "effects": [
+        {
+          "kind": "set_flag",
+          "flag": "flag.bark_knows_secret_seen",
+          "to": true
+        }
+      ]
     }
   ],
   "assertions": [

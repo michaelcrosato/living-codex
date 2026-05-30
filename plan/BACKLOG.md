@@ -32,6 +32,11 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
 ## Gated on a profile or a real demand (don't pre-optimize / don't add speculative verbs — GOAL §3, ARCH §8)
 - **Render perf: `GraphicsContext` reuse + app-level culling** in `render-pixi`/`scene`. ARCH §8 requires
   a cited profile before perf-motivated complexity. Add only if a frame is measured heavy (>~500 entities).
+- **Bundle-size baseline (measured 2026-05-30):** `pnpm --filter @codex/app-web build` is healthy (877
+  modules, 2.5s); main chunk **679 kB / 190 kB gzip**, Pixi renderers already code-split (WebGL/WebGPU/Canvas
+  separate chunks). Vite flags the one >500 kB chunk — **informational, not a defect**: 190 kB gzip for a
+  cache-once offline-first Pixi game is reasonable, and manual-chunk splitting is perf-motivated complexity
+  gated by ARCH §8 (needs a cited load-time profile). **Do not chase** absent a measured cold-load problem.
 - **New engine verbs** (lockpicking, time-of-day/`wait`, trade/economy, status effects, a magic system).
   GOAL §3 + SCHEMA §5: add a verb **only when curated content demands it** (the bribe pattern). Each is a
   clean Recipe-1/Recipe-5 ticket *when the demand is real* — not before.

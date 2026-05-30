@@ -345,3 +345,57 @@ place. **Until a human unblocks that, the unblocked queue is diminishing-value h
 repo's own discipline (SPEC-30, GOAL §3) says not to manufacture churn (mutation-number chasing, speculative
 verbs/features). Net: Cycle-7's high-value work is human-gated; the loop continues on genuine, non-churn
 hardening/hygiene where it exists, and otherwise holds the line (green gates, clean audit, current deps).
+
+## 10. CYCLE 7 (planning-only) — real-model generation: the unblock plan
+
+**Status: BLOCKED on a human.** This section is a *decision tree* prepared so the human's return is
+immediately productive — NOT executable specs (BACKLOG rule: promote to `specs/SPEC-NN` only once unblocked
++ validated). No API key is needed to read or refine this plan; everything below is reversible.
+
+### 10.1 What unblocking requires (the human decisions)
+1. Provide `OPENROUTER_API_KEY` as an **environment variable** (never committed; the AFK agent will never
+   read/print/hardcode it — `openrouter.ts` reads `opts.apiKey` from env at the CLI only).
+2. Authorize a **spend cap** for the first run (real money). Recommend a tiny cap — one pack — to validate
+   the path before any batch.
+3. Pick the **model(s)**. Per-role model is config, not code (`ModelRequest.model` overrides the default),
+   so Architect/Loremaster/Dramatist/Critic can each use a different model.
+
+### 10.2 The cutover is ALREADY WIRED — it's config-only (verified 2026-05-30)
+`runCycle`/bake take a `ModelProvider`; tests inject the stub, so `pnpm verify` stays hermetic. **Confirmed:**
+`tools/scripts/pipeline-cycle.ts:46` already selects the provider by key-presence —
+`process.env.OPENROUTER_API_KEY ? new OpenRouterProvider({ apiKey, model: process.env.PIPELINE_MODEL ??
+"anthropic/claude-opus-4.6" }) : demoProvider()` — and logs that it's using the stub when the key is absent.
+So **real generation needs ZERO code change**: set `OPENROUTER_API_KEY` (+ optionally `PIPELINE_MODEL` to
+pick the model) in the env and run `pnpm pipeline:cycle --brief "…"`. The vendor-isolation port makes this a
+pure config swap; no engine/loader/pipeline edit required. (The default model id `anthropic/claude-opus-4.6`
+is overridable per-run via `PIPELINE_MODEL`; the human picks per 10.1.)
+
+### 10.3 Cost & safety controls (the spending guardrail in practice)
+- **Dry-run first:** estimate tokens × price for one cycle before any paid call; log the estimate.
+- **Hard cap:** a per-run budget; abort if exceeded. One pack, not a batch, for run #1.
+- **Prompt-caching** (BACKLOG): OpenRouter sticky routing / `cache_control` breakpoints — cost optimization,
+  only meaningful once batches run; defer until run #1 validates correctness.
+- **Output is NOT auto-shipped:** every candidate passes the SAME safety boundary as hand-authored content
+  (loader referential integrity + `auditCanon` semantic graph + `staticPlayabilityCheck`) AND the rubric
+  judge (SPEC-15) flags low scores AND a human reviews the curation bundle (accept/edit/reject) before bake.
+  So a bad/expensive/hallucinated generation cannot reach the game silently.
+
+### 10.4 Verification strategy (how we know a real run is good)
+Per-role **structured output** (`response_format: json_schema`, already wired) → schema-valid proposals →
+`synthesize` → `ContentPack.parse` (treaty-valid) → `auditCanon` + playability gate → rubric scorecard →
+**human curation**. The deterministic gates are already mutation-hardened (Cycle 6); they apply unchanged to
+AI output. Success = a treaty-valid, canon-consistent, playable, human-approved pack produced from real
+models at a known cost.
+
+### 10.5 Enhancement specs — promote ONLY after run #1 validates the baseline
+- **Persona-diverse critics** (Multi-Agent Reflexion): replace the single Critic with 2–3 persona critics;
+  pays off only with real models. (BACKLOG.)
+- **Multi-hop context-context contradiction detection** (MAGIC, arxiv 2507.21544): a validator pass over the
+  canon graph catching cross-*source* conflicts the single-pass `auditCanon` misses. Extends the
+  (now test-hardened) `canon-graph.ts`. (BACKLOG.)
+- **Prompt-caching for batch builds** (cost). (BACKLOG.)
+
+### 10.6 First concrete action when unblocked
+One **capped, single-pack** real cycle (e.g., a new patron via `pipeline:cycle`), reviewed through the
+curation bundle, **not baked until human-approved**. Validates the real-model path end-to-end at minimal
+cost/risk. Only then promote 10.5 to executable specs + a Cycle-7 execution wave.

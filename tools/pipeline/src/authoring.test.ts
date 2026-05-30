@@ -70,4 +70,16 @@ describe("renderBundleHtml — the static curation review page (S3.4)", () => {
     expect(html).toContain("&lt;b&gt;danger&lt;/b&gt;");
     expect(html).toContain("&lt;b&gt;bold&lt;/b&gt; statement");
   });
+
+  // SPEC-109: the curation page is an XSS boundary (opened in the reviewer's browser). Pin that esc()
+  // escapes ALL FIVE HTML-significant chars — incl. `'` (defense-in-depth for single-quoted attrs) — and
+  // that `&` is replaced FIRST (else `<`→`&lt;` would be double-escaped). The exact escaped substring
+  // asserts both, char-by-char (killing the esc() replace-chain mutants).
+  it("escapes all five HTML-significant chars (& < > \" ') including apostrophe, ampersand-first", async () => {
+    const base = await run();
+    const html = renderBundleHtml({ ...base, flagged: ["X & < > \" ' Y onclick='x'"] });
+    expect(html).toContain("X &amp; &lt; &gt; &quot; &#39; Y");
+    expect(html).not.toContain("X & < > \" ' Y"); // no raw unescaped payload survives
+    expect(html).not.toContain("onclick='x'"); // single-quoted attribute breakout neutralised
+  });
 });

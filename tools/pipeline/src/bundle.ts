@@ -39,12 +39,17 @@ export function renderBundleMarkdown(bundle: CurationBundle): string {
   return lines.filter((l) => l !== undefined).join("\n") + "\n";
 }
 
+// HTML-escape authored/AI text before it lands in the curation page (an XSS boundary — the page is
+// opened in the reviewer's browser). `&` must be replaced first so later entities aren't double-escaped.
+// `'` is escaped too (defense-in-depth) so the helper is safe under single-quoted attributes, not just
+// the current double-quoted template.
 function esc(text: string): string {
   return text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 /**

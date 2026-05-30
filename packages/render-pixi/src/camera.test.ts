@@ -14,7 +14,11 @@ const cam = (center: { x: number; y: number }, zoom: number, w = 800, h = 600): 
 
 describe("cameraTransform (SPEC-100)", () => {
   it("centers the camera target in the viewport at zoom 1", () => {
-    expect(cameraTransform(cam({ x: 100, y: 50 }, 1))).toEqual({ scale: 1, x: 400 - 100, y: 300 - 50 });
+    expect(cameraTransform(cam({ x: 100, y: 50 }, 1))).toEqual({
+      scale: 1,
+      x: 400 - 100,
+      y: 300 - 50,
+    });
   });
 
   it("a centered target at the origin offsets to the viewport center", () => {
@@ -22,6 +26,10 @@ describe("cameraTransform (SPEC-100)", () => {
   });
 
   it("scales by zoom and offsets by center*zoom", () => {
-    expect(cameraTransform(cam({ x: 100, y: 100 }, 2))).toEqual({ scale: 2, x: 400 - 200, y: 300 - 200 });
+    expect(cameraTransform(cam({ x: 100, y: 100 }, 2))).toEqual({
+      scale: 2,
+      x: 400 - 200,
+      y: 300 - 200,
+    });
   });
 });

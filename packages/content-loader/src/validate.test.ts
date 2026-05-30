@@ -26,7 +26,9 @@ describe("validatePack (SPEC-102)", () => {
   });
 
   it("falls back to '(unknown)' when no label is given", () => {
-    expect(() => validatePack({ nope: true })).toThrow(/Content pack \(unknown\) failed schema validation/);
+    expect(() => validatePack({ nope: true })).toThrow(
+      /Content pack \(unknown\) failed schema validation/,
+    );
   });
 
   it("uses '(root)' for a top-level (pathless) issue", () => {

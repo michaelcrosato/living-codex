@@ -105,10 +105,10 @@ describe("runCycle — full decomposition + curation bundle (P2)", () => {
     const bundle = await run();
     expect(bundle.scorecard.canonConsistency).toBe(4);
     expect(Array.isArray(bundle.flagged)).toBe(true);
-    
+
     // Assert that the low score (integrationCost = 2 < 3) triggers a low score flag
     expect(bundle.flagged).toContain(
-      "[rubric] integrationCost needs attention (2/5): Stub implementation lacks complex variables."
+      "[rubric] integrationCost needs attention (2/5): Stub implementation lacks complex variables.",
     );
 
     const md = renderBundleMarkdown(bundle);
@@ -150,6 +150,8 @@ describe("runCycle — full decomposition + curation bundle (P2)", () => {
     expect(arcReq).toBeDefined();
     // User prompt should contain the Grounding facts section
     expect(arcReq!.user).toContain("# Grounding facts");
-    expect(arcReq!.user).toContain("npc.varga is member of faction.varga_crew (from prior_packs_compiled [derived])");
+    expect(arcReq!.user).toContain(
+      "npc.varga is member of faction.varga_crew (from prior_packs_compiled [derived])",
+    );
   });
 });

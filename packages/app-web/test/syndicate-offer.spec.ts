@@ -119,7 +119,9 @@ describe("syndicate decrypt payoff storylet (SPEC-54)", () => {
       seed: "secret",
       startLocationId: DISTRICT,
       startPos: { x: 50, y: 50 },
-      seedEvents: [{ type: "SetFlag", flag: FlagId.parse("flag.knows_syndicate_secret"), to: true }],
+      seedEvents: [
+        { type: "SetFlag", flag: FlagId.parse("flag.knows_syndicate_secret"), to: true },
+      ],
     };
     const session = new GameSession(regs, fingerprint, new InkNarrative(), opts);
 
@@ -215,12 +217,18 @@ describe("warehouse rumor lead storylet (SPEC-63)", () => {
 describe("syndicate recruitment quest (SPEC-66)", () => {
   const RQ = QuestId.parse("quest.syndicate_recruit");
   const withSynRep = (delta: number) => {
-    let w = createWorld({ seed: "recruit", startLocationId: DISTRICT, skills: { persuade: 20, force: 20 } });
+    let w = createWorld({
+      seed: "recruit",
+      startLocationId: DISTRICT,
+      skills: { persuade: 20, force: 20 },
+    });
     if (delta !== 0) w = applyEvent(w, { type: "AdjustReputation", factionId: SYNDICATE, delta });
     return w;
   };
   const recruitOffered = (w: ReturnType<typeof createWorld>): boolean =>
-    questSystem(registries.quests, [])(w, 0).some((e) => e.type === "ActivateQuest" && e.questId === RQ);
+    questSystem(registries.quests, [])(w, 0).some(
+      (e) => e.type === "ActivateQuest" && e.questId === RQ,
+    );
 
   it("does NOT offer below ashfall_syndicate standing 12, but DOES at/above it", () => {
     expect(recruitOffered(withSynRep(0))).toBe(false);
@@ -255,11 +263,18 @@ describe("syndicate cleaner — leverage payoff (SPEC-86)", () => {
   const CLEANER_DLG = DialogueId.parse("dialogue.syndicate_cleaner");
   const leveraged = (set: boolean): ReturnType<typeof createWorld> => {
     let w = createWorld({ seed: "cleaner", startLocationId: DISTRICT, skills: { persuade: 20 } });
-    if (set) w = applyEvent(w, { type: "SetFlag", flag: FlagId.parse("flag.leveraged_syndicate"), to: true });
+    if (set)
+      w = applyEvent(w, {
+        type: "SetFlag",
+        flag: FlagId.parse("flag.leveraged_syndicate"),
+        to: true,
+      });
     return w;
   };
   const offered = (w: ReturnType<typeof createWorld>): boolean =>
-    questSystem(registries.quests, [])(w, 0).some((e) => e.type === "ActivateQuest" && e.questId === LQ);
+    questSystem(registries.quests, [])(w, 0).some(
+      (e) => e.type === "ActivateQuest" && e.questId === LQ,
+    );
 
   it("does NOT summon the cleaner unless the player leveraged the Syndicate", () => {
     expect(offered(leveraged(false))).toBe(false);
@@ -268,7 +283,12 @@ describe("syndicate cleaner — leverage payoff (SPEC-86)", () => {
 
   it("the talk_down branch completes end-to-end with its consequence", () => {
     let w = leveraged(true);
-    w = applyEvent(w, { type: "DialogueAdvanced", dialogueId: CLEANER_DLG, inkState: "{}", flags: {} });
+    w = applyEvent(w, {
+      type: "DialogueAdvanced",
+      dialogueId: CLEANER_DLG,
+      inkState: "{}",
+      flags: {},
+    });
     const attempt = [{ type: "Attempt" as const, questId: LQ, branchId: "talk_down" }];
     for (let t = 0; t < 8 && w.quests[LQ]?.status !== "completed"; t++) {
       w = applyEvents(w, questSystem(registries.quests, attempt, registries.npcs)(w, 0));

@@ -28,12 +28,22 @@ describe("old safehouse: learned_origin-gated exit (SPEC-80)", () => {
   });
 
   it("is BARRED before learning your origin, and OPENS after (real interactionSystem gate)", () => {
-    const atExit = createWorld({ seed: "sh", startLocationId: DISTRICT, startPos: { x: 50, y: 50 } });
-    const barred = interactionSystem([{ type: "UseExit", exitIndex: safehouseExit }], ctx)(atExit, 0);
+    const atExit = createWorld({
+      seed: "sh",
+      startLocationId: DISTRICT,
+      startPos: { x: 50, y: 50 },
+    });
+    const barred = interactionSystem([{ type: "UseExit", exitIndex: safehouseExit }], ctx)(
+      atExit,
+      0,
+    );
     expect(barred.some((e) => e.type === "EnterLocation")).toBe(false); // gate holds
 
     const unlocked = applyEvent(atExit, { type: "SetFlag", flag: LEARNED, to: true });
-    const passed = interactionSystem([{ type: "UseExit", exitIndex: safehouseExit }], ctx)(unlocked, 0);
+    const passed = interactionSystem([{ type: "UseExit", exitIndex: safehouseExit }], ctx)(
+      unlocked,
+      0,
+    );
     expect(
       passed.some((e) => e.type === "EnterLocation" && e.locationId === "location.old_safehouse"),
     ).toBe(true);

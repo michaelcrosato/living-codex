@@ -20,7 +20,18 @@ import dripPatrons from "../../../content/generated/pack.the_drip_patrons/pack.j
  * pass, with a signature entity from each live pack present — so a future pack that breaks the live
  * boot fails here, not silently in the browser.
  */
-const LIVE_PACKS = [openingPack, districtBarks, dripMarket, syndicateOffer, kestrel, vargaTrust, clinic, lostThread, streetKid, dripPatrons];
+const LIVE_PACKS = [
+  openingPack,
+  districtBarks,
+  dripMarket,
+  syndicateOffer,
+  kestrel,
+  vargaTrust,
+  clinic,
+  lostThread,
+  streetKid,
+  dripPatrons,
+];
 
 describe("live boot pack set (SPEC-51)", () => {
   it("the exact set main.ts loads resolves in one integrity pass", () => {

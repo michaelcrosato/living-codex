@@ -13,7 +13,10 @@ import { createWorld, applyEvent, applyEvents, questSystem, type World } from "@
  * isolated tests can't (e.g. the warehouse's onAnyComplete flag failing to gate the syndicate offer).
  */
 const read = (p: string): unknown => JSON.parse(readFileSync(resolve(process.cwd(), p), "utf8"));
-const { registries } = loadPacks([read("content/core/pack.syndicate_offer/pack.json"), read("content/core/pack.opening/pack.json")]);
+const { registries } = loadPacks([
+  read("content/core/pack.syndicate_offer/pack.json"),
+  read("content/core/pack.opening/pack.json"),
+]);
 const DISTRICT = LocationId.parse("location.ashfall_district");
 const objKey = (b: string, i: number): string => `${b}#${i}`;
 
@@ -29,7 +32,11 @@ function driveBranch(w: World, questId: QuestId, branchId: string): World {
       while (i < branch.objectives.length && rt.objectiveProgress[objKey(branchId, i)]?.done) i++;
       const obj = branch.objectives[i];
       if (obj?.kind === "reach" && w.locationId !== obj.locationId) {
-        w = applyEvent(w, { type: "EnterLocation", locationId: obj.locationId, spawnAt: { x: 5, y: 5 } });
+        w = applyEvent(w, {
+          type: "EnterLocation",
+          locationId: obj.locationId,
+          spawnAt: { x: 5, y: 5 },
+        });
       } else if (obj?.kind === "talk_to") {
         const dlg = registries.npcs.get(obj.npcId)!.dialogueId;
         w = applyEvent(w, { type: "DialogueAdvanced", dialogueId: dlg, inkState: "{}", flags: {} });
@@ -55,10 +62,14 @@ describe("cross-thread chain: warehouse → drive → Syndicate (SPEC-95)", () =
     expect(w.quests[WAREHOUSE]?.completedBranchId).toBe("talk");
     // Step 2: completing it granted the drive (onAnyComplete) — NOT seeded.
     expect(w.flags[FlagId.parse("flag.has_drive")]).toBe(true);
-    expect((w.inventory as Record<string, number>)["item.encrypted_drive"]).toBeGreaterThanOrEqual(1);
+    expect((w.inventory as Record<string, number>)["item.encrypted_drive"]).toBeGreaterThanOrEqual(
+      1,
+    );
 
     // Step 3: the drive chains the syndicate offer (offerWhen flag.has_drive) — the cross-thread link.
-    const offers = questSystem(registries.quests, [])(w, 0).some((e) => e.type === "ActivateQuest" && e.questId === SYNDICATE);
+    const offers = questSystem(registries.quests, [])(w, 0).some(
+      (e) => e.type === "ActivateQuest" && e.questId === SYNDICATE,
+    );
     expect(offers).toBe(true);
 
     // Step 4: complete the syndicate sell branch and assert the chained consequences.

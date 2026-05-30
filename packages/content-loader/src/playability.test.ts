@@ -10,7 +10,9 @@ const baseLocation = {
   mood: "m",
   bounds: { w: 10, h: 10 },
   art: [],
-  exits: [{ at: { x: 0, y: 0 }, toLocationId: "location.start", spawnAt: { x: 1, y: 1 }, label: "loop" }],
+  exits: [
+    { at: { x: 0, y: 0 }, toLocationId: "location.start", spawnAt: { x: 1, y: 1 }, label: "loop" },
+  ],
   npcSpawns: [],
 };
 // An island: exists, but nothing exits to it and it has no exits out.
@@ -29,7 +31,9 @@ function quest(over: Record<string, unknown>): Record<string, unknown> {
     id: "quest.t",
     title: "T",
     summary: "s",
-    branches: [{ id: "b", label: "l", objectives: [{ kind: "reach", locationId: "location.start" }] }],
+    branches: [
+      { id: "b", label: "l", objectives: [{ kind: "reach", locationId: "location.start" }] },
+    ],
     rewards: {},
     ...over,
   };
@@ -62,7 +66,9 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
   it("flags a quest whose only branch is unsatisfiable (defeat a nonexistent npc)", () => {
     const { errors } = check({
       quests: [
-        quest({ branches: [{ id: "b", label: "l", objectives: [{ kind: "defeat", npcId: "npc.ghost" }] }] }),
+        quest({
+          branches: [{ id: "b", label: "l", objectives: [{ kind: "defeat", npcId: "npc.ghost" }] }],
+        }),
       ],
     });
     expect(errors.some((e) => e.includes("no branch is solvable"))).toBe(true);
@@ -71,24 +77,69 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
   it("flags a defeat objective whose target NPC has no combat stats (unwinnable, SPEC-72)", () => {
     const { errors } = check({
       npcs: [
-        { id: "npc.pacifist", name: "P", appearance: { bodyColor: "#000", accentColor: "#fff", silhouette: "humanoid" }, bio: { role: "r", backstory: "b", wants: "w", fears: "f", voice: "v" }, dialogueId: "dialogue.d", homeLocationId: "location.start" },
+        {
+          id: "npc.pacifist",
+          name: "P",
+          appearance: { bodyColor: "#000", accentColor: "#fff", silhouette: "humanoid" },
+          bio: { role: "r", backstory: "b", wants: "w", fears: "f", voice: "v" },
+          dialogueId: "dialogue.d",
+          homeLocationId: "location.start",
+        },
       ],
-      dialogues: [{ id: "dialogue.d", format: "ink-json", inkVersion: "21", sourceHash: "x", compiled: {}, declaredVars: [] }],
+      dialogues: [
+        {
+          id: "dialogue.d",
+          format: "ink-json",
+          inkVersion: "21",
+          sourceHash: "x",
+          compiled: {},
+          declaredVars: [],
+        },
+      ],
       quests: [
-        quest({ giverNpcId: "npc.pacifist", branches: [{ id: "fight", label: "f", objectives: [{ kind: "defeat", npcId: "npc.pacifist" }] }] }),
+        quest({
+          giverNpcId: "npc.pacifist",
+          branches: [
+            { id: "fight", label: "f", objectives: [{ kind: "defeat", npcId: "npc.pacifist" }] },
+          ],
+        }),
       ],
     });
-    expect(errors.some((e) => e.includes('defeat target "npc.pacifist" has no combat stats'))).toBe(true);
+    expect(errors.some((e) => e.includes('defeat target "npc.pacifist" has no combat stats'))).toBe(
+      true,
+    );
   });
 
   it("does NOT flag a defeat objective whose target carries combat stats", () => {
     const { errors } = check({
       npcs: [
-        { id: "npc.bruiser", name: "B", appearance: { bodyColor: "#000", accentColor: "#fff", silhouette: "humanoid" }, bio: { role: "r", backstory: "b", wants: "w", fears: "f", voice: "v" }, dialogueId: "dialogue.d", homeLocationId: "location.start", combat: { hp: 10 } },
+        {
+          id: "npc.bruiser",
+          name: "B",
+          appearance: { bodyColor: "#000", accentColor: "#fff", silhouette: "humanoid" },
+          bio: { role: "r", backstory: "b", wants: "w", fears: "f", voice: "v" },
+          dialogueId: "dialogue.d",
+          homeLocationId: "location.start",
+          combat: { hp: 10 },
+        },
       ],
-      dialogues: [{ id: "dialogue.d", format: "ink-json", inkVersion: "21", sourceHash: "x", compiled: {}, declaredVars: [] }],
+      dialogues: [
+        {
+          id: "dialogue.d",
+          format: "ink-json",
+          inkVersion: "21",
+          sourceHash: "x",
+          compiled: {},
+          declaredVars: [],
+        },
+      ],
       quests: [
-        quest({ giverNpcId: "npc.bruiser", branches: [{ id: "fight", label: "f", objectives: [{ kind: "defeat", npcId: "npc.bruiser" }] }] }),
+        quest({
+          giverNpcId: "npc.bruiser",
+          branches: [
+            { id: "fight", label: "f", objectives: [{ kind: "defeat", npcId: "npc.bruiser" }] },
+          ],
+        }),
       ],
     });
     expect(errors.filter((e) => e.includes("no combat stats"))).toEqual([]);
@@ -98,7 +149,9 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
   it("flags an unlock_exit whose index is out of range for the target location", () => {
     const { errors } = check({
       quests: [
-        quest({ onAnyComplete: [{ kind: "unlock_exit", locationId: "location.start", exitIndex: 5 }] }),
+        quest({
+          onAnyComplete: [{ kind: "unlock_exit", locationId: "location.start", exitIndex: 5 }],
+        }),
       ],
     });
     expect(errors.some((e) => e.includes("unlock_exit index 5 out of range"))).toBe(true);
@@ -108,10 +161,16 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
     const { errors } = check({
       locations: [baseLocation, islandLocation],
       quests: [
-        quest({ branches: [{ id: "b", label: "l", objectives: [{ kind: "reach", locationId: "location.island" }] }] }),
+        quest({
+          branches: [
+            { id: "b", label: "l", objectives: [{ kind: "reach", locationId: "location.island" }] },
+          ],
+        }),
       ],
     });
-    expect(errors.some((e) => e.includes('reach target "location.island" is an island'))).toBe(true);
+    expect(errors.some((e) => e.includes('reach target "location.island" is an island'))).toBe(
+      true,
+    );
   });
 
   it("flags contradictory flag_is gates in offerWhen (the quest could never be offered)", () => {
@@ -131,7 +190,14 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
   it("warns (non-fatal) on an always-on storylet — no preconditions and salience 0", () => {
     const { errors, warnings } = check({
       storylets: [
-        { id: "storylet.noise", preconditions: [], salience: 0, tags: [], content: { ambient: "hush" }, effects: [] },
+        {
+          id: "storylet.noise",
+          preconditions: [],
+          salience: 0,
+          tags: [],
+          content: { ambient: "hush" },
+          effects: [],
+        },
       ],
     });
     expect(errors).toEqual([]);
@@ -162,7 +228,9 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
       dialogues: [dialogue("dialogue.used"), dialogue("dialogue.orphan")],
     });
     expect(errors).toEqual([]);
-    expect(warnings.some((w) => w.includes("dialogue.orphan") && w.includes("orphaned dialogue"))).toBe(true);
+    expect(
+      warnings.some((w) => w.includes("dialogue.orphan") && w.includes("orphaned dialogue")),
+    ).toBe(true);
     expect(warnings.some((w) => w.includes("dialogue.used"))).toBe(false); // the referenced one is fine
   });
 
@@ -193,32 +261,50 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
         quest({
           giverNpcId: "npc.t",
           branches: [
-            { id: "gated", label: "g", objectives: [{ kind: "skill_check", skill: "force", dc: 10 }] },
+            {
+              id: "gated",
+              label: "g",
+              objectives: [{ kind: "skill_check", skill: "force", dc: 10 }],
+            },
             { id: "shadow", label: "s", objectives: [{ kind: "talk_to", npcId: "npc.t" }] }, // talk_to the GIVER
           ],
         }),
       ],
     });
     expect(errors).toEqual([]);
-    expect(warnings.some((w) => w.includes("quest.t.branches.shadow") && w.includes("auto-completes when the offer is taken"))).toBe(true);
+    expect(
+      warnings.some(
+        (w) =>
+          w.includes("quest.t.branches.shadow") &&
+          w.includes("auto-completes when the offer is taken"),
+      ),
+    ).toBe(true);
     expect(warnings.some((w) => w.includes("branches.gated"))).toBe(false);
   });
 
   it("does NOT warn on a talk_to to a NON-giver NPC (a legitimate choice mechanic — the market_debt shape)", () => {
     const { warnings } = check({
-      npcs: [npc({ id: "npc.giver", dialogueId: "dialogue.used", homeLocationId: "location.start" })],
+      npcs: [
+        npc({ id: "npc.giver", dialogueId: "dialogue.used", homeLocationId: "location.start" }),
+      ],
       dialogues: [dialogue("dialogue.used")],
       quests: [
         quest({
           giverNpcId: "npc.giver",
           branches: [
             { id: "talk", label: "t", objectives: [{ kind: "talk_to", npcId: "npc.other" }] }, // a DIFFERENT npc
-            { id: "muscle", label: "m", objectives: [{ kind: "skill_check", skill: "force", dc: 10 }] },
+            {
+              id: "muscle",
+              label: "m",
+              objectives: [{ kind: "skill_check", skill: "force", dc: 10 }],
+            },
           ],
         }),
       ],
     });
-    expect(warnings.filter((w) => w.includes("auto-completes when the offer is taken"))).toEqual([]);
+    expect(warnings.filter((w) => w.includes("auto-completes when the offer is taken"))).toEqual(
+      [],
+    );
   });
 
   it("does NOT warn when every branch has a player-gated objective", () => {
@@ -233,16 +319,25 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
         }),
       ],
     });
-    expect(warnings.filter((w) => w.includes("auto-completes when the offer is taken"))).toEqual([]);
+    expect(warnings.filter((w) => w.includes("auto-completes when the offer is taken"))).toEqual(
+      [],
+    );
   });
 
   it("does NOT warn on a single-branch talk_to-giver quest (no siblings to shadow)", () => {
     const { warnings } = check({
       npcs: [npc({ homeLocationId: "location.start" })],
       dialogues: [dialogue("dialogue.used")],
-      quests: [quest({ giverNpcId: "npc.t", branches: [{ id: "only", label: "o", objectives: [{ kind: "talk_to", npcId: "npc.t" }] }] })],
+      quests: [
+        quest({
+          giverNpcId: "npc.t",
+          branches: [{ id: "only", label: "o", objectives: [{ kind: "talk_to", npcId: "npc.t" }] }],
+        }),
+      ],
     });
-    expect(warnings.filter((w) => w.includes("auto-completes when the offer is taken"))).toEqual([]);
+    expect(warnings.filter((w) => w.includes("auto-completes when the offer is taken"))).toEqual(
+      [],
+    );
   });
 
   // SPEC-70 — unsatisfiable flag gate: a flag_is gate reading a flag nothing sets can never trigger.
@@ -253,7 +348,9 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
       quests: [quest({ offerWhen: [{ kind: "flag_is", flag: "flag.never_set", equals: true }] })],
     });
     expect(errors).toEqual([]);
-    expect(warnings.some((w) => w.includes('flag.never_set') && w.includes("set by nothing"))).toBe(true);
+    expect(warnings.some((w) => w.includes("flag.never_set") && w.includes("set by nothing"))).toBe(
+      true,
+    );
   });
 
   it("does NOT warn when the gated flag is set by a set_flag effect", () => {
@@ -261,8 +358,16 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
       npcs: [npc({ homeLocationId: "location.start" })],
       dialogues: [dialogue("dialogue.used")],
       quests: [
-        quest({ id: "quest.setter", offerWhen: [], onAnyComplete: [{ kind: "set_flag", flag: "flag.x", to: true }] }),
-        quest({ id: "quest.reader", giverNpcId: "npc.t", offerWhen: [{ kind: "flag_is", flag: "flag.x", equals: true }] }),
+        quest({
+          id: "quest.setter",
+          offerWhen: [],
+          onAnyComplete: [{ kind: "set_flag", flag: "flag.x", to: true }],
+        }),
+        quest({
+          id: "quest.reader",
+          giverNpcId: "npc.t",
+          offerWhen: [{ kind: "flag_is", flag: "flag.x", equals: true }],
+        }),
       ],
     });
     expect(warnings.filter((w) => w.includes("set by nothing"))).toEqual([]);
@@ -301,10 +406,21 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
         }),
       ],
       storylets: [
-        { id: "storylet.s", preconditions: [{ kind: "flag_is", flag: "flag.y", equals: true }], salience: 1, tags: [], content: { dialogueId: "dialogue.storylet" }, effects: [] },
+        {
+          id: "storylet.s",
+          preconditions: [{ kind: "flag_is", flag: "flag.y", equals: true }],
+          salience: 1,
+          tags: [],
+          content: { dialogueId: "dialogue.storylet" },
+          effects: [],
+        },
       ],
       quests: [
-        quest({ onAnyComplete: [{ kind: "set_npc_dialogue", npcId: "npc.t", dialogueId: "dialogue.effect" }] }),
+        quest({
+          onAnyComplete: [
+            { kind: "set_npc_dialogue", npcId: "npc.t", dialogueId: "dialogue.effect" },
+          ],
+        }),
       ],
       dialogues: [
         dialogue("dialogue.used"), // npc.dialogueId

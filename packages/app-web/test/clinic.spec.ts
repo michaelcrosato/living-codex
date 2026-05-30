@@ -4,7 +4,13 @@ import { resolve } from "node:path";
 import { loadPacks } from "@codex/content-loader";
 import { NpcId, QuestId, FlagId, DialogueId, LocationId } from "@codex/content-schema";
 import { InkNarrative } from "@codex/narrative-ink";
-import { createWorld, applyEvent, applyEvents, questSystem, reactionsSystem } from "@codex/engine-core";
+import {
+  createWorld,
+  applyEvent,
+  applyEvents,
+  questSystem,
+  reactionsSystem,
+} from "@codex/engine-core";
 import { GameSession } from "./../src/session";
 import { DialogueController } from "./../src/dialogue-controller";
 
@@ -92,7 +98,11 @@ describe("ashfall clinic thread (SPEC-67)", () => {
   // SPEC-77 — the training quest exercises modify_skill (progression) + give_item; has_item gates a storylet.
   it("the training quest raises tech (modify_skill) and grants the field kit", () => {
     let w = createWorld({ seed: "train", startLocationId: CLINIC, skills: { tech: 15 } });
-    w = applyEvent(w, { type: "SetFlag", flag: FlagId.parse("flag.clinic_debt_resolved"), to: true });
+    w = applyEvent(w, {
+      type: "SetFlag",
+      flag: FlagId.parse("flag.clinic_debt_resolved"),
+      to: true,
+    });
     w = applyEvent(w, { type: "DialogueAdvanced", dialogueId: DLG, inkState: "{}", flags: {} });
     const TQ = QuestId.parse("quest.clinic_training");
     const attempt = [{ type: "Attempt" as const, questId: TQ, branchId: "train" }];

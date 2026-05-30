@@ -18,7 +18,11 @@ const CONSEQUENCE_LINES: ReadonlyArray<{ flag: string; icon: string; text: strin
   { flag: "flag.syndicate_marked", icon: "⚠", text: "The Syndicate has marked you." },
   { flag: "flag.sold_drive", icon: "✗", text: "You sold the drive to the Syndicate." },
   { flag: "flag.knows_syndicate_secret", icon: "✓", text: "You know what's on the drive." },
-  { flag: "flag.leveraged_syndicate", icon: "⚠", text: "You're holding the drive over the Syndicate." },
+  {
+    flag: "flag.leveraged_syndicate",
+    icon: "⚠",
+    text: "You're holding the drive over the Syndicate.",
+  },
   { flag: "flag.sided_with_kestrel", icon: "·", text: "You threw in with Kestrel." },
   { flag: "flag.refused_kestrel", icon: "·", text: "You stayed loyal to Varga." },
   { flag: "flag.played_both", icon: "·", text: "You played Kestrel and Varga against each other." },

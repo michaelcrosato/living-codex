@@ -62,7 +62,7 @@ export function renderBundleHtml(bundle: CurationBundle): string {
     `</div>` +
     `<p style="margin:4px 0 0 0; font-size:0.85rem; color:#a8a9ad;">${esc(rationale)}</p>` +
     `</div>`;
-  
+
   const npcRows = bundle.candidate.npcs
     .map((n) => `<li><code>${esc(n.id)}</code> — ${esc(n.name)} <em>${esc(n.bio.role)}</em></li>`)
     .join("");

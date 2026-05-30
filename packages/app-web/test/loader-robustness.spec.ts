@@ -12,7 +12,12 @@ import { loadPacks } from "@codex/content-loader";
  * crash (TypeError/undefined). Uses the real on-disk packs, not synthetic ones.
  */
 const read = (n: string, gen = false): unknown =>
-  JSON.parse(readFileSync(resolve(process.cwd(), `content/${gen ? "generated" : "core"}/${n}/pack.json`), "utf8"));
+  JSON.parse(
+    readFileSync(
+      resolve(process.cwd(), `content/${gen ? "generated" : "core"}/${n}/pack.json`),
+      "utf8",
+    ),
+  );
 const PACKS: unknown[] = [
   read("pack.opening"),
   read("pack.district_barks"),
@@ -30,9 +35,12 @@ describe("content-loader robustness (SPEC-90)", () => {
   it("is order-independent: any permutation of the live packs yields the same registries fingerprint", () => {
     const baseline = loadPacks(PACKS).fingerprint.registriesHash;
     fc.assert(
-      fc.property(fc.shuffledSubarray(PACKS, { minLength: PACKS.length, maxLength: PACKS.length }), (perm) => {
-        expect(loadPacks(perm).fingerprint.registriesHash).toBe(baseline);
-      }),
+      fc.property(
+        fc.shuffledSubarray(PACKS, { minLength: PACKS.length, maxLength: PACKS.length }),
+        (perm) => {
+          expect(loadPacks(perm).fingerprint.registriesHash).toBe(baseline);
+        },
+      ),
       { numRuns: 30, seed: 0xf00d },
     );
   });

@@ -345,4 +345,3 @@ export function relevantSubgraph(graph: CanonGraph, seedIds: readonly string[]):
 
   return { records };
 }
-

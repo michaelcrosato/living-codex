@@ -9,9 +9,15 @@ import { InputController } from "../src/input";
  * (dialogue choice when a dialogue is open, exit selector otherwise) — the branch most likely to regress.
  */
 type Handlers = Record<string, (e: { key: string }) => void>;
-function makeInput(): { input: InputController; press: (key: string) => void; release: (key: string) => void } {
+function makeInput(): {
+  input: InputController;
+  press: (key: string) => void;
+  release: (key: string) => void;
+} {
   const handlers: Handlers = {};
-  const target = { addEventListener: (type: string, fn: (e: { key: string }) => void) => (handlers[type] = fn) };
+  const target = {
+    addEventListener: (type: string, fn: (e: { key: string }) => void) => (handlers[type] = fn),
+  };
   const input = new InputController();
   input.attach(target as unknown as Window);
   return {

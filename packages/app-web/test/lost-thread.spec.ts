@@ -4,7 +4,13 @@ import { resolve } from "node:path";
 import { loadPacks } from "@codex/content-loader";
 import { QuestId, FlagId, DialogueId } from "@codex/content-schema";
 import { InkNarrative } from "@codex/narrative-ink";
-import { createWorld, applyEvent, applyEvents, questSystem, reactionsSystem } from "@codex/engine-core";
+import {
+  createWorld,
+  applyEvent,
+  applyEvents,
+  questSystem,
+  reactionsSystem,
+} from "@codex/engine-core";
 import { LocationId } from "@codex/content-schema";
 import { DialogueController } from "./../src/dialogue-controller";
 
@@ -27,7 +33,9 @@ describe("lost-thread amnesia payoff (SPEC-73)", () => {
   it("the quest loads same-path and is gated on flag.has_drive (engine offer path)", () => {
     expect(registries.quests.has(QID)).toBe(true);
     const offered = (w: ReturnType<typeof createWorld>): boolean =>
-      questSystem(registries.quests, [])(w, 0).some((e) => e.type === "ActivateQuest" && e.questId === QID);
+      questSystem(registries.quests, [])(w, 0).some(
+        (e) => e.type === "ActivateQuest" && e.questId === QID,
+      );
     const noDrive = createWorld({ seed: "lost", startLocationId: DISTRICT });
     expect(offered(noDrive)).toBe(false);
     expect(offered(applyEvent(noDrive, { type: "SetFlag", flag: HAS_DRIVE, to: true }))).toBe(true);
@@ -45,7 +53,12 @@ describe("lost-thread amnesia payoff (SPEC-73)", () => {
   it("the bargain branch completes end-to-end with the revelation consequence", () => {
     let w = createWorld({ seed: "lost", startLocationId: DISTRICT, skills: { persuade: 20 } });
     w = applyEvent(w, { type: "SetFlag", flag: HAS_DRIVE, to: true });
-    w = applyEvent(w, { type: "DialogueAdvanced", dialogueId: STRANGER_DLG, inkState: "{}", flags: {} });
+    w = applyEvent(w, {
+      type: "DialogueAdvanced",
+      dialogueId: STRANGER_DLG,
+      inkState: "{}",
+      flags: {},
+    });
     const attempt = [{ type: "Attempt" as const, questId: QID, branchId: "bargain" }];
     for (let t = 0; t < 8 && w.quests[QID]?.status !== "completed"; t++) {
       w = applyEvents(w, questSystem(registries.quests, attempt, registries.npcs)(w, 0));

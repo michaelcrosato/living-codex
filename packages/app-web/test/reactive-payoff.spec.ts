@@ -62,7 +62,11 @@ describe("reactive payoff: Varga's follow-up changes by how you got in (S2.4)", 
 
   it("the betrayal override wins over the entry-method follow-up (reaction ordering)", () => {
     // entered peacefully AND later sold the drive: the more recent betrayal beat dominates
-    const { open } = afterCompletion(["flag.has_drive", "flag.entered_peacefully", "flag.sold_drive"]);
+    const { open } = afterCompletion([
+      "flag.has_drive",
+      "flag.entered_peacefully",
+      "flag.sold_drive",
+    ]);
     expect(open.dialogueId).toBe("dialogue.varga_betrayed");
   });
 });

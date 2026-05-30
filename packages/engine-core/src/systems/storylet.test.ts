@@ -182,10 +182,11 @@ describe("drama-manager waypoint steering (SPEC-32)", () => {
       [aligned.id, aligned],
       [plain.id, plain],
     ]);
-    expect(candidates(reg, world).map((c) => c.id).sort()).toEqual([
-      "storylet.aligned",
-      "storylet.plain",
-    ]);
+    expect(
+      candidates(reg, world)
+        .map((c) => c.id)
+        .sort(),
+    ).toEqual(["storylet.aligned", "storylet.plain"]);
   });
 
   it("promotes the aligned-faction storylet once the player is rising with that faction", () => {
@@ -208,10 +209,11 @@ describe("drama-manager waypoint steering (SPEC-32)", () => {
       [plain.id, plain],
     ]);
     // mainTagged has the faction tag but is "main" → bonus 0 → still ties with plain (no promotion)
-    expect(candidates(reg, world).map((c) => c.id).sort()).toEqual([
-      "storylet.main_beat",
-      "storylet.plain",
-    ]);
+    expect(
+      candidates(reg, world)
+        .map((c) => c.id)
+        .sort(),
+    ).toEqual(["storylet.main_beat", "storylet.plain"]);
   });
 
   it("waypointBonus is pure, integer, and bounded", () => {

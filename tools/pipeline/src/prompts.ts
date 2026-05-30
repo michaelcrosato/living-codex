@@ -41,11 +41,7 @@ export function buildUserPrompt(brief: Brief, canonText: string, groundingText?:
     canonText,
     "",
     groundingText
-      ? [
-          "# Grounding facts (assertions from related entities)",
-          groundingText,
-          "",
-        ].join("\n")
+      ? ["# Grounding facts (assertions from related entities)", groundingText, ""].join("\n")
       : "",
     "Return JSON that satisfies the provided schema. No prose, no code fences.",
   ]

@@ -2,7 +2,12 @@ import { describe, it, expect } from "vitest";
 import type { Registries } from "@codex/content-loader";
 import { LocationId, type FlagId } from "@codex/content-schema";
 import { createWorld, applyEvent, type World } from "@codex/engine-core";
-import { renderHud, locationAnnouncement, questAnnouncements, consequenceAnnouncements } from "../src/hud";
+import {
+  renderHud,
+  locationAnnouncement,
+  questAnnouncements,
+  consequenceAnnouncements,
+} from "../src/hud";
 
 /**
  * SPEC-56 — first test for renderHud. Pins the consequence-journal contract: each arc consequence
@@ -23,7 +28,8 @@ const emptyRegistries: Registries = {
 /** Render a fresh world (optionally with the given flags set true) and return the HUD text. */
 function hud(flags: readonly string[]): string {
   let world: World = createWorld({ seed: "hud", startLocationId: START });
-  for (const f of flags) world = applyEvent(world, { type: "SetFlag", flag: f as FlagId, to: true });
+  for (const f of flags)
+    world = applyEvent(world, { type: "SetFlag", flag: f as FlagId, to: true });
   const el = { textContent: "" } as unknown as HTMLElement;
   renderHud(el, world, emptyRegistries);
   return el.textContent ?? "";
@@ -38,7 +44,11 @@ describe("renderHud consequence journal (SPEC-56)", () => {
   });
 
   it("shows the player's skill sheet (SPEC-76)", () => {
-    const world: World = createWorld({ seed: "hud", startLocationId: START, skills: { persuade: 5, force: 2 } });
+    const world: World = createWorld({
+      seed: "hud",
+      startLocationId: START,
+      skills: { persuade: 5, force: 2 },
+    });
     const el = { textContent: "" } as unknown as HTMLElement;
     renderHud(el, world, emptyRegistries);
     expect(el.textContent ?? "").toContain("⚔");
@@ -121,7 +131,9 @@ function hudAt(locId: string, locations: Record<string, unknown>[]): string {
 
 describe("renderHud surfaces location ambientText (SPEC-71)", () => {
   it("shows the current location's ambient line when present (tick 0 → first line)", () => {
-    const text = hudAt("location.start", [loc("location.start", ["A drone coughs past overhead.", "Rain on tin."])]);
+    const text = hudAt("location.start", [
+      loc("location.start", ["A drone coughs past overhead.", "Rain on tin."]),
+    ]);
     expect(text).toContain("~ A drone coughs past overhead.");
   });
 
@@ -137,7 +149,15 @@ describe("renderHud surfaces location ambientText (SPEC-71)", () => {
 import { QuestId } from "@codex/content-schema";
 describe("renderHud surfaces active quest summary (SPEC-75)", () => {
   const QID = QuestId.parse("quest.demo");
-  const questObj = { id: "quest.demo", title: "Demo Quest", summary: "Find the thing and decide its fate.", branches: [], offerWhen: [], onAnyComplete: [], rewards: { credits: 0, items: [], reputation: [] } };
+  const questObj = {
+    id: "quest.demo",
+    title: "Demo Quest",
+    summary: "Find the thing and decide its fate.",
+    branches: [],
+    offerWhen: [],
+    onAnyComplete: [],
+    rewards: { credits: 0, items: [], reputation: [] },
+  };
   const regs: Registries = { ...emptyRegistries, quests: new Map([[QID, questObj as never]]) };
 
   it("announces quest-status changes once (SPEC-82) and is silent when unchanged", () => {

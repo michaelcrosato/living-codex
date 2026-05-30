@@ -3,7 +3,14 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadPacks } from "@codex/content-loader";
 import { QuestId, FactionId, FlagId, DialogueId, LocationId } from "@codex/content-schema";
-import { createWorld, applyEvent, applyEvents, questSystem, type World, type GameEvent } from "@codex/engine-core";
+import {
+  createWorld,
+  applyEvent,
+  applyEvents,
+  questSystem,
+  type World,
+  type GameEvent,
+} from "@codex/engine-core";
 import { InkNarrative } from "@codex/narrative-ink";
 import { GameSession } from "../src/session";
 import type { Storylet } from "@codex/content-schema";
@@ -25,12 +32,18 @@ const DISTRICT = LocationId.parse("location.ashfall_district");
 const VARGA_DLG = DialogueId.parse("dialogue.varga_intro");
 
 const withRep = (delta: number): World => {
-  let w = createWorld({ seed: "trust", startLocationId: DISTRICT, skills: { sneak: 20, persuade: 20 } });
+  let w = createWorld({
+    seed: "trust",
+    startLocationId: DISTRICT,
+    skills: { sneak: 20, persuade: 20 },
+  });
   if (delta !== 0) w = applyEvent(w, { type: "AdjustReputation", factionId: VARGA_CREW, delta });
   return w;
 };
 const offered = (w: World): boolean =>
-  questSystem(registries.quests, [])(w, 0).some((e) => e.type === "ActivateQuest" && e.questId === QID);
+  questSystem(registries.quests, [])(w, 0).some(
+    (e) => e.type === "ActivateQuest" && e.questId === QID,
+  );
 
 describe("varga-trust reputation-gated quest (SPEC-64)", () => {
   it("does NOT offer below varga_crew standing 15, but DOES at/above it", () => {
@@ -43,7 +56,12 @@ describe("varga-trust reputation-gated quest (SPEC-64)", () => {
   it("a branch completes end-to-end through the real engine with its consequences", () => {
     let w = withRep(15);
     // talk_to Varga = engaging her dialogue (captured into world.dialogue â€” the talk_to signal)
-    w = applyEvent(w, { type: "DialogueAdvanced", dialogueId: VARGA_DLG, inkState: "{}", flags: {} });
+    w = applyEvent(w, {
+      type: "DialogueAdvanced",
+      dialogueId: VARGA_DLG,
+      inkState: "{}",
+      flags: {},
+    });
     // run_it also needs reach(the_drip) â€” reach checks world.locationId (quests.ts)
     w = applyEvent(w, {
       type: "EnterLocation",
@@ -63,21 +81,29 @@ describe("varga-trust reputation-gated quest (SPEC-64)", () => {
   });
 });
 
-
 /**
- * SPEC-93 — the convergence pair's other half: the player who stayed FULLY Varga's (inner circle + refused
+ * SPEC-93 ï¿½ the convergence pair's other half: the player who stayed FULLY Varga's (inner circle + refused
  * Kestrel + never joined the Syndicate) gets storylet.fully_varga, the mirror of SPEC-92's fully_syndicate.
  */
 describe("varga convergence storylet (SPEC-93)", () => {
-  const opening2 = JSON.parse(readFileSync(resolve(process.cwd(), "content/core/pack.opening/pack.json"), "utf8"));
-  const vargaTrust = JSON.parse(readFileSync(resolve(process.cwd(), "content/core/pack.varga_trust/pack.json"), "utf8"));
+  const opening2 = JSON.parse(
+    readFileSync(resolve(process.cwd(), "content/core/pack.opening/pack.json"), "utf8"),
+  );
+  const vargaTrust = JSON.parse(
+    readFileSync(resolve(process.cwd(), "content/core/pack.varga_trust/pack.json"), "utf8"),
+  );
   const trig = (evs: readonly GameEvent[]): Storylet[] =>
-    (evs.find((e): e is Extract<GameEvent, { type: "TriggerStorylet" }> => e.type === "TriggerStorylet")?.candidates ?? []);
-  const has = (evs: readonly GameEvent[]): boolean => trig(evs).some((s) => (s.id as string) === "storylet.fully_varga");
+    evs.find(
+      (e): e is Extract<GameEvent, { type: "TriggerStorylet" }> => e.type === "TriggerStorylet",
+    )?.candidates ?? [];
+  const has = (evs: readonly GameEvent[]): boolean =>
+    trig(evs).some((s) => (s.id as string) === "storylet.fully_varga");
   const sess = (flags: string[]) => {
     const { registries: r, fingerprint } = loadPacks([opening2, vargaTrust]);
     return new GameSession(r, fingerprint, new InkNarrative(), {
-      seed: "fv", startLocationId: DISTRICT, startPos: { x: 50, y: 50 },
+      seed: "fv",
+      startLocationId: DISTRICT,
+      startPos: { x: 50, y: 50 },
       seedEvents: flags.map((f) => ({ type: "SetFlag", flag: FlagId.parse(f), to: true })),
     });
   };
@@ -86,7 +112,11 @@ describe("varga convergence storylet (SPEC-93)", () => {
     const loyal = sess(["flag.varga_inner_circle", "flag.refused_kestrel"]);
     expect(has(loyal.step([]))).toBe(true);
     expect(has(loyal.step([]))).toBe(false); // fire-once
-    const turncoat = sess(["flag.varga_inner_circle", "flag.refused_kestrel", "flag.syndicate_made_member"]);
-    expect(has(turncoat.step([]))).toBe(false); // excluded — they took the Syndicate's coin
+    const turncoat = sess([
+      "flag.varga_inner_circle",
+      "flag.refused_kestrel",
+      "flag.syndicate_made_member",
+    ]);
+    expect(has(turncoat.step([]))).toBe(false); // excluded ï¿½ they took the Syndicate's coin
   });
 });

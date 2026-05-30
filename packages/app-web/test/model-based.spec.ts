@@ -83,7 +83,9 @@ const commandArbs = [
     .map(({ x, y }) => cmd(`Move(${x},${y})`, { type: "Move", dir: { x, y } })),
   fc.constant(cmd("Interact", { type: "Interact" })),
   fc.constant(cmd("Attack", { type: "Attack" })),
-  fc.integer({ min: 0, max: 4 }).map((i) => cmd(`UseExit(${i})`, { type: "UseExit", exitIndex: i })),
+  fc
+    .integer({ min: 0, max: 4 })
+    .map((i) => cmd(`UseExit(${i})`, { type: "UseExit", exitIndex: i })),
   fc
     .constantFrom("talk", "sneak", "force")
     .map((b) => cmd(`Attempt(${b})`, { type: "Attempt", questId: QID, branchId: b })),

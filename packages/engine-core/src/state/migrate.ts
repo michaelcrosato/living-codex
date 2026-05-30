@@ -41,7 +41,9 @@ export function runMigrations(
     version = next;
   }
   if (version > target) {
-    throw new Error(`${label}: data is version ${version}, newer than this build supports (${target})`);
+    throw new Error(
+      `${label}: data is version ${version}, newer than this build supports (${target})`,
+    );
   }
   return data;
 }

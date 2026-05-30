@@ -3,7 +3,13 @@ import { FlagId, LocationId } from "@codex/content-schema";
 import { accumulate, makeSave } from "@codex/engine-core";
 import { createPixiRenderer } from "@codex/render-pixi";
 import { InkNarrative } from "@codex/narrative-ink";
-import { exportSave, importSave, saveGame, loadGame, requestPersistentStorage } from "@codex/persistence";
+import {
+  exportSave,
+  importSave,
+  saveGame,
+  loadGame,
+  requestPersistentStorage,
+} from "@codex/persistence";
 import openingPack from "../../../content/core/pack.opening/pack.json";
 import districtBarks from "../../../content/core/pack.district_barks/pack.json";
 import dripMarket from "../../../content/core/pack.drip_market/pack.json";
@@ -17,7 +23,12 @@ import dripPatrons from "../../../content/generated/pack.the_drip_patrons/pack.j
 import { GameSession } from "./session";
 import { drawScene } from "./scene";
 import { InputController } from "./input";
-import { renderHud, locationAnnouncement, questAnnouncements, consequenceAnnouncements } from "./hud";
+import {
+  renderHud,
+  locationAnnouncement,
+  questAnnouncements,
+  consequenceAnnouncements,
+} from "./hud";
 import { DialogueController } from "./dialogue-controller";
 import { DialogueView } from "./dialogue-view";
 import { beats } from "./beats";
@@ -211,7 +222,8 @@ async function main(): Promise<void> {
         },
         (err: unknown) => toast(err instanceof Error ? err.message : "Load failed."),
       );
-    else if (k === "i") fileInput.click(); // SPEC-79: import a save file
+    else if (k === "i")
+      fileInput.click(); // SPEC-79: import a save file
     else if (k === "l") {
       // export the current session as a downloadable JSON (replayable bug report / share)
       const json = exportSave(makeSave(session.world, [], fingerprint));

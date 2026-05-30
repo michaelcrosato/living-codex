@@ -30,7 +30,11 @@ const loaded = loadPacks([
 const WAREHOUSE = QuestId.parse("quest.the_warehouse");
 const SYNDICATE_Q = QuestId.parse("quest.syndicate_offer");
 const DISTRICT = LocationId.parse("location.ashfall_district");
-const setFlag = (flag: string): GameEvent => ({ type: "SetFlag", flag: FlagId.parse(flag), to: true });
+const setFlag = (flag: string): GameEvent => ({
+  type: "SetFlag",
+  flag: FlagId.parse(flag),
+  to: true,
+});
 
 function makeOpts(): GameSessionOptions {
   return {
@@ -91,13 +95,19 @@ const commandArbs = [
     .map(({ x, y }) => cmd(`Move(${x},${y})`, { type: "Move", dir: { x, y } })),
   fc.constant(cmd("Interact", { type: "Interact" })),
   fc.constant(cmd("Attack", { type: "Attack" })),
-  fc.integer({ min: 0, max: 4 }).map((i) => cmd(`UseExit(${i})`, { type: "UseExit", exitIndex: i })),
+  fc
+    .integer({ min: 0, max: 4 })
+    .map((i) => cmd(`UseExit(${i})`, { type: "UseExit", exitIndex: i })),
   fc
     .constantFrom("talk", "sneak", "force")
-    .map((b) => cmd(`AttemptWarehouse(${b})`, { type: "Attempt", questId: WAREHOUSE, branchId: b })),
+    .map((b) =>
+      cmd(`AttemptWarehouse(${b})`, { type: "Attempt", questId: WAREHOUSE, branchId: b }),
+    ),
   fc
     .constantFrom("sell", "decrypt", "leverage")
-    .map((b) => cmd(`AttemptSyndicate(${b})`, { type: "Attempt", questId: SYNDICATE_Q, branchId: b })),
+    .map((b) =>
+      cmd(`AttemptSyndicate(${b})`, { type: "Attempt", questId: SYNDICATE_Q, branchId: b }),
+    ),
 ];
 
 describe("full-content determinism fuzz (SPEC-57)", () => {

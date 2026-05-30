@@ -70,7 +70,13 @@ describe("scene drawing", () => {
     let world = createWorld({ seed: "s", startLocationId: DISTRICT, startPos: { x: 50, y: 50 } });
     world = applyEvent(world, {
       type: "SpawnEntity",
-      entity: { id: "entity.npc.varga", defId: "npc.varga", locationId: DISTRICT, pos: { x: 100, y: 100 }, alive: true },
+      entity: {
+        id: "entity.npc.varga",
+        defId: "npc.varga",
+        locationId: DISTRICT,
+        pos: { x: 100, y: 100 },
+        alive: true,
+      },
     });
     const varga = registries.npcs.get(NpcId.parse("npc.varga"))!;
     const r = new FakeRenderer();
@@ -83,7 +89,13 @@ describe("scene drawing", () => {
     let world = createWorld({ seed: "s", startLocationId: DISTRICT, startPos: { x: 50, y: 50 } });
     world = applyEvent(world, {
       type: "SpawnEntity",
-      entity: { id: "entity.npc.varga", defId: "npc.varga", locationId: DISTRICT, pos: { x: 100, y: 100 }, alive: false },
+      entity: {
+        id: "entity.npc.varga",
+        defId: "npc.varga",
+        locationId: DISTRICT,
+        pos: { x: 100, y: 100 },
+        alive: false,
+      },
     });
     const r = new FakeRenderer();
     drawScene(r, world, registries, { w: 800, h: 600 });

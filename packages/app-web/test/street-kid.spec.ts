@@ -3,7 +3,13 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadPacks } from "@codex/content-loader";
 import { NpcId, QuestId, FlagId, LocationId } from "@codex/content-schema";
-import { createWorld, applyEvent, applyEvents, questSystem, reactionsSystem } from "@codex/engine-core";
+import {
+  createWorld,
+  applyEvent,
+  applyEvents,
+  questSystem,
+  reactionsSystem,
+} from "@codex/engine-core";
 import { DialogueController } from "./../src/dialogue-controller";
 import { InkNarrative } from "@codex/narrative-ink";
 
@@ -12,8 +18,12 @@ import { InkNarrative } from "@codex/narrative-ink";
  * otherwise all fixers/crime). The kid asks you to find out what happened to her brother; offerWhen met_kid;
  * the single search branch resolves by reaching the warehouse floor.
  */
-const opening = JSON.parse(readFileSync(resolve(process.cwd(), "content/core/pack.opening/pack.json"), "utf8")) as unknown;
-const streetKid = JSON.parse(readFileSync(resolve(process.cwd(), "content/core/pack.street_kid/pack.json"), "utf8")) as unknown;
+const opening = JSON.parse(
+  readFileSync(resolve(process.cwd(), "content/core/pack.opening/pack.json"), "utf8"),
+) as unknown;
+const streetKid = JSON.parse(
+  readFileSync(resolve(process.cwd(), "content/core/pack.street_kid/pack.json"), "utf8"),
+) as unknown;
 const { registries } = loadPacks([streetKid, opening]);
 
 const QID = QuestId.parse("quest.lost_brother");
@@ -31,7 +41,9 @@ describe("street-kid human-moment beat (SPEC-87)", () => {
 
   it("offers only after meeting the kid, and the search resolves by reaching the warehouse floor", () => {
     const offered = (w: ReturnType<typeof createWorld>): boolean =>
-      questSystem(registries.quests, [])(w, 0).some((e) => e.type === "ActivateQuest" && e.questId === QID);
+      questSystem(registries.quests, [])(w, 0).some(
+        (e) => e.type === "ActivateQuest" && e.questId === QID,
+      );
     let w = createWorld({ seed: "kid", startLocationId: DISTRICT });
     expect(offered(w)).toBe(false);
     w = applyEvent(w, { type: "SetFlag", flag: MET_KID, to: true });
@@ -39,9 +51,20 @@ describe("street-kid human-moment beat (SPEC-87)", () => {
 
     // activate, then reach the warehouse floor → the single search objective completes
     w = applyEvents(w, questSystem(registries.quests, [])(w, 0));
-    w = applyEvent(w, { type: "EnterLocation", locationId: LocationId.parse("location.warehouse_floor"), spawnAt: { x: 5, y: 5 } });
+    w = applyEvent(w, {
+      type: "EnterLocation",
+      locationId: LocationId.parse("location.warehouse_floor"),
+      spawnAt: { x: 5, y: 5 },
+    });
     for (let t = 0; t < 6 && w.quests[QID]?.status !== "completed"; t++) {
-      w = applyEvents(w, questSystem(registries.quests, [{ type: "Attempt", questId: QID, branchId: "search" }], registries.npcs)(w, 0));
+      w = applyEvents(
+        w,
+        questSystem(
+          registries.quests,
+          [{ type: "Attempt", questId: QID, branchId: "search" }],
+          registries.npcs,
+        )(w, 0),
+      );
     }
     expect(w.quests[QID]?.completedBranchId).toBe("search");
     expect(w.flags[FlagId.parse("flag.searched_for_tomas")]).toBe(true);

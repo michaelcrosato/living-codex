@@ -61,7 +61,11 @@ export function drawScene(
     // Honor the NPC's authored appearance (SPEC-74): a living NPC is filled with its bodyColor and ringed
     // with its accentColor, so the distinct authored looks actually show. Player gold; downed grey.
     const npc = isPlayer ? undefined : registries.npcs.get(entity.defId as never);
-    const fill = isPlayer ? "#ffd166" : !entity.alive ? "#555555" : (npc?.appearance.bodyColor ?? "#2bd1ff");
+    const fill = isPlayer
+      ? "#ffd166"
+      : !entity.alive
+        ? "#555555"
+        : (npc?.appearance.bodyColor ?? "#2bd1ff");
     // Don't convey alive/downed by color alone (WCAG 1.4.1, SPEC-85): a downed entity is drawn distinctly
     // smaller (a size cue), not just grey, so colorblind/low-vision players can tell. Player 8, alive 7, downed 4.
     const radius = isPlayer ? 8 : entity.alive ? 7 : 4;

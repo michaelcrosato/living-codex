@@ -25,7 +25,10 @@ const candidate = ContentPack.parse({
 
 describe("bake / finalizeProvenance (SPEC-98)", () => {
   it("stamps curatedBy + approvedAt while preserving the generated content + origin provenance", () => {
-    const baked = finalizeProvenance(candidate, { curatedBy: "operator", approvedAt: "2026-05-30T00:00:00.000Z" });
+    const baked = finalizeProvenance(candidate, {
+      curatedBy: "operator",
+      approvedAt: "2026-05-30T00:00:00.000Z",
+    });
     expect(baked.provenance.curatedBy).toBe("operator");
     expect(baked.provenance.approvedAt).toBe("2026-05-30T00:00:00.000Z");
     expect(baked.provenance.authoredBy).toBe("pipeline"); // origin preserved
@@ -35,11 +38,16 @@ describe("bake / finalizeProvenance (SPEC-98)", () => {
   });
 
   it("re-validates against the treaty: a non-ISO approvedAt is rejected (can't bake an invalid pack)", () => {
-    expect(() => finalizeProvenance(candidate, { curatedBy: "operator", approvedAt: "yesterday" })).toThrow();
+    expect(() =>
+      finalizeProvenance(candidate, { curatedBy: "operator", approvedAt: "yesterday" }),
+    ).toThrow();
   });
 
   it("does not mutate the input candidate", () => {
-    finalizeProvenance(candidate, { curatedBy: "operator", approvedAt: "2026-05-30T00:00:00.000Z" });
+    finalizeProvenance(candidate, {
+      curatedBy: "operator",
+      approvedAt: "2026-05-30T00:00:00.000Z",
+    });
     expect(candidate.provenance.curatedBy).toBeUndefined(); // original unchanged
   });
 });

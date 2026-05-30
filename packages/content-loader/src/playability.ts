@@ -235,7 +235,8 @@ export function staticPlayabilityCheck(registries: Registries): PlayabilityRepor
     else if (cond.kind === "not") noteConditionFlags(cond.of);
     else if (cond.kind === "all" || cond.kind === "any") cond.of.forEach(noteConditionFlags);
   };
-  for (const d of registries.dialogues.values()) for (const v of d.declaredVars) setFlags.add(`flag.${v}`);
+  for (const d of registries.dialogues.values())
+    for (const v of d.declaredVars) setFlags.add(`flag.${v}`);
   for (const npc of registries.npcs.values()) {
     for (const r of npc.reactsTo) {
       r.when.forEach(noteConditionFlags);

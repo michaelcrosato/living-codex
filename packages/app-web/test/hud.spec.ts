@@ -61,3 +61,40 @@ describe("renderHud consequence journal (SPEC-56)", () => {
     expect(el.textContent ?? "").not.toContain("You sold the drive");
   });
 });
+
+/**
+ * SPEC-71 — the HUD surfaces the current location's authored ambientText (previously rendered nowhere).
+ * Deterministic slow rotation by tick (tick 0 → ambientText[0]); absent when the location has none.
+ */
+const loc = (id: string, ambientText: string[]): Record<string, unknown> => ({
+  id,
+  name: id,
+  mood: "m",
+  bounds: { w: 10, h: 10 },
+  art: [],
+  exits: [],
+  npcSpawns: [],
+  ambientText,
+});
+function hudAt(locId: string, locations: Record<string, unknown>[]): string {
+  const regs: Registries = {
+    ...emptyRegistries,
+    locations: new Map(locations.map((l) => [LocationId.parse(l.id as string), l as never])),
+  };
+  const world: World = createWorld({ seed: "amb", startLocationId: LocationId.parse(locId) });
+  const el = { textContent: "" } as unknown as HTMLElement;
+  renderHud(el, world, regs);
+  return el.textContent ?? "";
+}
+
+describe("renderHud surfaces location ambientText (SPEC-71)", () => {
+  it("shows the current location's ambient line when present (tick 0 → first line)", () => {
+    const text = hudAt("location.start", [loc("location.start", ["A drone coughs past overhead.", "Rain on tin."])]);
+    expect(text).toContain("~ A drone coughs past overhead.");
+  });
+
+  it("shows no ambient (~) line when the location has none", () => {
+    const text = hudAt("location.bare", [loc("location.bare", [])]);
+    expect(text).not.toContain("~ ");
+  });
+});

@@ -14,7 +14,12 @@ export function renderHud(
   bark?: string,
 ): void {
   const lines: string[] = [];
-  lines.push(`◍ ${registries.locations.get(world.locationId)?.name ?? world.locationId}`);
+  const location = registries.locations.get(world.locationId);
+  lines.push(`◍ ${location?.name ?? world.locationId}`);
+  // Authored location atmosphere (SPEC-71): surface ambientText, rotating slowly + deterministically by
+  // tick so it doesn't flicker per-frame (one line per ~10s at 60fps; tick 0 → ambientText[0]).
+  const ambient = location?.ambientText ?? [];
+  if (ambient.length > 0) lines.push(`~ ${ambient[Math.floor(world.tick / 600) % ambient.length]}`);
   lines.push(beatsLine(world));
   if (bark) lines.push(`» ${bark}`);
   for (const [questId, quest] of registries.quests) {

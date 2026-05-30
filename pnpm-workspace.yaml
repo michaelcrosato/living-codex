@@ -3,3 +3,7 @@ packages:
   - "tools/*"
 allowBuilds:
   esbuild: true
+# Security: force the transitive `qs` (via @stryker-mutator → typed-rest-client) to the patched
+# line. <=6.15.1 has GHSA-q8mj-m7cp-5q26 (moderate). Dev-only dep; prod audit was already clean.
+overrides:
+  qs: "^6.15.2"

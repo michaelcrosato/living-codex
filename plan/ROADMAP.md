@@ -534,3 +534,31 @@ Every agent-auditable dimension is now exhausted or deferred with rationale. The
   when a real beat demands, not before.
 The loop continues from /plan/: re-confirm green, act on the next external trigger (human unblock, content
 demand, or a future forcing function — CVE/dep major), and never manufacture churn.
+
+### 13.4 Cycle 11 (SPEC-112…116) — automated quality/security gates + code health
+Theme: **automate manually-maintained postures + tighten code health.** All shipped green by exit code.
+- **Automated a11y (axe-core):** SPEC-112 added `@axe-core/playwright` + an axe WCAG 2.1 A/AA scan of the
+  main game view (0 serious/critical — the manual a11y work, SPEC-09/81–85, confirmed comprehensively);
+  SPEC-114 extended it to the open dialogue modal (the richest ARIA surface) via a shared e2e nav helper.
+- **CI supply-chain gate:** SPEC-113 added a blocking `audit` job (`pnpm audit --prod`) to verify.yml —
+  enforcing the security posture the repo had maintained by hand (SPEC-41), scoped to the shipped surface
+  for low noise.
+- **Code health:** SPEC-115 — a heuristic unused-export scan **confirmed the codebase is clean** (nearly all
+  candidates were in-file/test usages); removed the 2 genuine items (dead `appendInput`, a stale `T-12`
+  placeholder), kept the deliberate Audio port seam. SPEC-116 — synced AGENTS.md's verify-chain description
+  (it omitted the `format`/prettier step added at the merge).
+
+State at Cycle-11 progress: `pnpm verify` EXIT 0 **359 tests / 61 files**; `pnpm e2e` **6 passed** (incl. 2
+axe scans); `pnpm audit`(+`--prod`) clean; content:verify 11 packs/21 NPCs/12 quests/12 storylets/9 loc · 0
+hygiene warnings; golden untouched; ~38 commits ahead of main (unpushed, human-gated). New dev dep:
+@axe-core/playwright (audit-clean, --frozen-lockfile reproducible).
+
+### 13.5 Forward frontier (after Cycles 10–11, 13 specs)
+Three discovery methods exhausted to genuine depth this session: theme-driven audit (safety-gate/security/
+code-health), web research (metamorphic testing, SNAP temporal-causality, axe/QBN), and coverage data
+(conditions.ts). Remaining levers stay external-trigger-gated: **human-gated** real-model generation (§10),
+**demand-gated** content (genuine creative beat only — verb-content is redundant-by-design, BACKLOG). Smaller
+polish (more doc-sync, marginal gates like bundle-budget/content-fingerprint-pin) is available but yields
+diminishing value; the loop takes it only when genuinely warranted, never as manufactured churn. Possible
+maintainer-decision item (not taken unattended — CI-stability risk): split e2e into a blocking deterministic
+core (boot axe + static a11y) vs non-blocking nav-based, so the axe a11y gate ENFORCES rather than reports.

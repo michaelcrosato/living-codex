@@ -38,7 +38,7 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 | SPEC-19 | depcruise 17 + node types | 5 | Done | main | (see log) | green | dependency-cruiser 16.10→17.4.2, @types/node 22→24.12; config unchanged (v17-compatible); rule-fire re-proven via planted node:fs import (error + exit 1), reverted; 174 tests |
 | SPEC-20 | TypeScript 6 | 6 | Done | main | (see log) | green | typescript 5.9.3→6.0.3; removed deprecated `baseUrl`, relativized `paths` (TS7-ready, no `ignoreDeprecations` suppression); purity re-proven (planted `document` errors under pure tsconfig.json, TS2584); ts-eslint 8.60 supports TS6 (no warning); 174 tests |
 | SPEC-21 | Vitest 4 | 7 | Done | main | (see log) | green | vitest+coverage-v8 3.2.4→4.1.7 (on Vite 7.3.3); vitest.config.ts unchanged (no workspace/poolOptions to migrate); no mocks in suite (zero mock-semantics risk); replay:verify still tag-selects + green; **coverage baseline (v8 remap): 75.13% stmts / 65.14% branch / 76.14% funcs / 76.93% lines** (report-only, no floor); 174 tests |
-| SPEC-22 | fast-check 4 | 7 | Todo | — | — | — | keep determinism fuzz green; new divergence = real bug |
+| SPEC-22 | fast-check 4 | 7 | Done | main | (see log) | green | fast-check 3.23.2→4.8.0; no spec edits (oneof/record/constant/integer/constantFrom/array/assert/property all v4-stable); seeds still pinned (0xc0de, numRuns 60); no new divergence surfaced; 174 tests |
 | SPEC-23 | `skill_at_least` condition | 8 | Todo | — | — | — | additive verb (Recipe 5); HARD after SPEC-16 |
 | SPEC-24 | Storylet pack + ambient barks | 8 | Todo | — | — | — | prove SPEC-11 end-to-end; salience = reactive only |
 | SPEC-25 | content:verify storylets | 8 | Todo | — | — | — | reference + unsatisfiability + hygiene checks |

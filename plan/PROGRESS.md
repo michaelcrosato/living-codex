@@ -11,6 +11,15 @@ violations, `pnpm audit --prod` clean, content = 4 packs / 14 NPCs / 3 quests / 
 `1c8d11480b2aa5`), replay invariant holds. Cycle 1 = SPEC-01…15 **Done**, SPEC-16 carryover. Cycle 2
 (SPEC-16…26, Waves 5–9) is **dependency modernization + narrative depth** — see [ROADMAP §7](ROADMAP.md#7-cycle-2-v202605--the-next-wave).
 
+**Cycle-6 close re-baseline (2026-05-30):** `pnpm verify` green — **237 tests / 44 files**, 0 dep violations,
+`pnpm audit` clean; **`pnpm e2e` 4 passed** + **production `vite build` green** (190 kB gzip). Content = 6
+packs / 17 NPCs / 4 quests / 7 locations. Cycles done: 1 (SPEC-01…15), 2 (16…26), 3 (27…33), **4–6
+(34…49 — the AFK arc: content reachability + all three content-safety layers test-hardened + the pure-logic
+mutation sweep complete + security/docs)**. The pure-logic mutation sweep (engine-core + content-loader),
+build, e2e, audit, deps, and the perf question are all resolved/verified (see [ROADMAP §9](ROADMAP.md) +
+JOURNAL). **Cycle 7 (real-model generation) is human-gated** on `OPENROUTER_API_KEY` — plan in
+[ROADMAP §10](ROADMAP.md); review-guide in [HANDOFF.md](HANDOFF.md).
+
 ## Status board
 
 Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with reason).

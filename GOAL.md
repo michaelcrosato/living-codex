@@ -54,12 +54,12 @@ Treat this as factual until a later run or commit proves otherwise.
 - CI runs `pnpm agent:doctor`, `pnpm verify`, coverage, and a non-blocking Playwright browser smoke job.
 - `engine-core` is pure simulation with time, state, events, replay, conditions, ports, and systems.
 - `content-schema` is the treaty between engine and world; `content-loader` validates and indexes packs.
-- Runtime composition currently imports these packs in `packages/app-web/src/main.ts`:
+- The default browser pack set is now documented in [`content/PACKS.md`](content/PACKS.md):
   - `content/core/pack.opening`
   - `content/core/pack.district_barks`
   - `content/core/pack.drip_market`
   - `content/generated/pack.the_drip_patrons`
-- Some docs still mention older pack inventories. **Normalize pack catalog/docs/app imports before adding more packs.**
+- A root PR checklist now exists at `.github/pull_request_template.md`.
 - Open PR #1 contains Cursor Cloud setup notes. Review and reconcile it rather than duplicating cloud-agent
   instructions across docs.
 
@@ -134,11 +134,11 @@ See [`ROADMAP.md`](ROADMAP.md) for tickets and sequencing. Keep the strategy sim
 
 ### Repo + verification
 
-- Normalize the content pack catalog across docs and runtime imports.
-- Add a PR template requiring checks, scope, artifacts, and follow-ups.
+- Add a sync check that proves `content/PACKS.md` still matches runtime imports.
 - Add golden replay fixtures for First Light.
 - Capture Playwright screenshots/traces/video on failure.
-- Add docs-sync/content-catalog checks once the catalog exists.
+- Add docs-sync checks for stale paths and stale pack references.
+- Reconcile Cursor Cloud PR #1 into one concise location.
 
 ### Engine + UX
 
@@ -155,7 +155,7 @@ See [`ROADMAP.md`](ROADMAP.md) for tickets and sequencing. Keep the strategy sim
 - Deepen The Drip patrons with distinct wants, voices, rumors, and at least one useful clue.
 - Add Varga/Syndicate reaction matrices for peaceful, sneaky, violent, and bribed outcomes.
 - Land the hook NPC/beat after the encrypted drive.
-- Use Pipeline B for pack-sized expansion only after the default pack catalog is reliable.
+- Use Pipeline B for pack-sized expansion only after the default pack catalog has a sync check.
 
 ### Pipeline + canon
 
@@ -187,15 +187,15 @@ A unit of work is done only when all applicable conditions hold:
 
 If no human gives a more specific task, work in this order:
 
-1. **Pack catalog:** make one authoritative runtime/default pack inventory and sync docs to it.
-2. **PR template:** require verification, artifacts, scope exceptions, and follow-up tickets.
-3. **Golden replay:** commit a short First Light replay fixture and hash check.
-4. **Quest journal:** expose active quest, branches, and known objectives.
-5. **Affordances:** improve interaction/exit prompts and blocker text.
-6. **Warehouse audit:** prove talk/sneak/force are reachable and consequential.
-7. **E2E artifacts:** upload browser traces/screenshots/video on smoke failures.
-8. **Drip density:** deepen patrons, rumors, clue flow, and hook setup.
-9. **Pipeline bundle:** make content proposals reviewable before bake.
-10. **Reaction matrix:** Varga and Syndicate visibly react to the route taken.
+1. **Pack sync check:** prove `content/PACKS.md` and `app-web` runtime imports agree.
+2. **Golden replay:** commit a short First Light replay fixture and hash check.
+3. **Quest journal:** expose active quest, branches, and known objectives.
+4. **Affordances:** improve interaction/exit prompts and blocker text.
+5. **Warehouse audit:** prove talk/sneak/force are reachable and consequential.
+6. **E2E artifacts:** upload browser traces/screenshots/video on smoke failures.
+7. **Drip density:** deepen patrons, rumors, clue flow, and hook setup.
+8. **Pipeline bundle:** make content proposals reviewable before bake.
+9. **Reaction matrix:** Varga and Syndicate visibly react to the route taken.
+10. **Cloud-agent notes:** reconcile PR #1 without bloating root docs.
 
 This sequence turns a healthy engine repo into a stronger game proof without broadening scope.

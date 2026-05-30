@@ -519,7 +519,10 @@
         }
       ],
       "npcSpawns": [],
-      "ambientText": []
+      "ambientText": [
+        "An autoclave hisses and clicks.",
+        "Someone left blood on the cot. Not yours. Not yet."
+      ]
     }
   ],
   "npcs": [

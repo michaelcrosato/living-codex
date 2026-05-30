@@ -26,6 +26,7 @@ A browser top-down 2D RPG. **You build and evolve the engine.** The world's cont
 - Verify content is *playable* (solvability/reachability): `pnpm content:verify`
 - Verify replay determinism: `pnpm replay:verify`
 - Full gate (run before declaring a ticket done): `pnpm verify` (= typecheck + lint + deps:check + test + content:validate + content:verify + replay:verify)
+- AFK wrappers: `pnpm agent:bootstrap`, `pnpm agent:doctor`, `pnpm agent:check`, `pnpm agent:test`, `pnpm agent:lint`, `pnpm agent:typecheck`, `pnpm agent:format`, `pnpm agent:status`, `pnpm agent:preflight`, `pnpm agent:afk-status`
 
 ## Never do these
 1. **Never import `pixi.js`** outside `packages/render-pixi/`.

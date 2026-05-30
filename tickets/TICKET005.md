@@ -1,15 +1,15 @@
 # TICKET005 — CI doctor step + coverage reporting
 
-- **Status:** Todo
+- **Status:** Done
 - **Priority:** Medium
 
 ## Goal
-Make the CI gate report environment readiness and test coverage, so regressions in either are visible.
+Report environment readiness and test coverage in CI while keeping the existing blocking gate unchanged.
 
 ## Context
 CI (`.github/workflows/verify.yml`) runs `pnpm install --frozen-lockfile` + `pnpm verify` and a
-non-blocking e2e job. There is no coverage report and no explicit readiness step. Vitest supports
-coverage via `@vitest/coverage-v8` (not currently a dependency — `not found`).
+non-blocking e2e job. Coverage reporting is already implemented via `pnpm test:coverage`
+with `@vitest/coverage-v8`, and readiness is checked via `pnpm agent:doctor`.
 
 ## Scope
 CI workflow + a `test:coverage` script. Do NOT lower any existing gate or make e2e blocking.
@@ -22,22 +22,20 @@ CI workflow + a `test:coverage` script. Do NOT lower any existing gate or make e
 - dev dep: `@vitest/coverage-v8`
 
 ## Steps
-1. Add `"test:coverage": "vitest run --coverage"` and `@vitest/coverage-v8` to devDependencies.
-2. Configure `coverage` in `vitest.config.ts` (v8 provider, text + lcov reporters).
-3. In `verify.yml`, add a `pnpm agent:doctor` step before `pnpm verify` and upload the coverage report artifact.
-4. Decide a coverage floor only if the team wants enforcement (default: report-only).
+1. Keep `test:coverage` coverage config intact in `vitest.config.ts` (`text`, `lcov` reporters via v8 provider).
+2. Keep CI calling `pnpm agent:doctor` before `pnpm verify` and run `pnpm test:coverage` afterward.
+3. Keep `coverage/lcov.info` upload as non-blocking CI artifact (`coverage-report`).
+4. Confirm `pnpm verify` remains the blocking gate and e2e remains non-blocking.
 
 ## Acceptance Criteria
 - `pnpm test:coverage` produces a coverage summary locally.
 - CI shows a coverage report and a doctor readiness line; `pnpm verify` still the blocking gate; e2e still non-blocking.
 
 ## Commands
-`pnpm add -D @vitest/coverage-v8` · `pnpm test:coverage` · push to a branch and inspect the CI run.
+`pnpm test:coverage` · inspect CI coverage artifact (`coverage-report`) · e2e remains non-blocking
 
 ## Risks
-Adding a dependency changes the lockfile — keep it a single, reviewed change. Coverage thresholds
-can cause flaky failures; start report-only.
+No lockfile changes are required for this ticket; coverage remains report-only.
 
 ## Notes
-Unblocked. Good first AFK ticket: small, additive, no gate-lowering. Bump status to `In progress`
-when picked up.
+Completed in the AFK readiness pass. No additional implementation blockers.

@@ -16,7 +16,7 @@ No failing gates were found. The one real defect found and fixed: stale doc path
 1. **Stabilize** — ✅ done before this session: `pnpm verify` green, CI present.
 2. **Tooling / deps** — ✅ `scripts/agent/*.sh` + `pnpm agent:*` wrappers + `.env.example` + `.aiignore` (TICKET001, TICKET002).
 3. **Docs** — ✅ `GOAL.md`, `ROADMAP.md`, `AGENTS.md` loop, `docs/ai/REPO_MAP.md`, README quick-start (TICKET004).
-4. **Bugs / tests** — ◐ README path bug fixed (TICKET003); broader test/coverage additions are open (TICKET005).
+4. **Bugs / tests** — ✅ high-confidence path/documentation bugs fixed; coverage reporting is in CI (TICKET003, TICKET005).
 5. **Modularity** — ✅ already strong (pure core, ports, vendor isolation, <600-line files). Maintain; do not refactor without cause.
 6. **Features** — open: grow content via Pipeline B; add engine verbs only as content demands (pattern proven by S4 bribe). Track per future ticket.
 7. **CI** — ✅ `verify.yml` runs `pnpm verify` + non-blocking e2e. Possible follow-up: run `pnpm agent:doctor` as a readiness step (TICKET005 stretch).
@@ -28,7 +28,7 @@ No failing gates were found. The one real defect found and fixed: stale doc path
 | [TICKET002](tickets/TICKET002.md) | Agent workflow scripts (`scripts/agent/*`) | High | Done |
 | [TICKET003](tickets/TICKET003.md) | Fix stale `README.md` doc paths | High | Done |
 | [TICKET004](tickets/TICKET004.md) | Agent docs & repo map | High | Done |
-| [TICKET005](tickets/TICKET005.md) | CI doctor step + coverage reporting | Medium | Todo |
+| [TICKET005](tickets/TICKET005.md) | CI doctor step + coverage reporting | Medium | Done |
 
 ## Risks / blockers
 - **No blockers.** Real generation (`pnpm pipeline:cycle/bake`) needs `OPENROUTER_API_KEY` (a paid

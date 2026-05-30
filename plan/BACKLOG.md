@@ -50,6 +50,10 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
 - **New engine verbs** (lockpicking, time-of-day/`wait`, trade/economy, status effects, a magic system).
   GOAL §3 + SCHEMA §5: add a verb **only when curated content demands it** (the bribe pattern). Each is a
   clean Recipe-1/Recipe-5 ticket *when the demand is real* — not before.
+- **NPC `silhouette` shape variation (SPEC-74 follow-up).** `appearance.silhouette` (tall/stocky/cloaked/
+  mech/beast) is authored but the scene draws all NPCs as circles (colors now honored — SPEC-74). Varying the
+  drawn SHAPE by silhouette needs new `Renderer` primitives / per-silhouette vector shapes. Defer until it's
+  worth the renderer work — cosmetic; bodyColor/accentColor already differentiate NPCs visually.
 - **WebGPU renderer** behind the existing `Renderer` port. Pixi recommends WebGL2 for production in 2026;
   revisit only if a batch-break-heavy scene profiles badly. The port already makes this a swap, not a rewrite.
 - **OPFS / Storage Buckets persistence.** Beats IndexedDB only for *large blobs*; relevant when AI-generated

@@ -23,6 +23,14 @@ pnpm e2e                # browser smoke test (needs: pnpm exec playwright instal
 (`pnpm pipeline:cycle` / `pnpm pipeline:bake`) uses `OPENROUTER_API_KEY` for *real* generation;
 without it a deterministic demo stub runs. See [.env.example](.env.example).
 
+## Controls (in `pnpm dev`)
+- **Move:** WASD or arrow keys · **Talk / interact:** E · **Fight:** F
+- **Number keys:** pick a dialogue choice when a dialogue is open, otherwise take a numbered exit
+- **Esc:** close the dialogue
+- **K** save · **O** load · **L** export a save file · **I** import a save file
+- A **dyslexia-friendly font** toggle is in the on-screen controls; location changes and quest/consequence
+  updates are announced to screen readers (the UI is keyboard-navigable and meets WCAG 2.2 AA contrast).
+
 ## Project docs
 - [GOAL.md](GOAL.md) — operational state for working on the repo · [ROADMAP.md](ROADMAP.md) — phases + tickets
 - [AGENTS.md](AGENTS.md) — agent operating manual · [tickets/](tickets/) — atomic work items

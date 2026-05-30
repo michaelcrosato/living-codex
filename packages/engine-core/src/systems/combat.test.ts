@@ -72,3 +72,56 @@ describe("minimal combat", () => {
     expect(hash(applyEvent(w, ev))).toBe(hash(applyEvent(w, ev)));
   });
 });
+
+describe("combat target selection (SPEC-44 — every arm of the selection predicate is load-bearing)", () => {
+  const PLAYER = "entity.player";
+  const world = (): World =>
+    createWorld({ seed: "ashfall", startLocationId: START, skills: { force: 4 } });
+  /** Spawn one entity that is a valid target on every arm, then override one arm to make it ineligible. */
+  const withEntity = (over: Partial<Entity> & { id: string }): World => {
+    const entity: Entity = {
+      defId: "npc.x",
+      locationId: START,
+      pos: { x: 0, y: 0 },
+      hp: 12,
+      alive: true,
+      ...over,
+    };
+    return applyEvent(world(), { type: "SpawnEntity", entity });
+  };
+
+  it("ignores a non-Attack input even when a valid target is present", () => {
+    expect(combatSystem([{ type: "Interact" }])(withGuard(12), 0)).toEqual([]);
+  });
+
+  it("does not target a dead entity", () => {
+    expect(combatSystem([{ type: "Attack" }])(withEntity({ id: "entity.corpse", alive: false }), 0)).toEqual(
+      [],
+    );
+  });
+
+  it("does not target a non-combatant (an entity with no hp)", () => {
+    // hp is OMITTED (not undefined) — exactOptionalPropertyTypes — so it is genuinely a no-hp entity.
+    const w = applyEvent(world(), {
+      type: "SpawnEntity",
+      entity: { id: "entity.civilian", defId: "npc.x", locationId: START, pos: { x: 0, y: 0 }, alive: true },
+    });
+    expect(combatSystem([{ type: "Attack" }])(w, 0)).toEqual([]);
+  });
+
+  it("does not target an entity in a different location", () => {
+    const elsewhere = LocationId.parse("location.elsewhere");
+    expect(
+      combatSystem([{ type: "Attack" }])(withEntity({ id: "entity.faraway", locationId: elsewhere }), 0),
+    ).toEqual([]);
+  });
+
+  it("does not target the player themselves, even when the player is attackable", () => {
+    // Overwrite the player entity so it satisfies every arm EXCEPT identity; it must still be skipped.
+    const w = applyEvent(world(), {
+      type: "SpawnEntity",
+      entity: { id: PLAYER, defId: "player", locationId: START, pos: { x: 0, y: 0 }, hp: 10, alive: true },
+    });
+    expect(combatSystem([{ type: "Attack" }])(w, 0)).toEqual([]);
+  });
+});

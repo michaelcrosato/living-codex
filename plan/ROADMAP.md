@@ -312,9 +312,14 @@ highest-value target. Captured here so the ROADMAP stays the durable record (det
 `pnpm verify` green — **213 tests / 43 files**; `pnpm audit` clean; deps current (vite 7.3.3 & @types/node
 24.12.4 are the latest *within-major* — only the deferred majors are newer); **zero** TODO/FIXME/HACK/
 ts-ignore/eslint-disable in `packages` or `tools`; all three content-safety layers have tested logic.
-Engine-core mutation re-measured this cycle (baseline was SPEC-30 73.31% → Cycle-5 75.14%; combat + quests
-hardened SPEC-34/36/37). Remaining engine-core survivors are the BACKLOG-flagged low-risk surfaces
-(`snapshot.ts` hashing, `world.ts`, `rng.ts`) — **explicitly do-not-chase** per SPEC-30.
+Engine-core mutation **re-measured this cycle** (SPEC-30 baseline 73.31% → Cycle-5 75.14%): aggregate
+**69.83%** — the drop vs. Cycle-5 reflects new code added in Cycles 4–6 generating fresh mutants, not a
+regression. The re-measure earned its keep: it surfaced `combat.ts` still at **50%** (SPEC-34 hardened the
+damage/HP side, but the *target-selection predicate* was unpinned) — a genuine gameplay gap, **not**
+low-risk — now closed by **SPEC-44 (combat.ts 50%→100%)**. `quests.ts` rose to 77.23% (SPEC-36/37). The
+only remaining lower surfaces are the BACKLOG-flagged low-risk ones (`snapshot.ts` hashing 43.75%,
+`world.ts` 60%, `rng.ts` 64%) — **do-not-chase** per SPEC-30 (hash collisions improbable; RNG bounds and
+world transitions are exercised by the fuzz + every system test).
 
 ### 9.3 The Cycle-7 frontier (honest assessment)
 The highest-value remaining leap is **real multi-model generation** end-to-end (Architect/Loremaster/

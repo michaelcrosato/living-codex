@@ -87,6 +87,15 @@ describe("runCycle — full decomposition + curation bundle (P2)", () => {
     expect(hashValue(a.candidate)).toBe(GOLDEN_HASH_STORYLETS);
   });
 
+  it("SPEC-97: the storylet-budget candidate also passes the full gate (generated storylet is satisfiable)", async () => {
+    const bundle = await runWithStorylets();
+    expect(bundle.candidate.storylets.length).toBeGreaterThan(0); // it generated a storylet
+    const loaded = loadPacks([bundle.candidate as unknown, raw]);
+    const { errors } = staticPlayabilityCheck(loaded.registries);
+    expect(errors).toEqual([]); // generated storylet is satisfiable; no unsatisfiable/dead-content errors
+    expect(auditCanon([bundle.candidate as never, raw as never], loaded.registries)).toEqual([]);
+  });
+
   it("default brief (budget.storylets=0) still produces NO storylets (golden unchanged)", async () => {
     const bundle = await run();
     expect(bundle.candidate.storylets).toEqual([]);

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { DialogueId, type InputEvent } from "@codex/content-schema";
+import { DialogueId } from "@codex/content-schema";
+import type { InputEvent } from "@codex/engine-core";
 import { InputController } from "../src/input";
 
 /**

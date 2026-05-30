@@ -88,5 +88,8 @@ describe("scene drawing", () => {
     const r = new FakeRenderer();
     drawScene(r, world, registries, { w: 800, h: 600 });
     expect(r.circleFills).toContain("#555555"); // downed grey
+    // WCAG 1.4.1 (SPEC-85): downed entities also get a non-color size cue (smaller radius), not color alone.
+    expect(r.calls).toContain("circle:4"); // downed radius
+    expect(r.calls).not.toContain("circle:7"); // ...distinct from a living NPC (7)
   });
 });

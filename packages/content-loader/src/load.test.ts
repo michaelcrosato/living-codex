@@ -145,4 +145,103 @@ describe("content-loader", () => {
     const h2 = loadPacks([validPack()]).fingerprint.registriesHash;
     expect(h1).toBe(h2);
   });
+
+  it("catches a dangling reference for EVERY entity type (treaty completeness)", () => {
+    // The integrity pass collects refs of types npc/quest/faction/item/location/dialogue across many
+    // paths. Prior tests only covered npc + quest; these guard the other four type detectors so a
+    // regression that stopped checking (say) faction or dialogue refs can't slip bad content through.
+
+    // faction — via npc.faction
+    const fac = validPack();
+    (fac.npcs as { faction?: string }[])[0]!.faction = "faction.ghost";
+    expect(() => loadPacks([fac])).toThrowError(/faction\.ghost/);
+
+    // item — via quest rewards.items
+    const itm = validPack();
+    (itm.quests as { rewards: { items?: unknown[] } }[])[0]!.rewards.items = [
+      { itemId: "item.ghost", count: 1 },
+    ];
+    expect(() => loadPacks([itm])).toThrowError(/item\.ghost/);
+
+    // location — via npc.homeLocationId
+    const loc = validPack();
+    (loc.npcs as { homeLocationId?: string }[])[0]!.homeLocationId = "location.ghost";
+    expect(() => loadPacks([loc])).toThrowError(/location\.ghost/);
+
+    // dialogue — via npc.dialogueId
+    const dlg = validPack();
+    (dlg.npcs as { dialogueId: string }[])[0]!.dialogueId = "dialogue.ghost";
+    expect(() => loadPacks([dlg])).toThrowError(/dialogue\.ghost/);
+  });
+
+  it("catches a dangling reference inside an EFFECT (give_item) — not just conditions/top-level fields", () => {
+    // Effects route refs too (collectEffectRefs); prior tests only hit a condition + a top-level id.
+    const broken = validPack();
+    (broken.quests as { onAnyComplete: unknown[] }[])[0]!.onAnyComplete = [
+      { kind: "give_item", itemId: "item.ghost", count: 1 },
+    ];
+    expect(() => loadPacks([broken])).toThrowError(/item\.ghost/);
+  });
+
+  it("catches dangling references across every collection PATH (the treaty is comprehensive)", () => {
+    // integrity.ts routes refs through distinct collectors per source location; a regression in any
+    // single arm must still fail the load. One dangling ref per path, each expected to throw its id.
+    const cases: { name: string; ghost: RegExp; mut: (p: Record<string, unknown>) => void }[] = [
+      {
+        name: "condition has_item (offerWhen)",
+        ghost: /item\.ghost/,
+        mut: (p) =>
+          ((p.quests as { offerWhen: unknown[] }[])[0]!.offerWhen = [
+            { kind: "has_item", itemId: "item.ghost", count: 1 },
+          ]),
+      },
+      {
+        name: "effect adjust_reputation (onAnyComplete)",
+        ghost: /faction\.ghost/,
+        mut: (p) =>
+          ((p.quests as { onAnyComplete: unknown[] }[])[0]!.onAnyComplete = [
+            { kind: "adjust_reputation", factionId: "faction.ghost", delta: 5 },
+          ]),
+      },
+      {
+        name: "objective reach (location)",
+        ghost: /location\.ghost/,
+        mut: (p) =>
+          ((p.quests as { branches: { objectives: unknown[] }[] }[])[0]!.branches[0]!.objectives = [
+            { kind: "reach", locationId: "location.ghost" },
+          ]),
+      },
+      {
+        name: "location exit.toLocationId",
+        ghost: /location\.ghost/,
+        mut: (p) =>
+          ((p.locations as { exits?: unknown[] }[])[0]!.exits = [
+            { at: { x: 0, y: 0 }, toLocationId: "location.ghost", spawnAt: { x: 0, y: 0 }, label: "x" },
+          ]),
+      },
+      {
+        name: "location npcSpawns.npcId",
+        ghost: /npc\.ghost/,
+        mut: (p) =>
+          ((p.locations as { npcSpawns: unknown[] }[])[0]!.npcSpawns = [
+            { npcId: "npc.ghost", at: { x: 0, y: 0 } },
+          ]),
+      },
+      {
+        name: "faction.rivals",
+        ghost: /faction\.ghost/,
+        mut: (p) => ((p.factions as { rivals?: string[] }[])[0]!.rivals = ["faction.ghost"]),
+      },
+    ];
+    for (const c of cases) {
+      const p = validPack();
+      c.mut(p);
+      try {
+        loadPacks([p]);
+        throw new Error(`expected a dangling-ref error for path: ${c.name}`);
+      } catch (err) {
+        expect(String((err as Error).message), c.name).toMatch(c.ghost);
+      }
+    }
+  });
 });

@@ -68,6 +68,17 @@
           ],
           "setsFlags": [],
           "overrideDialogueId": "dialogue.kestrel_refused"
+        },
+        {
+          "when": [
+            {
+              "kind": "flag_is",
+              "flag": "flag.played_both",
+              "equals": true
+            }
+          ],
+          "setsFlags": [],
+          "overrideDialogueId": "dialogue.kestrel_played"
         }
       ]
     }
@@ -274,6 +285,73 @@
               "c-0": [
                 "\n",
                 "^\"It always does. Right up until it doesn't. Door's behind you.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          null
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": []
+    },
+    {
+      "id": "dialogue.kestrel_played",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "17454e83bd8a0e",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "^She watches you over the rim of her glass for a beat too long. \"You worked us both. Varga and me, played off the middle.\" Something that isn't quite a smile. \"I'd be insulted if it weren't exactly what I'd have done. Just know I'm counting now — same as she is.\"",
+            "\n",
+            "ev",
+            "str",
+            "^That's the job.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^Nothing personal.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-1",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "^\"It is. Right up until everyone's counting. Then it's just math.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-1": [
+                "\n",
+                "^\"It never is. That's the part that costs you.\"",
                 "\n",
                 "end",
                 {

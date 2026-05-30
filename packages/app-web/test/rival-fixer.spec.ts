@@ -101,6 +101,10 @@ describe("Kestrel's follow-up changes by the loyalty choice (SPEC-55)", () => {
     expect(afterFlag("flag.refused_kestrel").dialogueId).toBe("dialogue.kestrel_refused");
   });
 
+  it("played both sides -> the grudging-respect follow-up (SPEC-58)", () => {
+    expect(afterFlag("flag.played_both").dialogueId).toBe("dialogue.kestrel_played");
+  });
+
   it("before deciding -> the default offer line", () => {
     expect(afterFlag().dialogueId).toBe("dialogue.kestrel");
   });

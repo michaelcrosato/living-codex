@@ -185,11 +185,18 @@
       "id": "dialogue.drip_vendor",
       "format": "ink-json",
       "inkVersion": "21",
-      "sourceHash": "1abb10d17a3814",
+      "sourceHash": "0ef1f82abc8986",
       "compiled": {
         "inkVersion": 21,
         "root": [
           [
+            "ev",
+            true,
+            "/ev",
+            {
+              "VAR=": "met_marrow",
+              "re": true
+            },
             "^Marrow wipes a glass that will never be clean. \"Ashfall sent collectors. I'm short. You look like someone who settles things.\"",
             "\n",
             "ev",
@@ -263,11 +270,24 @@
             }
           ],
           "done",
-          null
+          {
+            "global decl": [
+              "ev",
+              false,
+              {
+                "VAR=": "met_marrow"
+              },
+              "/ev",
+              "end",
+              null
+            ]
+          }
         ],
         "listDefs": {}
       },
-      "declaredVars": []
+      "declaredVars": [
+        "met_marrow"
+      ]
     },
     {
       "id": "dialogue.drip_enforcer",

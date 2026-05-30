@@ -119,4 +119,35 @@ describe("Drip Market pack: same-path load + play (SPEC-33)", () => {
     const replayed = replay(createWorld(opts), session.log, { against: fingerprint });
     expect(hash(replayed)).toBe(hash(session.world)); // determinism holds with the new pack loaded
   });
+
+  it("talking to Marrow sets flag.met_marrow → quest.market_debt offers (SPEC-38 Ink trigger)", () => {
+    const VENDOR_DLG = DialogueId.parse("dialogue.drip_vendor");
+    const asset = registries.dialogues.get(VENDOR_DLG);
+    expect(asset?.declaredVars).toContain("met_marrow");
+    // the Ink sets `met_marrow` on entry, so it reads true after the first choice
+    const ink = new InkNarrative().load(asset!.compiled);
+    ink.current();
+    ink.choose(0);
+    ink.current();
+    expect(ink.getVar("met_marrow")).toBe(true);
+
+    const offers = (w: ReturnType<typeof createWorld>): boolean =>
+      questSystem(registries.quests, [], registries.npcs)(w, 0).some(
+        (e) => e.type === "ActivateQuest" && e.questId === QID,
+      );
+
+    // before talking, the quest is NOT offered (offerWhen needs flag.met_marrow)
+    let w = createWorld({ seed: "marrow", startLocationId: MARKET });
+    expect(offers(w)).toBe(false);
+
+    // engaging Marrow's dialogue mirrors met_marrow -> flag.met_marrow (dialogue.ts:36 / apply.ts:70)
+    w = applyEvent(w, {
+      type: "DialogueAdvanced",
+      dialogueId: VENDOR_DLG,
+      inkState: "{}",
+      flags: { [MET_MARROW]: true },
+    });
+    expect(w.flags[MET_MARROW]).toBe(true);
+    expect(offers(w)).toBe(true); // now the quest offers in-game
+  });
 });

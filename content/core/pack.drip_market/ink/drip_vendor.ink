@@ -1,3 +1,5 @@
+VAR met_marrow = false
+~ met_marrow = true
 Marrow wipes a glass that will never be clean. "Ashfall sent collectors. I'm short. You look like someone who settles things."
 * [Hear her out]
     "Three ways this goes. Talk them down, scare them off, or slip the ledger. Your call."

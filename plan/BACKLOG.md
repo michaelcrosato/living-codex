@@ -85,12 +85,10 @@ tests just to chase the number. Hotspots (lowest score first):
 Re-run `pnpm mutation` after adding tests; consider a score *ratchet* spec once the baseline stabilizes.
 
 ## Content follow-ups
-- **~~Wire ashfall_district → drip_market~~ DONE (SPEC-35, 2026-05-30)** via master/plugin layering
-  (geography moved into pack.opening). Remaining follow-up: **the `flag.met_marrow` quest-offer trigger** —
-  `quest.market_debt`'s `offerWhen` needs `flag.met_marrow`, but nothing sets it yet, so the quest doesn't
-  offer in-game even though the district is reachable + NPCs are talkable. Add a `VAR met_marrow` to
-  `drip_vendor.ink` (`~ met_marrow = true`) + `declaredVars: ["met_marrow"]` so the dialogue system mirrors
-  it to `flag.met_marrow` on talking to Marrow; recompile Ink. Small, clean Recipe-style follow-up.
+- **~~Wire ashfall_district → drip_market~~ DONE (SPEC-35)** + **~~met_marrow quest trigger~~ DONE (SPEC-38)**,
+  both 2026-05-30. The Drip Market is now fully playable: reachable from the opening district (geography
+  layered into pack.opening) and `quest.market_debt` offers once the player talks to Marrow (her Ink sets
+  `met_marrow` → `flag.met_marrow`). No open content follow-ups for this district.
 
 ## Notes
 Every item above was considered and *deliberately deferred* during the 2026-05-29 planning pass. The

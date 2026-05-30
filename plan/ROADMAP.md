@@ -285,3 +285,44 @@ design note first). Re-baseline (`pnpm verify`, `pnpm outdated`, mutation score)
 [BACKLOG.md](BACKLOG.md). Still **deferred** (not specs): Vite 7→8, WebGPU, Miniplex→bitECS swap (no driver —
 contained behind `ecs/registry.ts`), persona critics + multi-hop contradiction detection (real-model-gated),
 `@types/node` 25 (ahead of runtime).
+
+## 9. CYCLES 4–6 (v2026.05-afk) — autonomous AFK hardening arc
+
+Unlike Cycles 2–3 (pre-planned waves), Cycles 4–6 ran under the perpetual AFK loop: AUDIT→EXECUTE→REPLENISH
+per discovery, no human in the loop. Specs were written just-in-time as the audit surfaced the next
+highest-value target. Captured here so the ROADMAP stays the durable record (details in JOURNAL/PROGRESS).
+
+### 9.1 What shipped (SPEC-34 … SPEC-43)
+- **Playable content depth.** SPEC-34 (combat overkill/post-mortem HP≥0 invariant), SPEC-36 + SPEC-37 (all
+  6 quest objective kinds now tested), SPEC-38 (`met_marrow` → quest-offer trigger). SPEC-35 made the Drip
+  Market reachable by resolving the cross-pack-exit trap via **master/plugin geography layering** (the
+  exit-target *location* lives in the base pack; content overlays from the dependent pack) — see SPEC-42.
+- **The content-safety boundary is now fully test-hardened** (the repo's core thesis — "AI-authored content
+  can never silently break the game"). Its three layers each gained tested logic: **referential integrity**
+  (SPEC-39, `integrity.ts` mutation 19.70%→45.45%), **semantic canon graph** (SPEC-40, `canon-graph.ts`
+  53.42%→58.22%), and the **static playability gate** (SPEC-43 — extracted the inline-and-untested
+  solvability/reachability/exit-bounds/offerWhen/dead-storylet rules into the tested
+  `staticPlayabilityCheck`, behavior-preserving).
+- **Supply-chain.** SPEC-41 pinned transitive `qs` ≥6.15.2 (GHSA-q8mj-m7cp-5q26) via a pnpm-workspace
+  override; `pnpm audit` is clean.
+- **Contract docs.** SPEC-42 documented the "base pack must load in isolation" layering rule in the durable
+  author docs (was only in /plan).
+
+### 9.2 Data-backed state at Cycle-6 close (2026-05-30)
+`pnpm verify` green — **213 tests / 43 files**; `pnpm audit` clean; deps current (vite 7.3.3 & @types/node
+24.12.4 are the latest *within-major* — only the deferred majors are newer); **zero** TODO/FIXME/HACK/
+ts-ignore/eslint-disable in `packages` or `tools`; all three content-safety layers have tested logic.
+Engine-core mutation re-measured this cycle (baseline was SPEC-30 73.31% → Cycle-5 75.14%; combat + quests
+hardened SPEC-34/36/37). Remaining engine-core survivors are the BACKLOG-flagged low-risk surfaces
+(`snapshot.ts` hashing, `world.ts`, `rng.ts`) — **explicitly do-not-chase** per SPEC-30.
+
+### 9.3 The Cycle-7 frontier (honest assessment)
+The highest-value remaining leap is **real multi-model generation** end-to-end (Architect/Loremaster/
+Dramatist/Critic) and its quality upgrades (**persona-diverse critics**, **multi-hop context-context
+contradiction detection**, prompt-caching). All are **BLOCKED on a paid `OPENROUTER_API_KEY`** + explicit
+human authorization to spend (see [BLOCKED.md](BLOCKED.md) / [BACKLOG.md](BACKLOG.md)) — the AFK guardrails
+forbid unattended spending/secret use, and the StubProvider path is the hermetic substitute already in
+place. **Until a human unblocks that, the unblocked queue is diminishing-value hardening only** — and the
+repo's own discipline (SPEC-30, GOAL §3) says not to manufacture churn (mutation-number chasing, speculative
+verbs/features). Net: Cycle-7's high-value work is human-gated; the loop continues on genuine, non-churn
+hardening/hygiene where it exists, and otherwise holds the line (green gates, clean audit, current deps).

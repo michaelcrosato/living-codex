@@ -519,6 +519,55 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
       expect(errors).toEqual([]);
       expect(warnings.some((w) => w.includes('retrieve target "item.credits"'))).toBe(false);
     });
+
+    // SPEC-106: the `rewards.credits > 0` boundary mirrors the engine's credit-grant (quests.ts:27) —
+    // credits=0 grants no item.credits, so a retrieve item.credits is unobtainable. (Kills the >0→>=0 mutant.)
+    it("warns for retrieve item.credits when no quest awards credits", () => {
+      const { errors, warnings } = check({
+        quests: [
+          retrieveQuest({
+            branches: [
+              {
+                id: "b",
+                label: "l",
+                objectives: [{ kind: "retrieve", itemId: "item.credits", count: 5 }],
+              },
+            ],
+            rewards: { credits: 0 },
+          }),
+        ],
+      });
+      expect(errors).toEqual([]);
+      expect(warnings.some((w) => w.includes('retrieve target "item.credits"'))).toBe(true);
+    });
+
+    // SPEC-106: a give_item inside a skill_check's onFail is a genuine item source. (Kills the :298 mutant
+    // that deletes the skill_check.onFail collection.)
+    it("no warning when the only item source is a give_item in a skill_check onFail", () => {
+      const { errors, warnings } = check({
+        quests: [
+          retrieveQuest({
+            branches: [
+              {
+                id: "b",
+                label: "l",
+                objectives: [
+                  { kind: "retrieve", itemId: "item.cell", count: 1 },
+                  {
+                    kind: "skill_check",
+                    skill: "tech",
+                    dc: 10,
+                    onFail: [{ kind: "give_item", itemId: "item.cell", count: 1 }],
+                  },
+                ],
+              },
+            ],
+          }),
+        ],
+      });
+      expect(errors).toEqual([]);
+      expect(warnings.some(isUnobtainable)).toBe(false);
+    });
   });
 
   // SPEC-105: a `has_item` gate on an item nothing grants is unsatisfiable (the item-analog of SPEC-70's
@@ -572,6 +621,26 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
               },
             ],
           }),
+        ],
+      });
+      expect(errors).toEqual([]);
+      expect(warnings.some(isUnsatItemGate)).toBe(true);
+    });
+
+    // SPEC-106: recursion must also descend `any` gates (not just `all`). Kills the "all" || false mutant.
+    it("recurses into an any gate in a storylet precondition", () => {
+      const { errors, warnings } = check({
+        storylets: [
+          {
+            id: "storylet.locked",
+            preconditions: [
+              { kind: "any", of: [{ kind: "has_item", itemId: "item.key", count: 1 }] },
+            ],
+            salience: 1,
+            tags: [],
+            content: { ambient: "a locked door" },
+            effects: [],
+          },
         ],
       });
       expect(errors).toEqual([]);

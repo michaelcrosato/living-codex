@@ -371,14 +371,27 @@ pure config swap; no engine/loader/pipeline edit required. (The default model id
 is overridable per-run via `PIPELINE_MODEL`; the human picks per 10.1.)
 
 ### 10.3 Cost & safety controls (the spending guardrail in practice)
+_(Concrete mechanisms from a 2026 OpenRouter best-practices scan — **confirm exact param names against the
+official docs at unblock-time**, as some come from third-party guides. Sources at the end of this section.)_
 - **Dry-run first:** estimate tokens × price for one cycle before any paid call; log the estimate.
-- **Hard cap:** a per-run budget; abort if exceeded. One pack, not a batch, for run #1.
-- **Prompt-caching** (BACKLOG): OpenRouter sticky routing / `cache_control` breakpoints — cost optimization,
-  only meaningful once batches run; defer until run #1 validates correctness.
+- **Hard per-request cap:** OpenRouter supports a **`max_cost_per_request`**-style cap — wire it into
+  `OpenRouterProvider`'s request body (env-driven, e.g. `PIPELINE_MAX_COST`) so a misconfigured retry can't
+  run up a bill. This is the first concrete enhancement to make at unblock (small, in `openrouter.ts`).
+- **Structured outputs already cut cost:** the provider already sends `response_format: json_schema` per
+  role — this reduces verbosity (a cost win already in place); keep it.
+- **Prompt-caching** (defer to batch builds; BACKLOG): Anthropic-style `cache_control: { type: "ephemeral" }`
+  breakpoints (default 5-min TTL, extendable via `"ttl": "1h"`) on the **stable** prefix — here the
+  **grounding facts** (prior canon), which repeat across a batch; plus a `session_id` for explicit sticky
+  routing to keep the cache warm. Cache HITS bill at zero (only the populating miss is charged). Only
+  meaningful once batches run — defer until run #1 validates correctness.
 - **Output is NOT auto-shipped:** every candidate passes the SAME safety boundary as hand-authored content
   (loader referential integrity + `auditCanon` semantic graph + `staticPlayabilityCheck`) AND the rubric
   judge (SPEC-15) flags low scores AND a human reviews the curation bundle (accept/edit/reject) before bake.
   So a bad/expensive/hallucinated generation cannot reach the game silently.
+
+_Sources:_ [OpenRouter prompt-caching](https://openrouter.ai/docs/guides/best-practices/prompt-caching),
+[OpenRouter response-caching](https://openrouter.ai/docs/guides/features/response-caching),
+[OpenRouter production practices (3rd-party)](https://markaicode.com/best/best-openrouter-production-practices/).
 
 ### 10.4 Verification strategy (how we know a real run is good)
 Per-role **structured output** (`response_format: json_schema`, already wired) → schema-valid proposals →

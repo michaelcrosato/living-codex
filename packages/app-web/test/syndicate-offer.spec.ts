@@ -243,3 +243,38 @@ describe("syndicate recruitment quest (SPEC-66)", () => {
     expect(w.reputation[VARGA_CREW]).toBe(-5); // joining the Syndicate costs Varga standing
   });
 });
+
+/**
+ * SPEC-86 — the leverage choice pays off: holding the drive over the Syndicate (flag.leveraged_syndicate)
+ * summons a cleaner (quest.loose_ends). Offer gated on that flag; the talk_down branch completes via the
+ * real engine. (The fight branch's defeat objective is solvability-verified by content:verify + the SPEC-72
+ * defeat-requires-combat guard — the cleaner has combat.hp 14.)
+ */
+describe("syndicate cleaner — leverage payoff (SPEC-86)", () => {
+  const LQ = QuestId.parse("quest.loose_ends");
+  const CLEANER_DLG = DialogueId.parse("dialogue.syndicate_cleaner");
+  const leveraged = (set: boolean): ReturnType<typeof createWorld> => {
+    let w = createWorld({ seed: "cleaner", startLocationId: DISTRICT, skills: { persuade: 20 } });
+    if (set) w = applyEvent(w, { type: "SetFlag", flag: FlagId.parse("flag.leveraged_syndicate"), to: true });
+    return w;
+  };
+  const offered = (w: ReturnType<typeof createWorld>): boolean =>
+    questSystem(registries.quests, [])(w, 0).some((e) => e.type === "ActivateQuest" && e.questId === LQ);
+
+  it("does NOT summon the cleaner unless the player leveraged the Syndicate", () => {
+    expect(offered(leveraged(false))).toBe(false);
+    expect(offered(leveraged(true))).toBe(true);
+  });
+
+  it("the talk_down branch completes end-to-end with its consequence", () => {
+    let w = leveraged(true);
+    w = applyEvent(w, { type: "DialogueAdvanced", dialogueId: CLEANER_DLG, inkState: "{}", flags: {} });
+    const attempt = [{ type: "Attempt" as const, questId: LQ, branchId: "talk_down" }];
+    for (let t = 0; t < 8 && w.quests[LQ]?.status !== "completed"; t++) {
+      w = applyEvents(w, questSystem(registries.quests, attempt, registries.npcs)(w, 0));
+    }
+    expect(w.quests[LQ]?.completedBranchId).toBe("talk_down");
+    expect(w.flags[FlagId.parse("flag.cleaner_talked")]).toBe(true);
+    expect(w.flags[FlagId.parse("flag.cleaner_resolved")]).toBe(true);
+  });
+});

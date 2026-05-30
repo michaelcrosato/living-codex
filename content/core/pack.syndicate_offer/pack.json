@@ -37,6 +37,32 @@
       "dialogueId": "dialogue.syndicate_broker",
       "homeLocationId": "location.the_drip",
       "reactsTo": []
+    },
+    {
+      "id": "npc.syndicate_cleaner",
+      "name": "The Cleaner",
+      "faction": "faction.ashfall_syndicate",
+      "appearance": {
+        "bodyColor": "#4b4f57",
+        "accentColor": "#b03a3a",
+        "silhouette": "stocky"
+      },
+      "bio": {
+        "role": "Syndicate cleaner",
+        "backstory": "The Syndicate keeps a few people whose whole job is making problems stop being problems. He is one of the quiet ones, which is worse.",
+        "wants": "to close the loose end you became without making a mess Mireille has to explain",
+        "fears": "a target who has nothing left to lose",
+        "voice": "flat, courteous, unhurried",
+        "secrets": [
+          "He has let exactly one mark walk, once, and has regretted it every day since."
+        ]
+      },
+      "dialogueId": "dialogue.syndicate_cleaner",
+      "homeLocationId": "location.the_drip",
+      "combat": {
+        "hp": 14
+      },
+      "reactsTo": []
     }
   ],
   "dialogues": [
@@ -146,6 +172,114 @@
       },
       "declaredVars": [
         "met_broker"
+      ]
+    },
+    {
+      "id": "dialogue.syndicate_cleaner",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "0556fd948d1f6f",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "ev",
+            true,
+            "/ev",
+            {
+              "VAR=": "met_cleaner",
+              "re": true
+            },
+            "^The man who sits down across from you has the stillness of someone paid to make problems stop. \"You're holding something over the Syndicate,\" he says, like a weather report. \"Mireille sent me to discuss... loose ends. You can hand it back, you can talk me out of it, or you can find out what I'm for.\" He sets both hands flat on the table. \"Your call. I'm patient. Not infinitely.\"",
+            "\n",
+            "ev",
+            "str",
+            "^Come and take it.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^Let's talk.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-1",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^I was just leaving.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-2",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "^\"There it is.\" He almost looks relieved. \"I did hope you'd be difficult.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-1": [
+                "\n",
+                "^\"Mireille said you might. She also said not to let you. We'll see who she pays better.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-2": [
+                "\n",
+                "^\"Were you. Funny how that works.\" He doesn't move, but the room feels smaller.",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          {
+            "global decl": [
+              "ev",
+              false,
+              {
+                "VAR=": "met_cleaner"
+              },
+              "/ev",
+              "end",
+              null
+            ]
+          }
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": [
+        "met_cleaner"
       ]
     }
   ],
@@ -378,6 +512,115 @@
         "items": [],
         "reputation": []
       }
+    },
+    {
+      "id": "quest.loose_ends",
+      "title": "Loose Ends",
+      "giverNpcId": "npc.syndicate_cleaner",
+      "summary": "You kept the drive as leverage, and the Syndicate sent someone to close the loose end. Fight him off, talk him down, or slip away.",
+      "offerWhen": [
+        {
+          "kind": "flag_is",
+          "flag": "flag.leveraged_syndicate",
+          "equals": true
+        }
+      ],
+      "branches": [
+        {
+          "id": "fight",
+          "label": "Fight him off",
+          "objectives": [
+            {
+              "kind": "talk_to",
+              "npcId": "npc.syndicate_cleaner"
+            },
+            {
+              "kind": "defeat",
+              "npcId": "npc.syndicate_cleaner"
+            }
+          ],
+          "onComplete": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.cleaner_beaten",
+              "to": true
+            },
+            {
+              "kind": "adjust_reputation",
+              "factionId": "faction.ashfall_syndicate",
+              "delta": -5
+            }
+          ]
+        },
+        {
+          "id": "talk_down",
+          "label": "Talk him down",
+          "objectives": [
+            {
+              "kind": "talk_to",
+              "npcId": "npc.syndicate_cleaner"
+            },
+            {
+              "kind": "skill_check",
+              "skill": "persuade",
+              "dc": 14,
+              "onFail": [
+                {
+                  "kind": "show_text",
+                  "text": "He listens, and is unmoved. \"Mireille pays better,\" he says. The conversation is over."
+                }
+              ]
+            }
+          ],
+          "onComplete": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.cleaner_talked",
+              "to": true
+            }
+          ]
+        },
+        {
+          "id": "slip_away",
+          "label": "Slip away",
+          "objectives": [
+            {
+              "kind": "talk_to",
+              "npcId": "npc.syndicate_cleaner"
+            },
+            {
+              "kind": "skill_check",
+              "skill": "sneak",
+              "dc": 12,
+              "onFail": [
+                {
+                  "kind": "show_text",
+                  "text": "He is between you and every exit before you finish the thought. Not this time."
+                }
+              ]
+            }
+          ],
+          "onComplete": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.cleaner_evaded",
+              "to": true
+            }
+          ]
+        }
+      ],
+      "onAnyComplete": [
+        {
+          "kind": "set_flag",
+          "flag": "flag.cleaner_resolved",
+          "to": true
+        }
+      ],
+      "rewards": {
+        "credits": 0,
+        "items": [],
+        "reputation": []
+      }
     }
   ],
   "storylets": [
@@ -533,6 +776,26 @@
       "predicate": "fact",
       "subject": "npc.syndicate_broker",
       "note": "The Syndicate's quiet hand, sent to recover the warehouse drive before its contents surface."
+    },
+    {
+      "predicate": "member_of",
+      "subject": "npc.syndicate_cleaner",
+      "object": "faction.ashfall_syndicate"
+    },
+    {
+      "predicate": "located_in",
+      "subject": "npc.syndicate_cleaner",
+      "object": "location.the_drip"
+    },
+    {
+      "predicate": "status",
+      "subject": "npc.syndicate_cleaner",
+      "state": "alive"
+    },
+    {
+      "predicate": "fact",
+      "subject": "npc.syndicate_cleaner",
+      "note": "A Syndicate cleaner sent to close the player as a loose end once they hold the drive as leverage."
     }
   ]
 }

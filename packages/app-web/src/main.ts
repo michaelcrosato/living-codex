@@ -3,7 +3,7 @@ import { FlagId, LocationId } from "@codex/content-schema";
 import { accumulate, makeSave } from "@codex/engine-core";
 import { createPixiRenderer } from "@codex/render-pixi";
 import { InkNarrative } from "@codex/narrative-ink";
-import { exportSave, saveGame, loadGame, requestPersistentStorage } from "@codex/persistence";
+import { exportSave, importSave, saveGame, loadGame, requestPersistentStorage } from "@codex/persistence";
 import openingPack from "../../../content/core/pack.opening/pack.json";
 import districtBarks from "../../../content/core/pack.district_barks/pack.json";
 import dripMarket from "../../../content/core/pack.drip_market/pack.json";
@@ -102,6 +102,37 @@ async function main(): Promise<void> {
     dialogueView.close();
   };
 
+  // Swap in a restored session from a loaded/imported save (SPEC-78/79).
+  const restoreFrom = (save: ReturnType<typeof importSave>): void => {
+    closeDialogue();
+    session = GameSession.restore(registries, fingerprint, new InkNarrative(), save);
+  };
+
+  // SPEC-79: import a previously-exported save file (the L-export's counterpart). A hidden file input
+  // triggered by the 'i' key; on pick, parse via importSave and restore. (File-read is thin DOM glue;
+  // importSave + GameSession.restore are unit-tested.)
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "application/json";
+  fileInput.style.display = "none";
+  document.body.appendChild(fileInput);
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files?.[0];
+    fileInput.value = ""; // allow re-importing the same file
+    if (!file) return;
+    file.text().then(
+      (text) => {
+        try {
+          restoreFrom(importSave(text));
+          toast("Imported.");
+        } catch (err) {
+          toast(err instanceof Error ? err.message : "Import failed.");
+        }
+      },
+      () => toast("Import failed."),
+    );
+  });
+
   let accumulatorMs = 0;
   let last = performance.now();
   const frame = (now: number): void => {
@@ -155,12 +186,12 @@ async function main(): Promise<void> {
       loadGame("manual").then(
         (save) => {
           if (!save) return void toast("No save to load.");
-          closeDialogue();
-          session = GameSession.restore(registries, fingerprint, new InkNarrative(), save);
+          restoreFrom(save);
           toast("Loaded.");
         },
         (err: unknown) => toast(err instanceof Error ? err.message : "Load failed."),
       );
+    else if (k === "i") fileInput.click(); // SPEC-79: import a save file
     else if (k === "l") {
       // export the current session as a downloadable JSON (replayable bug report / share)
       const json = exportSave(makeSave(session.world, [], fingerprint));

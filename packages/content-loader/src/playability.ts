@@ -26,7 +26,9 @@ export interface PlayabilityReport {
  *   - no `retrieve` objective targets an item that no `give_item` effect or quest reward ever grants (it
  *     could never be collected — warned, SPEC-104);
  *   - no `has_item` gate reads an item that nothing grants (unsatisfiable gate, the item-analog of the
- *     SPEC-70 flag check — warned, SPEC-105).
+ *     SPEC-70 flag check — warned, SPEC-105);
+ *   - no cycle of `quest_completed` offer-prerequisites (quests that gate each other's `offerWhen` and so
+ *     can never be offered — the temporal-causality failure mode; warned, SPEC-110).
  *
  * Pure over `registries` so it is unit-testable; the `content:verify` script is the thin CLI that
  * loads packs, runs this plus `auditCanon`, and reports (errors → exit 1).
@@ -334,6 +336,69 @@ export function staticPlayabilityCheck(registries: Registries): PlayabilityRepor
         `has_item gate "${item}" is read but granted by no give_item effect or quest reward — the content gated on it can never trigger.`,
       );
     }
+  }
+
+  // Quest-offer prerequisite cycles (SPEC-110): a `quest_completed(P)` condition in quest Q's `offerWhen`
+  // means Q's OFFER requires P completed first. A cycle in this hard-prerequisite graph means those quests
+  // can never be offered (no causal ordering exists — the 2026 "reference events that haven't occurred"
+  // failure mode). SOUNDNESS: a `start_quest` effect sets a quest active bypassing offerWhen (apply.ts), so
+  // a cycle is only unsatisfiable if NO quest in it is start_quest-reachable. Edges are "hard" only on an
+  // all-path of offerWhen (under `any` the prereq is optional, under `not` it is an anti-requisite). Warn
+  // (subset-safe: a start_quest could live in a not-yet-loaded pack — like the SPEC-60/70/105 warnings).
+  const startable = new Set<string>();
+  const noteStartable = (effects: readonly Effect[]): void => {
+    for (const e of effects) if (e.kind === "start_quest") startable.add(e.questId);
+  };
+  for (const s of registries.storylets.values()) noteStartable(s.effects);
+  for (const quest of registries.quests.values()) {
+    noteStartable(quest.onAnyComplete);
+    for (const branch of quest.branches) {
+      noteStartable(branch.onComplete);
+      noteStartable(branch.onFail);
+      for (const obj of branch.objectives) {
+        if (obj.kind === "skill_check") noteStartable(obj.onFail);
+      }
+    }
+  }
+  const collectHardPrereqs = (cond: Condition, into: Set<string>): void => {
+    if (cond.kind === "quest_completed") into.add(cond.questId);
+    else if (cond.kind === "all") cond.of.forEach((c) => collectHardPrereqs(c, into));
+    // `any` (optional) and `not` (anti-requisite) and leaf conditions are not hard prerequisites.
+  };
+  const prereq = new Map<string, Set<string>>();
+  for (const quest of registries.quests.values()) {
+    const into = new Set<string>();
+    quest.offerWhen.forEach((c) => collectHardPrereqs(c, into));
+    prereq.set(quest.id, into);
+  }
+  // 3-colour DFS: a back-edge to a GRAY node is a cycle; report it if no member is start_quest-reachable.
+  const color = new Map<string, 0 | 1 | 2>(); // 0 white, 1 gray, 2 black
+  const path: string[] = [];
+  const reported = new Set<string>();
+  const visit = (u: string): void => {
+    color.set(u, 1);
+    path.push(u);
+    for (const v of prereq.get(u) ?? []) {
+      if (!prereq.has(v)) continue; // dangling quest ref — integrity.ts already errors on it
+      const c = color.get(v) ?? 0;
+      if (c === 1) {
+        const cycle = path.slice(path.indexOf(v));
+        const key = [...cycle].sort().join("|");
+        if (!reported.has(key) && !cycle.some((q) => startable.has(q))) {
+          reported.add(key);
+          warnings.push(
+            `quest-offer prerequisite cycle: ${cycle.join(" → ")} → ${v} — these quests gate each other's offer via quest_completed and none is start_quest-reachable, so none can ever be offered.`,
+          );
+        }
+      } else if (c === 0) {
+        visit(v);
+      }
+    }
+    path.pop();
+    color.set(u, 2);
+  };
+  for (const id of prereq.keys()) {
+    if ((color.get(id) ?? 0) === 0) visit(id);
   }
 
   return { errors, warnings };

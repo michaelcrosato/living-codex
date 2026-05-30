@@ -647,4 +647,125 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
       expect(warnings.some(isUnsatItemGate)).toBe(true);
     });
   });
+
+  // SPEC-110: a cycle of quest_completed offer-prerequisites means those quests can never be offered
+  // (temporal-causality break). Warning-only; sound modulo the start_quest bypass + all-path hardness.
+  describe("quest-offer prerequisite cycle guard (SPEC-110)", () => {
+    const qOffer = (id: string, offerWhen: unknown[]): Record<string, unknown> =>
+      quest({ id, offerWhen });
+    const isCycle = (w: string) => w.includes("quest-offer prerequisite cycle");
+    const startStorylet = (questId: string): Record<string, unknown> => ({
+      id: "storylet.kick",
+      preconditions: [],
+      salience: 1,
+      tags: [],
+      content: { ambient: "go" },
+      effects: [{ kind: "start_quest", questId }],
+    });
+
+    it("warns on a 2-quest quest_completed offer cycle", () => {
+      const { errors, warnings } = check({
+        quests: [
+          qOffer("quest.a", [{ kind: "quest_completed", questId: "quest.b" }]),
+          qOffer("quest.b", [{ kind: "quest_completed", questId: "quest.a" }]),
+        ],
+      });
+      expect(errors).toEqual([]);
+      expect(warnings.some(isCycle)).toBe(true);
+    });
+
+    it("warns on a self-loop (quest gated on its own completion)", () => {
+      const { warnings } = check({
+        quests: [qOffer("quest.a", [{ kind: "quest_completed", questId: "quest.a" }])],
+      });
+      expect(warnings.some(isCycle)).toBe(true);
+    });
+
+    it("does NOT warn when a quest in the cycle is start_quest-reachable (bypasses offerWhen)", () => {
+      const { warnings } = check({
+        quests: [
+          qOffer("quest.a", [{ kind: "quest_completed", questId: "quest.b" }]),
+          qOffer("quest.b", [{ kind: "quest_completed", questId: "quest.a" }]),
+        ],
+        storylets: [startStorylet("quest.a")],
+      });
+      expect(warnings.some(isCycle)).toBe(false);
+    });
+
+    it("does NOT treat a quest_completed under `any` as a hard prerequisite", () => {
+      const { warnings } = check({
+        quests: [
+          qOffer("quest.a", [
+            {
+              kind: "any",
+              of: [
+                { kind: "quest_completed", questId: "quest.b" },
+                { kind: "flag_is", flag: "flag.x", equals: true },
+              ],
+            },
+          ]),
+          qOffer("quest.b", [{ kind: "quest_completed", questId: "quest.a" }]),
+        ],
+      });
+      expect(warnings.some(isCycle)).toBe(false);
+    });
+
+    it("does NOT treat a quest_completed under `not` as a prerequisite", () => {
+      const { warnings } = check({
+        quests: [
+          qOffer("quest.a", [{ kind: "not", of: { kind: "quest_completed", questId: "quest.b" } }]),
+          qOffer("quest.b", [{ kind: "quest_completed", questId: "quest.a" }]),
+        ],
+      });
+      expect(warnings.some(isCycle)).toBe(false);
+    });
+
+    it("does NOT warn on an acyclic prerequisite chain (A→B→C)", () => {
+      const { warnings } = check({
+        quests: [
+          qOffer("quest.a", [{ kind: "quest_completed", questId: "quest.b" }]),
+          qOffer("quest.b", [{ kind: "quest_completed", questId: "quest.c" }]),
+          qOffer("quest.c", []),
+        ],
+      });
+      expect(warnings.some(isCycle)).toBe(false);
+    });
+
+    // start_quest from a quest EFFECT site (the common quest-chaining path), not just a storylet, must
+    // also break a cycle — pins the multi-site startable scan (quest.onAnyComplete / branch / skill_check).
+    it("does NOT warn when a branch onComplete start_quest reaches a cycle member", () => {
+      const { warnings } = check({
+        quests: [
+          qOffer("quest.a", [{ kind: "quest_completed", questId: "quest.b" }]),
+          qOffer("quest.b", [{ kind: "quest_completed", questId: "quest.a" }]),
+          quest({
+            id: "quest.c",
+            branches: [
+              {
+                id: "b",
+                label: "l",
+                objectives: [{ kind: "reach", locationId: "location.start" }],
+                onComplete: [{ kind: "start_quest", questId: "quest.a" }],
+              },
+            ],
+          }),
+        ],
+      });
+      expect(warnings.some(isCycle)).toBe(false);
+    });
+
+    // A quest_completed nested inside an `all` IS a hard prerequisite (all-path) — the edge must form,
+    // so a cycle through it is still detected.
+    it("detects a cycle whose edge is a quest_completed nested in an `all`", () => {
+      const { warnings } = check({
+        quests: [
+          qOffer("quest.a", [
+            { kind: "all", of: [{ kind: "quest_completed", questId: "quest.b" }] },
+          ]),
+          qOffer("quest.b", [{ kind: "quest_completed", questId: "quest.a" }]),
+        ],
+      });
+      expect(warnings.some(isCycle)).toBe(true);
+    });
+  });
 });

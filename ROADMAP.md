@@ -1,42 +1,131 @@
 # ROADMAP.md
 
-Operational roadmap for autonomous work. Product vision is [docs/GOAL.md](docs/GOAL.md);
-the sequenced *engine* build plan is [docs/TICKETS.md](docs/TICKETS.md) (T-00…T-16, all complete).
-This file tracks the **agent-workflow** phases and the atomic tickets in [tickets/](tickets/).
+Operational roadmap for autonomous work. Product vision is [`docs/GOAL.md`](docs/GOAL.md); current
+operating state is [`GOAL.md`](GOAL.md); implementation rules are [`AGENTS.md`](AGENTS.md).
 
-## Assessment (2026-05-29)
-The codebase is **healthy and green**: `pnpm verify` passes (143 tests), the engine is
-browser-playable, vendor isolation + replay determinism are enforced, and docs are rich. The gap
-this initiative closes is **AFK-readiness**: an explicit agent loop, thin tool scripts, a
-token-efficient repo map, skip paths, and atomic tickets — so an agent can work unattended.
-No failing gates were found. The one real defect found and fixed: stale doc paths in `README.md`
-(linked `docs/` files as if at repo root) — see TICKET003.
+Snapshot date: **2026-05-30**.
 
-## Phases
-1. **Stabilize** — ✅ done before this session: `pnpm verify` green, CI present.
-2. **Tooling / deps** — ✅ `scripts/agent/*.sh` + `pnpm agent:*` wrappers + `.env.example` + `.aiignore` (TICKET001, TICKET002).
-3. **Docs** — ✅ `GOAL.md`, `ROADMAP.md`, `AGENTS.md` loop, `docs/ai/REPO_MAP.md`, README quick-start (TICKET004).
-4. **Bugs / tests** — ✅ high-confidence path/documentation bugs fixed; coverage reporting is in CI (TICKET003, TICKET005).
-5. **Modularity** — ✅ already strong (pure core, ports, vendor isolation, <600-line files). Maintain; do not refactor without cause.
-6. **Features** — open: grow content via Pipeline B; add engine verbs only as content demands (pattern proven by S4 bribe). Track per future ticket.
-7. **CI** — ✅ `verify.yml` runs `pnpm verify` + non-blocking e2e. Possible follow-up: run `pnpm agent:doctor` as a readiness step (TICKET005 stretch).
+---
 
-## Tickets
-| File | Title | Priority | Status |
-|------|-------|----------|--------|
-| [TICKET001](tickets/TICKET001.md) | Bootstrap & dependency readiness | High | Done |
-| [TICKET002](tickets/TICKET002.md) | Agent workflow scripts (`scripts/agent/*`) | High | Done |
-| [TICKET003](tickets/TICKET003.md) | Fix stale `README.md` doc paths | High | Done |
-| [TICKET004](tickets/TICKET004.md) | Agent docs & repo map | High | Done |
-| [TICKET005](tickets/TICKET005.md) | CI doctor step + coverage reporting | Medium | Done |
+## Assessment
 
-## Risks / blockers
-- **No blockers.** Real generation (`pnpm pipeline:cycle/bake`) needs `OPENROUTER_API_KEY` (a paid
-  service) — out of scope for unattended work; the demo stub keeps everything testable offline.
-- Agent scripts assume `bash` on PATH (true on CI/macOS/Linux and via Git Bash/WSL on Windows).
-- e2e needs `pnpm exec playwright install chromium`; it is non-blocking by design.
+The repo is healthy enough to stop treating “build the engine” as the main problem. The documented state is:
 
-## Loop
-Follow the workflow loop in [AGENTS.md](AGENTS.md): status → read GOAL/ROADMAP/REPO_MAP + top
-ticket → pick a small unblocked ticket → mark in progress → change → targeted then broad checks →
-update docs/ticket → note follow-ups → commit → summarize. Repeat unprompted.
+- Original engine tickets **T-00…T-16** plus the ULTRA hardening pass are complete.
+- `pnpm verify` was green on **2026-05-29** with **143 tests**.
+- The app is browser-playable.
+- CI runs `pnpm agent:doctor`, `pnpm verify`, coverage, and non-blocking Playwright e2e.
+- Architecture boundaries are strong: pure `engine-core`, schema/content separation, replay determinism,
+  vendor isolation, and agent workflow docs.
+
+The next gap is **proof quality**: make First Light clear, playable, replayable, content-rich, and easy for an
+agent to extend without broad context.
+
+---
+
+## Current risks
+
+| Risk | Response |
+|---|---|
+| Pack inventory drift across docs/runtime imports | Create one pack catalog and sync docs to it before adding packs. |
+| Browser smoke is non-blocking and artifacts are thin | Store traces/screenshots/video on failure; later decide whether a tiny smoke becomes blocking. |
+| First Light may be technically playable but unclear to first-time players | Add journal/affordance/UI feedback and run actual branch audits. |
+| Content pipeline can generate, but curation proof is thin | Make proposal/critique/curation bundles reviewable before bake. |
+| Open cloud-agent notes may duplicate root docs | Reconcile PR #1 into one concise place. |
+
+No known blocking gate is recorded in repo docs. Real generation still requires `OPENROUTER_API_KEY`; this must
+remain optional and pipeline-only.
+
+---
+
+## Roadmap lanes
+
+### Lane A — Repo proof and verification
+
+Goal: make the repo’s state and evidence hard to misread.
+
+1. **Pack catalog** — authoritative list of all content packs, versions, dependencies, provenance, and whether
+   they are loaded by default.
+2. **Docs sync** — fail or warn on stale doc paths and stale pack references.
+3. **Golden replay** — commit a short First Light replay fixture and assert its hash.
+4. **E2E artifacts** — upload Playwright trace/screenshot/video on browser smoke failure.
+5. **PR template** — require commands run, artifacts, scope exceptions, and follow-up tickets.
+
+### Lane B — First Light player clarity
+
+Goal: a new player understands what to do and sees consequence without developer narration.
+
+1. **Quest journal** — active quest, branch labels, known objectives, and completion state.
+2. **Interaction affordances** — nearby NPC/exits/use prompts with clear controls.
+3. **Exit blocker text** — gated exits explain immediate blockers without spoilers.
+4. **Branch outcome feedback** — surface authored feedback for skill checks, combat, bribes, reputation, and quest completion.
+5. **Save import/export UX** — exported saves become usable bug/replay artifacts, not only downloads.
+
+### Lane C — Gameplay/content depth
+
+Goal: prove the world remembers and the three-route quest structure works.
+
+1. **Warehouse branch audit** — talk, sneak, and force paths are all reachable, understandable, and consequential.
+2. **The Drip density pass** — 8–12 patrons with distinct voice, rumor value, and at least one mechanically useful clue.
+3. **Varga reaction matrix** — different lines for peaceful, sneaky, violent, bribed, and failed outcomes.
+4. **Syndicate reaction pass** — reputation/violence/bribery affects at least one NPC, exit, or bark.
+5. **Hook beat** — post-drive NPC/bark clearly points to a larger mystery.
+
+### Lane D — Pipeline B and canon
+
+Goal: make AI-authored content auditable and useful without changing engine scope.
+
+1. **Proposal bundle** — candidate pack JSON, prompts, model list, critique scorecard, validation errors, and curator decision.
+2. **Deterministic canon export hash** — same packs produce same export/context hash.
+3. **Content diff report** — new/changed IDs, dependencies, assertions, and blast radius.
+4. **Validation repair loop** — invalid structured output is repaired or surfaced with precise errors.
+5. **Canon graph rules** — add only from real contradiction shapes found in committed or candidate packs.
+
+### Lane E — Content-driven engine verbs
+
+Goal: add mechanics only when content earns them.
+
+Candidate verbs/systems: `lockpick`, `learn_clue`, `spend_favor`, `intimidate`, `disguise`, `blackmail`, `trade`,
+`rumor`, `debt`. Each must follow the same path: schema → event/effect → `applyEvent`/system → tests → content pack →
+replay check.
+
+---
+
+## Atomic tickets to create next
+
+| ID | Priority | Title | Acceptance gate |
+|---|---:|---|---|
+| REPO-001 | P0 | Build authoritative content pack catalog | Catalog matches `app-web` runtime imports; `pnpm content:validate` green. |
+| REPO-002 | P0 | Add PR template | New PRs require checks, artifacts, scope exceptions, and follow-ups. |
+| TEST-001 | P0 | Add First Light golden replay fixture | `pnpm replay:verify` asserts fixture hash. |
+| UI-001 | P0 | Add/improve quest journal surface | Active quest/branch/objective state visible in browser; e2e/manual evidence. |
+| UI-002 | P0 | Add interaction and exit affordances | Nearby usable entities/exits and blockers are legible; e2e/manual evidence. |
+| GAME-001 | P0 | Audit warehouse talk/sneak/force paths | All three routes are reachable and have persistent consequences. |
+| TEST-002 | P1 | Capture e2e failure artifacts | Failed browser smoke uploads trace/screenshot/video. |
+| CONTENT-001 | P1 | Deepen The Drip patrons and useful rumors | 8–12 patrons remain schema-valid and at least one rumor changes later play. |
+| PIPE-001 | P1 | Add proposal/critique/curation bundle | `pnpm pipeline:cycle` produces reviewable artifacts before bake. |
+| GAME-002 | P1 | Add Varga/Syndicate reaction matrix | Reactions differ by route and pass content verification. |
+| PIPE-002 | P1 | Add content diff/blast-radius report | Candidate pack review shows new/changed IDs and canon assertion impact. |
+| REPO-003 | P2 | Add docs sync check | Stale paths/pack references are caught by a script or CI step. |
+
+---
+
+## Done criteria for any ticket
+
+A ticket is complete only when:
+
+- The stated acceptance gate is satisfied.
+- `pnpm verify` is green, or inability to run it is recorded with the reason.
+- Targeted tests/checks for the touched area are green.
+- Replay determinism is preserved.
+- Content changes pass `pnpm content:validate` and `pnpm content:verify`.
+- UI changes have e2e, screenshot, trace, or explicit manual-browser evidence.
+- Public API changes update `index.ts` and package README where applicable.
+- GOAL/ROADMAP/REPO_MAP/tickets are updated when status, commands, paths, config, or pack inventory changes.
+
+---
+
+## Work loop
+
+Follow [`AGENTS.md`](AGENTS.md): status → orient → pick smallest unblocked ticket → mark/update ticket → change →
+targeted checks → broad checks → docs → commit → summarize. Prefer small, reviewable diffs over broad cleanup.

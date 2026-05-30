@@ -8,6 +8,7 @@ import syndicateOffer from "../../../content/core/pack.syndicate_offer/pack.json
 import kestrel from "../../../content/core/pack.kestrel/pack.json";
 import vargaTrust from "../../../content/core/pack.varga_trust/pack.json";
 import clinic from "../../../content/core/pack.clinic/pack.json";
+import lostThread from "../../../content/core/pack.lost_thread/pack.json";
 import dripPatrons from "../../../content/generated/pack.the_drip_patrons/pack.json";
 
 /**
@@ -18,7 +19,7 @@ import dripPatrons from "../../../content/generated/pack.the_drip_patrons/pack.j
  * pass, with a signature entity from each live pack present — so a future pack that breaks the live
  * boot fails here, not silently in the browser.
  */
-const LIVE_PACKS = [openingPack, districtBarks, dripMarket, syndicateOffer, kestrel, vargaTrust, clinic, dripPatrons];
+const LIVE_PACKS = [openingPack, districtBarks, dripMarket, syndicateOffer, kestrel, vargaTrust, clinic, lostThread, dripPatrons];
 
 describe("live boot pack set (SPEC-51)", () => {
   it("the exact set main.ts loads resolves in one integrity pass", () => {
@@ -35,6 +36,7 @@ describe("live boot pack set (SPEC-51)", () => {
     expect(registries.factions.has(FactionId.parse("faction.kestrel_outfit"))).toBe(true); // pack.kestrel
     expect(registries.quests.has(QuestId.parse("quest.varga_trust"))).toBe(true); // pack.varga_trust
     expect(registries.npcs.has(NpcId.parse("npc.clinic_medic"))).toBe(true); // pack.clinic
+    expect(registries.quests.has(QuestId.parse("quest.lost_thread"))).toBe(true); // pack.lost_thread
     expect(registries.npcs.has(NpcId.parse("npc.the_archivist"))).toBe(true); // pack.the_drip_patrons (generated)
   });
 

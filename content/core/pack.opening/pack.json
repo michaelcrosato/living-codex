@@ -668,7 +668,19 @@
         ]
       },
       "dialogueId": "dialogue.stranger",
-      "reactsTo": []
+      "reactsTo": [
+        {
+          "when": [
+            {
+              "kind": "flag_is",
+              "flag": "flag.has_drive",
+              "equals": true
+            }
+          ],
+          "setsFlags": [],
+          "overrideDialogueId": "dialogue.stranger_truth"
+        }
+      ]
     }
   ],
   "dialogues": [
@@ -1237,6 +1249,93 @@
         "listDefs": {}
       },
       "declaredVars": []
+    },
+    {
+      "id": "dialogue.stranger_truth",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "10cda6811ae803",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "ev",
+            true,
+            "/ev",
+            {
+              "VAR=": "stranger_opened",
+              "re": true
+            },
+            "^The stranger doesn't melt back into the crowd this time. They look at you like a debt that grew teeth. \"You weren't supposed to last a week. Pull a name off the street, point it at Varga, walk away — that was the job.\" A long pause. \"But you went and got *interesting*. So now you want to know who you were before Ashfall ate the rest.\" They almost smile. \"It'll cost you. Everything worth knowing does.\"",
+            "\n",
+            "ev",
+            "str",
+            "^Who am I?",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^Who sent you?",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-1",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "^\"Not here. Not for free. Press me, or pay me — your call. But know that some doors don't close behind you.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-1": [
+                "\n",
+                "^\"Wrong question. The right one is who paid to make you forget. Ask me that properly and we'll talk.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          {
+            "global decl": [
+              "ev",
+              false,
+              {
+                "VAR=": "stranger_opened"
+              },
+              "/ev",
+              "end",
+              null
+            ]
+          }
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": [
+        "stranger_opened"
+      ]
     }
   ],
   "quests": [

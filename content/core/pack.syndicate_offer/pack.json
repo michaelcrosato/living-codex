@@ -285,6 +285,99 @@
         "items": [],
         "reputation": []
       }
+    },
+    {
+      "id": "quest.syndicate_recruit",
+      "title": "The City's Offer",
+      "giverNpcId": "npc.syndicate_broker",
+      "summary": "You've been useful to the Syndicate — useful enough that Mireille Tan is done treating you as a contractor. She's offering a place inside. Take it, or stay your own.",
+      "offerWhen": [
+        {
+          "kind": "reputation_at_least",
+          "factionId": "faction.ashfall_syndicate",
+          "value": 12
+        }
+      ],
+      "branches": [
+        {
+          "id": "join",
+          "label": "Take the place inside",
+          "objectives": [
+            {
+              "kind": "talk_to",
+              "npcId": "npc.syndicate_broker"
+            },
+            {
+              "kind": "skill_check",
+              "skill": "persuade",
+              "dc": 12,
+              "onFail": [
+                {
+                  "kind": "show_text",
+                  "text": "You overplay the ask. Her offer cools by a degree — still open, but you'll wear that misstep."
+                }
+              ]
+            }
+          ],
+          "onComplete": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.syndicate_made_member",
+              "to": true
+            },
+            {
+              "kind": "adjust_reputation",
+              "factionId": "faction.ashfall_syndicate",
+              "delta": 5
+            },
+            {
+              "kind": "adjust_reputation",
+              "factionId": "faction.varga_crew",
+              "delta": -5
+            }
+          ]
+        },
+        {
+          "id": "stay_independent",
+          "label": "Stay your own",
+          "objectives": [
+            {
+              "kind": "talk_to",
+              "npcId": "npc.syndicate_broker"
+            },
+            {
+              "kind": "skill_check",
+              "skill": "force",
+              "dc": 10,
+              "onFail": [
+                {
+                  "kind": "show_text",
+                  "text": "You hold the line, but your voice catches. She notes it — independence is fine, weakness isn't."
+                }
+              ]
+            }
+          ],
+          "onComplete": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.syndicate_stayed_independent",
+              "to": true
+            }
+          ]
+        }
+      ],
+      "onAnyComplete": [
+        {
+          "kind": "set_flag",
+          "flag": "flag.syndicate_recruit_resolved",
+          "to": true
+        }
+      ],
+      "rewards": {
+        "credits": 150,
+        "items": [],
+        "reputation": []
+      }
     }
   ],
   "storylets": [

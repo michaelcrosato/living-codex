@@ -206,3 +206,40 @@ describe("warehouse rumor lead storylet (SPEC-63)", () => {
     expect(hasStorylet(triggerOf(session.step([])), "storylet.warehouse_rumor_lead")).toBe(false);
   });
 });
+
+/**
+ * SPEC-66 — the Syndicate recruitment quest, the standing-payoff pair to SPEC-64's varga_trust. Gated
+ * on ashfall_syndicate standing (earned by selling them the drive). Offer-gating proven via the engine's
+ * ActivateQuest path; a branch completes end-to-end with its flag + reputation consequences.
+ */
+describe("syndicate recruitment quest (SPEC-66)", () => {
+  const RQ = QuestId.parse("quest.syndicate_recruit");
+  const withSynRep = (delta: number) => {
+    let w = createWorld({ seed: "recruit", startLocationId: DISTRICT, skills: { persuade: 20, force: 20 } });
+    if (delta !== 0) w = applyEvent(w, { type: "AdjustReputation", factionId: SYNDICATE, delta });
+    return w;
+  };
+  const recruitOffered = (w: ReturnType<typeof createWorld>): boolean =>
+    questSystem(registries.quests, [])(w, 0).some((e) => e.type === "ActivateQuest" && e.questId === RQ);
+
+  it("does NOT offer below ashfall_syndicate standing 12, but DOES at/above it", () => {
+    expect(recruitOffered(withSynRep(0))).toBe(false);
+    expect(recruitOffered(withSynRep(11))).toBe(false);
+    expect(recruitOffered(withSynRep(12))).toBe(true);
+    expect(recruitOffered(withSynRep(20))).toBe(true);
+  });
+
+  it("the join branch completes end-to-end with its consequences", () => {
+    let w = withSynRep(12);
+    w = applyEvent(w, { type: "DialogueAdvanced", dialogueId: DLG, inkState: "{}", flags: {} });
+    const attempt = [{ type: "Attempt" as const, questId: RQ, branchId: "join" }];
+    for (let t = 0; t < 8 && w.quests[RQ]?.status !== "completed"; t++) {
+      w = applyEvents(w, questSystem(registries.quests, attempt, registries.npcs)(w, 0));
+    }
+    expect(w.quests[RQ]?.completedBranchId).toBe("join");
+    expect(w.flags[FlagId.parse("flag.syndicate_made_member")]).toBe(true);
+    expect(w.flags[FlagId.parse("flag.syndicate_recruit_resolved")]).toBe(true);
+    expect(w.reputation[SYNDICATE]).toBe(17); // 12 + 5
+    expect(w.reputation[VARGA_CREW]).toBe(-5); // joining the Syndicate costs Varga standing
+  });
+});

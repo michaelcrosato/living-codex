@@ -131,7 +131,7 @@ Re-run `pnpm mutation` after adding tests; consider a score *ratchet* spec once 
   (SPEC-60) guards.
 
 ## UX finding (2026-05-30, SPEC-70 audit) — surface authored ambientText
-- **Location `ambientText` is authored but unsurfaced.** 6 of 8 locations carry atmospheric lines (e.g.
+- **~~Location `ambientText` is authored but unsurfaced~~ → DONE (SPEC-71).** Surfaced in renderHud (slow deterministic rotation by tick). 6 of 8 locations carry atmospheric lines (e.g.
   ashfall_district "A drone coughs past overhead."), but `ambientText` is referenced ONLY in content-schema —
   nothing in app-web/render/scene displays it. Authored atmosphere players never see (parallel to the
   patrons-unspawned / consequence-HUD gaps). **Next-cycle spec:** surface it in the HUD on location entry

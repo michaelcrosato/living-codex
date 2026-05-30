@@ -197,3 +197,21 @@ The 3 genuine SPEC-104/105 survivors found this way are killed; the rest are the
 Every item above was considered and *deliberately deferred* during the 2026-05-29 planning pass. The
 reasons (paid/blocked, profile-gated, redesign-scale, or convenience-only) are why they are **not** in
 [ROADMAP.md](ROADMAP.md). Reassess at each wave gate.
+
+## Verb-coverage finding (2026-05-30, SPEC-110 follow-up) — why the unexercised verbs stay unexercised
+Mechanism analysis resolves the "unexercised verbs" item's ambiguity: **building content for them here is
+churn-by-design, not deferred-genuine-work.**
+- **`unlock_exit`** (interaction.ts:60) force-opens an exit *regardless* of its `requires` gate — but this is
+  **redundant with the cleaner `requires`-condition gating** (SPEC-80's old-safehouse = a flag-gated exit, the
+  preferred pattern). Using `unlock_exit` "purely" needs an exit whose `requires` flag is never set, which
+  itself trips the SPEC-70 guard. So an `unlock_exit` beat is contrived.
+- **`start_quest`** vs flag-gated `offerWhen`: the existing flag-gate chaining (a quest's onComplete set_flag →
+  the next quest's offerWhen flag_is) is the cleaner, replay-transparent pattern; a `start_quest` effect
+  bypasses offerWhen (the SPEC-110 soundness caveat) — useful only for a forced/scripted activation no current
+  beat needs.
+- **`retrieve`** is awkward without a loot/pickup mechanic (items enter inventory only via give_item/rewards —
+  SPEC-104); a multi-source collect-N beat is unnatural in this engine.
+**Conclusion:** these verbs are exercised at the ENGINE level (tested) and guarded at the GATE level
+(SPEC-43/104/110). Content for them awaits a beat where they're the NATURAL expression — not a verb-exercise.
+The reactive-storylet space is also saturated (SPEC-52–63/92–94 cover the consequence flags). Net: the content
+lever advances only on a genuine NEW creative beat or the real-model frontier — forcing it now is filler/churn.

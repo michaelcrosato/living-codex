@@ -42,6 +42,7 @@
     "agent:afk-status": "bash scripts/agent/afk-status.sh"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.60.0",
     "@stryker-mutator/core": "^9.6.1",

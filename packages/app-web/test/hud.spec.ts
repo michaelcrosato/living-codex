@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import type { Registries } from "@codex/content-loader";
 import { LocationId, type FlagId } from "@codex/content-schema";
 import { createWorld, applyEvent, type World } from "@codex/engine-core";
-import { renderHud, locationAnnouncement, questAnnouncements } from "../src/hud";
+import { renderHud, locationAnnouncement, questAnnouncements, consequenceAnnouncements } from "../src/hud";
 
 /**
  * SPEC-56 — first test for renderHud. Pins the consequence-journal contract: each arc consequence
@@ -67,6 +67,15 @@ describe("renderHud consequence journal (SPEC-56)", () => {
     expect(hud(["flag.entered_peacefully"])).toContain("You talked your way in.");
     expect(hud(["flag.entered_unseen"])).toContain("You were never seen.");
     expect(hud(["flag.syndicate_marked"])).toContain("The Syndicate has marked you.");
+  });
+
+  it("announces newly-set consequence flags once for screen readers (SPEC-83)", () => {
+    let world: World = createWorld({ seed: "c", startLocationId: START });
+    world = applyEvent(world, { type: "SetFlag", flag: "flag.sold_drive" as FlagId, to: true });
+    const first = consequenceAnnouncements(new Set(), world);
+    expect(first.lines).toContain("You sold the drive to the Syndicate.");
+    // deduped: re-running with the returned seen-set yields nothing new
+    expect(consequenceAnnouncements(first.seen, world).lines).toEqual([]);
   });
 
   it("a flag set false does not render its line", () => {

@@ -16,7 +16,7 @@ import dripPatrons from "../../../content/generated/pack.the_drip_patrons/pack.j
 import { GameSession } from "./session";
 import { drawScene } from "./scene";
 import { InputController } from "./input";
-import { renderHud, locationAnnouncement, questAnnouncements } from "./hud";
+import { renderHud, locationAnnouncement, questAnnouncements, consequenceAnnouncements } from "./hud";
 import { DialogueController } from "./dialogue-controller";
 import { DialogueView } from "./dialogue-view";
 import { beats } from "./beats";
@@ -57,6 +57,7 @@ async function main(): Promise<void> {
   const announcer = document.getElementById("announcer") as HTMLElement;
   let announcedLocation: string | undefined; // SPEC-81: last location announced to screen readers
   let announcedQuests: Record<string, string> = {}; // SPEC-82: last-announced quest statuses
+  let announcedConsequences = new Set<string>(); // SPEC-83: consequence flags already announced
   const viewport = { w: canvas.width, h: canvas.height };
   const { renderer } = await createPixiRenderer({ canvas, width: viewport.w, height: viewport.h });
 
@@ -172,6 +173,9 @@ async function main(): Promise<void> {
     const qa = questAnnouncements(announcedQuests, session.world, registries);
     announcedQuests = qa.statuses;
     announcements.push(...qa.lines);
+    const ca = consequenceAnnouncements(announcedConsequences, session.world);
+    announcedConsequences = ca.seen;
+    announcements.push(...ca.lines);
     if (announcements.length > 0) announcer.textContent = announcements.join(" ");
     measure("codex:draw", "codex:draw:start");
 

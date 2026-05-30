@@ -8,6 +8,44 @@ import { beatsLine } from "./beats";
  * from the TriggerStorylet event stream, not World (ShowText is a replay-exact no-op on World).
  */
 /**
+ * The "world remembers" consequence journal (SPEC-50/52/54/55/56), as data so the HUD and the screen-reader
+ * announcer (SPEC-83) share one curated list: flag → an icon for the HUD line + the spoken text.
+ */
+const CONSEQUENCE_LINES: ReadonlyArray<{ flag: string; icon: string; text: string }> = [
+  { flag: "flag.has_drive", icon: "✓", text: "You have the drive." },
+  { flag: "flag.entered_peacefully", icon: "·", text: "You talked your way in." },
+  { flag: "flag.entered_unseen", icon: "·", text: "You were never seen." },
+  { flag: "flag.syndicate_marked", icon: "⚠", text: "The Syndicate has marked you." },
+  { flag: "flag.sold_drive", icon: "✗", text: "You sold the drive to the Syndicate." },
+  { flag: "flag.knows_syndicate_secret", icon: "✓", text: "You know what's on the drive." },
+  { flag: "flag.leveraged_syndicate", icon: "⚠", text: "You're holding the drive over the Syndicate." },
+  { flag: "flag.sided_with_kestrel", icon: "·", text: "You threw in with Kestrel." },
+  { flag: "flag.refused_kestrel", icon: "·", text: "You stayed loyal to Varga." },
+];
+
+const flagIsTrue = (world: World, key: string): boolean =>
+  Object.entries(world.flags).some(([k, v]) => k === key && v === true);
+
+/**
+ * Screen-reader announcements for newly-set consequence flags (SPEC-83, extends SPEC-81/82). Returns the
+ * spoken text for each CONSEQUENCE_LINES flag that became true since `previous` + the new seen-set, deduped.
+ */
+export function consequenceAnnouncements(
+  previous: ReadonlySet<string>,
+  world: World,
+): { lines: string[]; seen: Set<string> } {
+  const seen = new Set(previous);
+  const lines: string[] = [];
+  for (const { flag, text } of CONSEQUENCE_LINES) {
+    if (flagIsTrue(world, flag) && !seen.has(flag)) {
+      seen.add(flag);
+      lines.push(text);
+    }
+  }
+  return { lines, seen };
+}
+
+/**
  * Screen-reader announcement for a location change (SPEC-81 a11y). The HUD div re-renders every frame, so
  * it can't be a live region (it would spam). Instead the shell tracks the last-announced location and feeds
  * a polite aria-live region only when it changes. Pure: returns the announcement, or null if unchanged.
@@ -72,17 +110,9 @@ export function renderHud(
     // Surface the authored quest summary while it's active so the player knows what it's about (SPEC-75).
     if (rt.status === "active" && quest.summary) lines.push(`   ${quest.summary}`);
   }
-  const flag = (key: string): boolean =>
-    Object.entries(world.flags).some(([k, v]) => k === key && v === true);
-  if (flag("flag.has_drive")) lines.push("✓ You have the drive.");
-  if (flag("flag.entered_peacefully")) lines.push("· You talked your way in.");
-  if (flag("flag.entered_unseen")) lines.push("· You were never seen.");
-  if (flag("flag.syndicate_marked")) lines.push("⚠ The Syndicate has marked you.");
-  // The drive's fate + the loyalty choice (SPEC-50/52/54/55) — the world remembers; so does the journal.
-  if (flag("flag.sold_drive")) lines.push("✗ You sold the drive to the Syndicate.");
-  if (flag("flag.knows_syndicate_secret")) lines.push("✓ You know what's on the drive.");
-  if (flag("flag.leveraged_syndicate")) lines.push("⚠ You're holding the drive over the Syndicate.");
-  if (flag("flag.sided_with_kestrel")) lines.push("· You threw in with Kestrel.");
-  if (flag("flag.refused_kestrel")) lines.push("· You stayed loyal to Varga.");
+  // The "world remembers" consequence journal — one curated list (CONSEQUENCE_LINES), shared with the a11y announcer.
+  for (const { flag, icon, text } of CONSEQUENCE_LINES) {
+    if (flagIsTrue(world, flag)) lines.push(`${icon} ${text}`);
+  }
   el.textContent = lines.join("\n");
 }

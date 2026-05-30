@@ -1,0 +1,115 @@
+{
+  "id": "pack.varga_trust",
+  "version": "0.1.0",
+  "title": "Proven",
+  "dependsOn": [
+    "pack.opening"
+  ],
+  "provenance": {
+    "authoredBy": "human",
+    "models": [],
+    "curatedBy": "michael.crosato",
+    "approvedAt": "2026-05-30T00:00:00.000Z"
+  },
+  "factions": [],
+  "items": [],
+  "locations": [],
+  "npcs": [],
+  "dialogues": [],
+  "quests": [
+    {
+      "id": "quest.varga_trust",
+      "title": "Proven",
+      "giverNpcId": "npc.varga",
+      "summary": "You've earned your standing with Varga's crew. Now she has a job she'd only hand to someone she trusts — quiet work at the Drip. Take it her way, or play it safe.",
+      "offerWhen": [
+        {
+          "kind": "reputation_at_least",
+          "factionId": "faction.varga_crew",
+          "value": 15
+        }
+      ],
+      "branches": [
+        {
+          "id": "run_it",
+          "label": "Run it her way — quiet and clean",
+          "objectives": [
+            {
+              "kind": "talk_to",
+              "npcId": "npc.varga"
+            },
+            {
+              "kind": "reach",
+              "locationId": "location.the_drip"
+            },
+            {
+              "kind": "skill_check",
+              "skill": "sneak",
+              "dc": 12,
+              "onFail": [
+                {
+                  "kind": "show_text",
+                  "text": "A bottle goes over two tables down and every head turns. Not clean. Varga will hear about it."
+                }
+              ]
+            }
+          ],
+          "onComplete": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.varga_inner_circle",
+              "to": true
+            },
+            {
+              "kind": "adjust_reputation",
+              "factionId": "faction.varga_crew",
+              "delta": 5
+            }
+          ]
+        },
+        {
+          "id": "play_safe",
+          "label": "Talk her down to something safer",
+          "objectives": [
+            {
+              "kind": "talk_to",
+              "npcId": "npc.varga"
+            },
+            {
+              "kind": "skill_check",
+              "skill": "persuade",
+              "dc": 10,
+              "onFail": [
+                {
+                  "kind": "show_text",
+                  "text": "Varga's mouth flattens. \"I ask for nerve and you bring me caution.\" She lets it go — this time."
+                }
+              ]
+            }
+          ],
+          "onComplete": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.varga_played_safe",
+              "to": true
+            }
+          ]
+        }
+      ],
+      "onAnyComplete": [
+        {
+          "kind": "set_flag",
+          "flag": "flag.varga_trust_resolved",
+          "to": true
+        }
+      ],
+      "rewards": {
+        "credits": 150,
+        "items": [],
+        "reputation": []
+      }
+    }
+  ],
+  "storylets": [],
+  "assertions": []
+}

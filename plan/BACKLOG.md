@@ -37,11 +37,16 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
   below the item's own >500-entity trigger. Sim throughput is fine too: replay-fuzz runs 200×≤80-event
   sequences fast, and saves replay only a snapshot+tail (not from dawn). Revisit only if a future content
   batch pushes a location toward ~500 concurrent entities._
-- **Bundle-size baseline (measured 2026-05-30):** `pnpm --filter @codex/app-web build` is healthy (877
-  modules, 2.5s); main chunk **679 kB / 190 kB gzip**, Pixi renderers already code-split (WebGL/WebGPU/Canvas
-  separate chunks). Vite flags the one >500 kB chunk — **informational, not a defect**: 190 kB gzip for a
-  cache-once offline-first Pixi game is reasonable, and manual-chunk splitting is perf-motivated complexity
-  gated by ARCH §8 (needs a cited load-time profile). **Do not chase** absent a measured cold-load problem.
+- **Bundle-size baseline + Rolldown chunking (re-measured 2026-05-30, post-SPEC-61 Vite 8):** under Vite 7
+  the build split the Pixi renderer backends (WebGL/WebGPU/Canvas) into separate chunks (main 190 kB gzip +
+  per-backend chunks loaded on demand). **Vite 8 / Rolldown changed the default**: it emits one ~280 kB-gzip
+  `index` chunk (the renderer backends are no longer split out), and builds ~10× faster (230ms vs 2.5s). The
+  app is correct + e2e-green either way. The size shift is a **perf/size consideration, not a defect**:
+  ~280 kB gzip for a cache-once offline-first Pixi game is still reasonable, and restoring the split now
+  requires explicit `build.rolldownOptions.output` chunking config — **perf-motivated complexity gated by
+  ARCH §8** (needs a cited cold-load profile). **Do not chase** absent a measured cold-load problem; revisit
+  with `rolldownOptions.output.advancedChunks`/`codeSplitting` only if a profile shows the larger initial
+  chunk (or shipping all 3 renderer backends) actually hurts load time.
 - **New engine verbs** (lockpicking, time-of-day/`wait`, trade/economy, status effects, a magic system).
   GOAL §3 + SCHEMA §5: add a verb **only when curated content demands it** (the bribe pattern). Each is a
   clean Recipe-1/Recipe-5 ticket *when the demand is real* — not before.

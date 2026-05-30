@@ -68,6 +68,33 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
     expect(errors.some((e) => e.includes("no branch is solvable"))).toBe(true);
   });
 
+  it("flags a defeat objective whose target NPC has no combat stats (unwinnable, SPEC-72)", () => {
+    const { errors } = check({
+      npcs: [
+        { id: "npc.pacifist", name: "P", appearance: { bodyColor: "#000", accentColor: "#fff", silhouette: "humanoid" }, bio: { role: "r", backstory: "b", wants: "w", fears: "f", voice: "v" }, dialogueId: "dialogue.d", homeLocationId: "location.start" },
+      ],
+      dialogues: [{ id: "dialogue.d", format: "ink-json", inkVersion: "21", sourceHash: "x", compiled: {}, declaredVars: [] }],
+      quests: [
+        quest({ giverNpcId: "npc.pacifist", branches: [{ id: "fight", label: "f", objectives: [{ kind: "defeat", npcId: "npc.pacifist" }] }] }),
+      ],
+    });
+    expect(errors.some((e) => e.includes('defeat target "npc.pacifist" has no combat stats'))).toBe(true);
+  });
+
+  it("does NOT flag a defeat objective whose target carries combat stats", () => {
+    const { errors } = check({
+      npcs: [
+        { id: "npc.bruiser", name: "B", appearance: { bodyColor: "#000", accentColor: "#fff", silhouette: "humanoid" }, bio: { role: "r", backstory: "b", wants: "w", fears: "f", voice: "v" }, dialogueId: "dialogue.d", homeLocationId: "location.start", combat: { hp: 10 } },
+      ],
+      dialogues: [{ id: "dialogue.d", format: "ink-json", inkVersion: "21", sourceHash: "x", compiled: {}, declaredVars: [] }],
+      quests: [
+        quest({ giverNpcId: "npc.bruiser", branches: [{ id: "fight", label: "f", objectives: [{ kind: "defeat", npcId: "npc.bruiser" }] }] }),
+      ],
+    });
+    expect(errors.filter((e) => e.includes("no combat stats"))).toEqual([]);
+    expect(errors.filter((e) => e.includes("no branch is solvable"))).toEqual([]);
+  });
+
   it("flags an unlock_exit whose index is out of range for the target location", () => {
     const { errors } = check({
       quests: [

@@ -11,7 +11,8 @@ export interface PlayabilityReport {
  * Static solvability/reachability analysis (ARCHITECTURE.md §7): schema-valid ≠ playable. Beyond the
  * loader's referential integrity, this catches content that would be unwinnable or that points an
  * effect at a nonexistent slot:
- *   - every quest has ≥1 branch whose objectives are individually satisfiable in principle;
+ *   - every quest has ≥1 branch whose objectives are individually satisfiable in principle (a `defeat`
+ *     objective requires the target NPC to carry combat stats, else the branch is unwinnable — SPEC-72);
  *   - every `reach` target is connected to the location graph (no island locations);
  *   - every `unlock_exit` effect's exitIndex is within the target location's exits array (the loader
  *     checks the location id exists, but NOT that the index is in range);
@@ -45,7 +46,9 @@ export function staticPlayabilityCheck(registries: Registries): PlayabilityRepor
       case "retrieve":
         return obj.count > 0;
       case "defeat":
-        return registries.npcs.has(obj.npcId);
+        // A defeat objective is only satisfiable if the target can actually be fought: the NPC must
+        // exist AND carry combat stats (combat.hp). A defeat on a non-combat NPC is unwinnable (SPEC-72).
+        return registries.npcs.get(obj.npcId)?.combat !== undefined;
       case "talk_to":
         return registries.npcs.has(obj.npcId);
       case "skill_check":
@@ -77,6 +80,14 @@ export function staticPlayabilityCheck(registries: Registries): PlayabilityRepor
       checkUnlockExits(branch.onComplete, `${quest.id}.branches.${branch.id}.onComplete`);
       checkUnlockExits(branch.onFail, `${quest.id}.branches.${branch.id}.onFail`);
       for (const obj of branch.objectives) {
+        // A defeat objective whose target NPC carries no combat stats can never be completed — the branch
+        // is unwinnable even if the quest has other solvable branches (SPEC-72). combat.hp is final per NPC
+        // (defined once; integrity.ts catches a dangling npcId), so this is unambiguous → a hard error.
+        if (obj.kind === "defeat" && registries.npcs.get(obj.npcId)?.combat === undefined) {
+          errors.push(
+            `${quest.id}.branches.${branch.id}: defeat target "${obj.npcId}" has no combat stats (combat.hp) — the branch is unwinnable.`,
+          );
+        }
         if (obj.kind === "skill_check") {
           checkUnlockExits(obj.onFail, `${quest.id}.branches.${branch.id}.skill_check.onFail`);
         }

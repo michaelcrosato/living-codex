@@ -4,8 +4,9 @@ import { resolve } from "node:path";
 import { loadPacks } from "@codex/content-loader";
 import { NpcId, QuestId, FlagId, DialogueId, LocationId } from "@codex/content-schema";
 import { InkNarrative } from "@codex/narrative-ink";
-import { createWorld, applyEvent, applyEvents, questSystem } from "@codex/engine-core";
+import { createWorld, applyEvent, applyEvents, questSystem, reactionsSystem } from "@codex/engine-core";
 import { GameSession } from "./../src/session";
+import { DialogueController } from "./../src/dialogue-controller";
 
 /**
  * SPEC-67 — the back-alley clinic thread. A new neutral beat: the clinic LOCATION lives in pack.opening
@@ -86,5 +87,19 @@ describe("ashfall clinic thread (SPEC-67)", () => {
     expect(w.quests[QID]?.completedBranchId).toBe("talk_down");
     expect(w.flags[FlagId.parse("flag.clinic_debt_settled")]).toBe(true);
     expect(w.flags[FlagId.parse("flag.clinic_debt_resolved")]).toBe(true);
+  });
+
+  // SPEC-69 — the neutral medic ("treats both, tells neither") reacts to the player's faction standing.
+  it("the medic reacts to faction standing (joined Syndicate / Varga's inner circle), default otherwise", () => {
+    const controller = new DialogueController(registries, new InkNarrative());
+    const after = (flag?: string): string => {
+      let world = createWorld({ seed: "medic", startLocationId: CLINIC });
+      if (flag) world = applyEvent(world, { type: "SetFlag", flag: FlagId.parse(flag), to: true });
+      world = applyEvents(world, reactionsSystem(registries.npcs)(world, 0));
+      return controller.openFor(world, "npc.clinic_medic")!.dialogueId;
+    };
+    expect(after("flag.syndicate_made_member")).toBe("dialogue.medic_syndicate");
+    expect(after("flag.varga_inner_circle")).toBe("dialogue.medic_varga");
+    expect(after()).toBe("dialogue.clinic_medic"); // default offer line
   });
 });

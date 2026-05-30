@@ -35,7 +35,30 @@
       },
       "dialogueId": "dialogue.clinic_medic",
       "homeLocationId": "location.ashfall_clinic",
-      "reactsTo": []
+      "reactsTo": [
+        {
+          "when": [
+            {
+              "kind": "flag_is",
+              "flag": "flag.syndicate_made_member",
+              "equals": true
+            }
+          ],
+          "setsFlags": [],
+          "overrideDialogueId": "dialogue.medic_syndicate"
+        },
+        {
+          "when": [
+            {
+              "kind": "flag_is",
+              "flag": "flag.varga_inner_circle",
+              "equals": true
+            }
+          ],
+          "setsFlags": [],
+          "overrideDialogueId": "dialogue.medic_varga"
+        }
+      ]
     }
   ],
   "dialogues": [
@@ -146,6 +169,98 @@
       "declaredVars": [
         "met_medic"
       ]
+    },
+    {
+      "id": "dialogue.medic_syndicate",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "164cdf8c372081",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "^She clocks the way you carry yourself now. \"Syndicate. I wondered.\" She doesn't stop working. \"I stitch their people same as anyone's — same as Varga's. I don't ask whose coin it is, and I don't tell. You're not special, and that's the safest thing I can offer you. Try not to bleed where it shows.\"",
+            "\n",
+            "ev",
+            "str",
+            "^Understood.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "^\"Good. Understanding's cheap. Keeping it is the trick.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          null
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": []
+    },
+    {
+      "id": "dialogue.medic_varga",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "0383f06822ad7a",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "^\"Varga's inner circle.\" She says it flat, no judgment. \"I've stitched half of them, one time or another. Loyalty's a wound that doesn't close, in this city — but it's a clean way to bleed, if you're going to.\" She nods at the door. \"Tell her Vane says her people heal slow when they're carrying something.\"",
+            "\n",
+            "ev",
+            "str",
+            "^I'll tell her.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "^\"Don't, actually. She'll know what I mean, and she won't thank you for the message.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          null
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": []
     }
   ],
   "quests": [

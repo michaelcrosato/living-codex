@@ -437,3 +437,25 @@ Per SPEC-30 / GOAL §3 the loop will **not** manufacture churn (mutation-number 
 network telemetry that breaks offline-first). Cycle-7 work is genuine product/canon depth and any real
 correctness gap an audit surfaces. The real-model enhancements (§10.5) promote to specs only once a human
 unblocks the key and run #1 validates the baseline.
+
+### 11.3 Cycle-7 REPLENISH research pass (2026-05-30) — frontier scan results
+Per the loop's REPLENISH mandate (re-run A+B for the next frontier), a fresh audit + web-research pass:
+- **Dependencies (AUDIT):** `pnpm audit` clean; `pnpm outdated` showed two majors behind. **Vite 7→8 was the
+  one genuine, now-unblocked win** → shipped as **SPEC-61** (Vite 8.0 stable + Rolldown + Vitest 4.1.7 support;
+  the forcing function BLOCKED.md awaited). `@types/node` 24→25 stays deferred (deliberately pinned to the
+  Node-24 runtime — bumping types ahead of the runtime risks typing APIs that don't exist at run time).
+- **Offline / PWA (RESEARCH):** the app has no service worker / manifest. **Confirmed NOT a gap:** GOAL §3
+  mandates "instant access, **no install**, no login" (×2) and "offline-*capable*" = no runtime network calls
+  — already satisfied (no fetch/LLM at runtime; the static SPA is HTTP-cached on revisit). An installable PWA
+  would *contradict* the "no install" pillar → deliberately out of scope (GOAL §3, no speculative features).
+- **AI-content validation (RESEARCH):** the 2026 best-practice stack (schema-governed generation + knowledge
+  grounding + normalization repair + contradiction detection + LLM-judge) is **already implemented for every
+  deterministic-feasible part** (Zod→JSON Schema; `relevantSubgraph` SPEC-14; `tolerantParse` SPEC-12;
+  `auditCanon`/canon-graph SPEC-40; rubric judge SPEC-15). The remaining pieces (LLM-judge narrative-
+  consistency *at scale*, fact-list alignment, iterative refinement) are **real-model-gated** (already in
+  BACKLOG / §10.5). The repo is at the unblocked 2026 frontier here.
+
+**Net:** after SPEC-61 the unblocked frontier is again thin — deps current, offline-capable confirmed,
+content-validation at-frontier. The next high-value leap stays human-gated (real-model generation, §10). The
+loop continues by harvesting genuine product depth (curated content — the thesis's core lever) and any real
+gap a future audit surfaces; it does not manufacture churn (SPEC-30 / GOAL §3).

@@ -134,6 +134,18 @@ Re-run `pnpm mutation` after adding tests; consider a score *ratchet* spec once 
   by removing the branch) — promote to a spec then. Parallels the orphan-dialogue (SPEC-53) / unspawnable-NPC
   (SPEC-60) guards.
 
+## Playability-gate: numeric-threshold gate guards (deferred — harder + false-positive-prone)
+After SPEC-104/105 the **discrete-presence** unobtainability family is uniform: a `flag_is` gate needs a
+flag something sets (SPEC-70), a `has_item` gate + `retrieve` objective need an item something grants
+(SPEC-105/104). The **numeric-threshold** gates — `reputation_at_least`, `credits_at_least`,
+`skill_at_least` — are a *different, harder* class: deciding "can the player ever reach value N" requires
+summing the max reachable deltas (multiple `adjust_reputation`/`rewards.reputation`/`bribe_faction`, base
+skills + `modify_skill`, repeatable sources) vs the threshold. A naive "is there ANY positive source" check
+is unsound (a single +5 source can't satisfy a ≥15 gate) and a precise reachable-max analysis is
+noisy/over-approximating. **No real occurrence today** — per the SPEC-68 rule (promote a guard when a 2nd
+real case appears, not speculatively), defer until generated content actually emits an unsatisfiable numeric
+gate. The discrete checks (flag/item) are the sound, clean family; stop there.
+
 ## UX finding (2026-05-30, SPEC-70 audit) — surface authored ambientText
 - **~~Location `ambientText` is authored but unsurfaced~~ → DONE (SPEC-71).** Surfaced in renderHud (slow deterministic rotation by tick). 6 of 8 locations carry atmospheric lines (e.g.
   ashfall_district "A drone coughs past overhead."), but `ambientText` is referenced ONLY in content-schema —

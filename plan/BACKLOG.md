@@ -32,6 +32,11 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
 ## Gated on a profile or a real demand (don't pre-optimize / don't add speculative verbs — GOAL §3, ARCH §8)
 - **Render perf: `GraphicsContext` reuse + app-level culling** in `render-pixi`/`scene`. ARCH §8 requires
   a cited profile before perf-motivated complexity. Add only if a frame is measured heavy (>~500 entities).
+  _Perf-audit resolution (2026-05-30): NOT warranted + no runtime profile needed — the entire content set is
+  ~17 NPCs / 7 locations (and entities render per-location, so a handful per frame), an order of magnitude
+  below the item's own >500-entity trigger. Sim throughput is fine too: replay-fuzz runs 200×≤80-event
+  sequences fast, and saves replay only a snapshot+tail (not from dawn). Revisit only if a future content
+  batch pushes a location toward ~500 concurrent entities._
 - **Bundle-size baseline (measured 2026-05-30):** `pnpm --filter @codex/app-web build` is healthy (877
   modules, 2.5s); main chunk **679 kB / 190 kB gzip**, Pixi renderers already code-split (WebGL/WebGPU/Canvas
   separate chunks). Vite flags the one >500 kB chunk — **informational, not a defect**: 190 kB gzip for a

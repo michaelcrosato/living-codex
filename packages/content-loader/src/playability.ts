@@ -24,7 +24,9 @@ export interface PlayabilityReport {
  *     offer and shadows siblings — warned, SPEC-68);
  *   - no `flag_is` gate reads a flag that nothing sets (unsatisfiable — content can't trigger — warned, SPEC-70);
  *   - no `retrieve` objective targets an item that no `give_item` effect or quest reward ever grants (it
- *     could never be collected — warned, SPEC-104).
+ *     could never be collected — warned, SPEC-104);
+ *   - no `has_item` gate reads an item that nothing grants (unsatisfiable gate, the item-analog of the
+ *     SPEC-70 flag check — warned, SPEC-105).
  *
  * Pure over `registries` so it is unit-testable; the `content:verify` script is the thin CLI that
  * loads packs, runs this plus `auditCanon`, and reports (errors → exit 1).
@@ -307,6 +309,30 @@ export function staticPlayabilityCheck(registries: Registries): PlayabilityRepor
           );
         }
       }
+    }
+  }
+
+  // Unsatisfiable has_item gates (SPEC-105): the item-analog of the SPEC-70 flag-gate check, reusing the
+  // obtainableItems set above. A `has_item` condition (offerWhen / storylet precondition / exit requires /
+  // reactsTo when) reading an item that nothing grants can never hold — the content behind that gate can
+  // never trigger. Same four gate sites + recursion as the flag walk; warn (extrinsic/subset-safe).
+  const readItems = new Set<string>();
+  const noteConditionItems = (cond: Condition): void => {
+    if (cond.kind === "has_item") readItems.add(cond.itemId);
+    else if (cond.kind === "not") noteConditionItems(cond.of);
+    else if (cond.kind === "all" || cond.kind === "any") cond.of.forEach(noteConditionItems);
+  };
+  for (const quest of registries.quests.values()) quest.offerWhen.forEach(noteConditionItems);
+  for (const s of registries.storylets.values()) s.preconditions.forEach(noteConditionItems);
+  for (const loc of registries.locations.values())
+    for (const ex of loc.exits) ex.requires.forEach(noteConditionItems);
+  for (const npc of registries.npcs.values())
+    for (const r of npc.reactsTo) r.when.forEach(noteConditionItems);
+  for (const item of readItems) {
+    if (!obtainableItems.has(item)) {
+      warnings.push(
+        `has_item gate "${item}" is read but granted by no give_item effect or quest reward — the content gated on it can never trigger.`,
+      );
     }
   }
 

@@ -520,4 +520,62 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
       expect(warnings.some((w) => w.includes('retrieve target "item.credits"'))).toBe(false);
     });
   });
+
+  // SPEC-105: a `has_item` gate on an item nothing grants is unsatisfiable (the item-analog of SPEC-70's
+  // flag-gate check). Warning-only; reuses the SPEC-104 obtainable-item set across the four gate sites.
+  describe("has_item gate guard (SPEC-105)", () => {
+    const isUnsatItemGate = (w: string) =>
+      w.includes('has_item gate "item.key"') && w.includes("granted by no give_item");
+
+    it("warns on a has_item storylet precondition for an item nothing grants", () => {
+      const { errors, warnings } = check({
+        storylets: [
+          {
+            id: "storylet.locked",
+            preconditions: [{ kind: "has_item", itemId: "item.key", count: 1 }],
+            salience: 1,
+            tags: [],
+            content: { ambient: "a locked door" },
+            effects: [],
+          },
+        ],
+      });
+      expect(errors).toEqual([]);
+      expect(warnings.some(isUnsatItemGate)).toBe(true);
+    });
+
+    it("no warning when the gated item is granted by a give_item effect", () => {
+      const { errors, warnings } = check({
+        storylets: [
+          {
+            id: "storylet.locked",
+            preconditions: [{ kind: "has_item", itemId: "item.key", count: 1 }],
+            salience: 1,
+            tags: [],
+            content: { ambient: "a locked door" },
+            effects: [{ kind: "give_item", itemId: "item.key", count: 1 }],
+          },
+        ],
+      });
+      expect(errors).toEqual([]);
+      expect(warnings.some(isUnsatItemGate)).toBe(false);
+    });
+
+    it("recurses into a nested all/not gate in offerWhen", () => {
+      const { errors, warnings } = check({
+        quests: [
+          quest({
+            offerWhen: [
+              {
+                kind: "all",
+                of: [{ kind: "not", of: { kind: "has_item", itemId: "item.key", count: 1 } }],
+              },
+            ],
+          }),
+        ],
+      });
+      expect(errors).toEqual([]);
+      expect(warnings.some(isUnsatItemGate)).toBe(true);
+    });
+  });
 });

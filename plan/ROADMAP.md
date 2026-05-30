@@ -486,3 +486,51 @@ coverage ~80%, golden untouched. ~72 commits ahead of origin/main (unpushed, hum
   `unlock_exit` (a quest that opens a locked path), `start_quest` (a quest that triggers another),
   `set_npc_dialogue` (a quest that permanently changes an NPC's line). Each validates the verb end-to-end.
 - **Real-model generation (human-gated):** still the highest-value leap (ROADMAP §10).
+
+## 13. CYCLES 9–10 (v2026.05-afk cont.) — content convergence, gate completeness, robustness, security
+
+Ran under the perpetual loop. **Cycle 9 (SPEC-80…103, 24 specs)** + **Cycle 10 (SPEC-104…109, 6 specs)**.
+ROADMAP brought current here (was 2 cycles behind; PROGRESS/JOURNAL held the detail).
+
+### 13.1 Cycle 9 (SPEC-80…103) — shipped
+- **Content convergence:** SPEC-80 old-safehouse (amnesia-payoff destination, gated exit); SPEC-86/87/88
+  syndicate-cleaner + street-kid human beat; SPEC-92/93 the convergence PAIR (fully-syndicate / fully-varga
+  combination gates — emergent endgame allegiance, not parallel quests).
+- **a11y completion:** SPEC-81/82/83 screen-reader announcer (location/quest/consequence); SPEC-84 WCAG 2.2
+  AA contrast; SPEC-85 use-of-color (1.4.1).
+- **Robustness + thesis-hardening:** SPEC-90 loader order-independence + subset-safety property tests;
+  SPEC-95 cross-thread integration; SPEC-96/97 pipeline output passes the full playability gate (both gen
+  paths); SPEC-98 bake test; SPEC-99/100 InputController + cameraTransform unit tests; SPEC-101 coverage
+  ratchet (→78/73/78/80); SPEC-102/103 content-safety + save-durability branch coverage.
+- **Merged to main** (human-authorized push) + prettier wired into the verify gate.
+
+### 13.2 Cycle 10 (SPEC-104…109) — shipped: gate completeness + robustness + security
+- **Playability gate — item-unobtainability family (made uniform):** SPEC-104 `retrieve` objective on an
+  ungranted item; SPEC-105 `has_item` gate on an ungranted item. Unwinnability/unsatisfiability detection is
+  now uniform across all 6 objective kinds AND both discrete (flag+item) gate surfaces. SPEC-106
+  mutation-hardened the new guards (playability.ts 75→78.5%, 3 genuine survivors killed). SPEC-107 documented
+  all three safety layers in the durable author contract (SCHEMA.md §8).
+- **Determinism robustness (research-motivated):** SPEC-108 metamorphic save/restore-continuation property —
+  `play(A++B) ≡ restore(jsonRoundTrip(makeSave(play(A)))).play(B)` through real JSON serialization (2026
+  metamorphic-testing best practice; SPEC-78 only proved point-in-time restore identity).
+- **Security:** SPEC-109 hardened the curation-page HTML escaper (added `'`; pinned all 5 chars,
+  mutation-killed). Full content→output XSS surface audited CLEAN (shipped app uses textContent/Pixi, no
+  innerHTML; markdown renderer is terminal-only).
+- **Disciplined deferrals (BACKLOG, not built — no real case):** numeric-threshold gate guards;
+  content-loader mutation-scope extension; condition-nesting-depth (fail-safe). Audit re-confirmed quests.ts
+  mutation survivors low-value; security+deps clean/current.
+
+State at Cycle-10 progress: `pnpm verify` EXIT 0 **349 tests / 61 files**; build + e2e green; `pnpm audit`
+clean; content:verify 11 packs / 21 NPCs / 12 quests / 12 storylets / 9 locations · 0 hygiene warnings;
+golden untouched; fingerprint 01a3d1f9d1cee0; tree clean. ~17 commits ahead of main (unpushed, human-gated).
+
+### 13.3 The forward frontier (honest)
+Every agent-auditable dimension is now exhausted or deferred with rationale. The two live levers:
+- **Human-gated:** real multi-model generation (§10 / BLOCKED — `OPENROUTER_API_KEY` + spend authorization).
+  The cutover is config-only and ready; enhancement specs (§10.5) promote after run #1 validates the baseline.
+- **Demand-gated:** new curated content — the thesis's core lever — but only when a genuine creative beat
+  warrants it (GOAL §3); manufacturing filler or speculative verb-exercises is churn. The unexercised verbs
+  (`start_quest`/`unlock_exit`/`set_npc_dialogue`; `retrieve` is awkward without a loot mechanic) get content
+  when a real beat demands, not before.
+The loop continues from /plan/: re-confirm green, act on the next external trigger (human unblock, content
+demand, or a future forcing function — CVE/dep major), and never manufacture churn.

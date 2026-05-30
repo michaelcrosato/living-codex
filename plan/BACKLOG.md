@@ -114,6 +114,9 @@ Re-run `pnpm mutation` after adding tests; consider a score *ratchet* spec once 
   layered into pack.opening) and `quest.market_debt` offers once the player talks to Marrow (her Ink sets
   `met_marrow` → `flag.met_marrow`). No open content follow-ups for this district.
 
+## UX (deferred — not over-engineering, GOAL §3)
+- **Data-driven HUD consequence journal.** `hud.ts` renders consequence lines from a hardcoded flag→line list (extended for the arc in SPEC-56). If the list keeps growing, promote it to content metadata (a flag→journal-line map authored in packs) so new content surfaces in the HUD without an app edit. Only worth it once the list is long enough to be a maintenance burden; today the curated list is fine.
+
 ## Notes
 Every item above was considered and *deliberately deferred* during the 2026-05-29 planning pass. The
 reasons (paid/blocked, profile-gated, redesign-scale, or convenience-only) are why they are **not** in

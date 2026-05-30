@@ -29,5 +29,11 @@ export function renderHud(
   if (flag("flag.entered_peacefully")) lines.push("· You talked your way in.");
   if (flag("flag.entered_unseen")) lines.push("· You were never seen.");
   if (flag("flag.syndicate_marked")) lines.push("⚠ The Syndicate has marked you.");
+  // The drive's fate + the loyalty choice (SPEC-50/52/54/55) — the world remembers; so does the journal.
+  if (flag("flag.sold_drive")) lines.push("✗ You sold the drive to the Syndicate.");
+  if (flag("flag.knows_syndicate_secret")) lines.push("✓ You know what's on the drive.");
+  if (flag("flag.leveraged_syndicate")) lines.push("⚠ You're holding the drive over the Syndicate.");
+  if (flag("flag.sided_with_kestrel")) lines.push("· You threw in with Kestrel.");
+  if (flag("flag.refused_kestrel")) lines.push("· You stayed loyal to Varga.");
   el.textContent = lines.join("\n");
 }

@@ -151,6 +151,9 @@ Re-run `pnpm mutation` after adding tests; consider a score *ratchet* spec once 
   uses each only when a genuine beat demands it (GOAL §3) — e.g. a fetch quest (`retrieve`), a quest that
   unlocks a locked door (`unlock_exit`), a quest that triggers another (`start_quest`). Not speculative churn.
 
+## a11y follow-up
+- **Announce quest-status + consequence changes to screen readers (SPEC-81 follow-up).** SPEC-81 announces location changes via the polite #announcer; extend the same deduped pattern to quest activations/completions and new consequence flags (the HUD shows them visually but they are not spoken). Keep it deduped (announce each change once, not per frame).
+
 ## Notes
 Every item above was considered and *deliberately deferred* during the 2026-05-29 planning pass. The
 reasons (paid/blocked, profile-gated, redesign-scale, or convenience-only) are why they are **not** in

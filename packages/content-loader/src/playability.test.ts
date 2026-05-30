@@ -432,4 +432,92 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
     expect(errors).toEqual([]);
     expect(warnings.filter((w) => w.includes("orphaned dialogue"))).toEqual([]);
   });
+
+  // SPEC-104: a `retrieve` objective on an item nothing grants is unwinnable (the engine only adds items
+  // via give_item / quest rewards; starting inventory is empty). Warning-only (extrinsic, subset-safe).
+  describe("retrieve item-source guard (SPEC-104)", () => {
+    const retrieveQuest = (over: Record<string, unknown> = {}) =>
+      quest({
+        branches: [
+          {
+            id: "b",
+            label: "l",
+            objectives: [{ kind: "retrieve", itemId: "item.cell", count: 2 }],
+          },
+        ],
+        ...over,
+      });
+    const isUnobtainable = (w: string) =>
+      w.includes('retrieve target "item.cell"') && w.includes("granted by no give_item");
+
+    it("warns when the retrieve item is granted by nothing", () => {
+      const { errors, warnings } = check({ quests: [retrieveQuest()] });
+      expect(errors).toEqual([]);
+      expect(warnings.some(isUnobtainable)).toBe(true);
+    });
+
+    it("no warning when a branch onComplete give_item grants the item", () => {
+      const { errors, warnings } = check({
+        quests: [
+          retrieveQuest({
+            branches: [
+              {
+                id: "b",
+                label: "l",
+                objectives: [{ kind: "retrieve", itemId: "item.cell", count: 2 }],
+                onComplete: [{ kind: "give_item", itemId: "item.cell", count: 1 }],
+              },
+            ],
+          }),
+        ],
+      });
+      expect(errors).toEqual([]);
+      expect(warnings.some(isUnobtainable)).toBe(false);
+    });
+
+    it("no warning when a storylet effect grants the item", () => {
+      const { errors, warnings } = check({
+        quests: [retrieveQuest()],
+        storylets: [
+          {
+            id: "storylet.drop",
+            preconditions: [{ kind: "flag_is", flag: "flag.x", equals: true }],
+            salience: 1,
+            tags: [],
+            content: { ambient: "a cell" },
+            effects: [{ kind: "give_item", itemId: "item.cell", count: 1 }],
+          },
+        ],
+      });
+      expect(errors).toEqual([]);
+      expect(warnings.some(isUnobtainable)).toBe(false);
+    });
+
+    it("no warning when rewards.items grants the item", () => {
+      const { errors, warnings } = check({
+        quests: [retrieveQuest({ rewards: { items: [{ itemId: "item.cell", count: 1 }] } })],
+      });
+      expect(errors).toEqual([]);
+      expect(warnings.some(isUnobtainable)).toBe(false);
+    });
+
+    it("no warning for retrieve item.credits when a quest awards credits", () => {
+      const { errors, warnings } = check({
+        quests: [
+          retrieveQuest({
+            branches: [
+              {
+                id: "b",
+                label: "l",
+                objectives: [{ kind: "retrieve", itemId: "item.credits", count: 5 }],
+              },
+            ],
+            rewards: { credits: 100 },
+          }),
+        ],
+      });
+      expect(errors).toEqual([]);
+      expect(warnings.some((w) => w.includes('retrieve target "item.credits"'))).toBe(false);
+    });
+  });
 });

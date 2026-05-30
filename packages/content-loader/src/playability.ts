@@ -22,7 +22,9 @@ export interface PlayabilityReport {
  *   - no NPC is unspawnable (no homeLocationId and in no location's npcSpawns — warned, SPEC-60);
  *   - no multi-branch quest has a branch whose objectives are all `talk_to` the giver (it auto-completes at
  *     offer and shadows siblings — warned, SPEC-68);
- *   - no `flag_is` gate reads a flag that nothing sets (unsatisfiable — content can't trigger — warned, SPEC-70).
+ *   - no `flag_is` gate reads a flag that nothing sets (unsatisfiable — content can't trigger — warned, SPEC-70);
+ *   - no `retrieve` objective targets an item that no `give_item` effect or quest reward ever grants (it
+ *     could never be collected — warned, SPEC-104).
  *
  * Pure over `registries` so it is unit-testable; the `content:verify` script is the thin CLI that
  * loads packs, runs this plus `auditCanon`, and reports (errors → exit 1).
@@ -267,6 +269,44 @@ export function staticPlayabilityCheck(registries: Registries): PlayabilityRepor
       warnings.push(
         `flag gate "${flag}" is read (flag_is) but set by nothing — the content gated on it can never trigger.`,
       );
+    }
+  }
+
+  // Unobtainable retrieve items (SPEC-104): the engine adds an item to inventory ONLY via a GiveItem
+  // event — sourced from a `give_item` effect or a quest's reward (rewards.items / rewards.credits;
+  // starting inventory is empty + combat drops nothing). So a `retrieve` objective whose item is granted
+  // by nothing can never be collected — the branch is unwinnable. This completes the unwinnability family:
+  // `defeat` (combat.hp, SPEC-72), `reach` (island), and now `retrieve`. Warn (not error): like the flag-gate
+  // (SPEC-70) and unspawnable-NPC (SPEC-60) checks, an item grant is EXTRINSIC — a not-yet-loaded pack could
+  // give_item it on a subset load — unlike `defeat`'s intrinsic combat.hp (a hard error).
+  const obtainableItems = new Set<string>();
+  const noteEffectItems = (effects: readonly Effect[]): void => {
+    for (const e of effects) if (e.kind === "give_item") obtainableItems.add(e.itemId);
+  };
+  for (const s of registries.storylets.values()) noteEffectItems(s.effects);
+  for (const quest of registries.quests.values()) {
+    noteEffectItems(quest.onAnyComplete);
+    for (const reward of quest.rewards.items) obtainableItems.add(reward.itemId);
+    // The engine grants reward credits as the `item.credits` inventory entry (WORLD_STATE; apply.ts
+    // bribe path spends it). Literal here because content-loader must not import engine-core (deps rule).
+    if (quest.rewards.credits > 0) obtainableItems.add("item.credits");
+    for (const branch of quest.branches) {
+      noteEffectItems(branch.onComplete);
+      noteEffectItems(branch.onFail);
+      for (const obj of branch.objectives) {
+        if (obj.kind === "skill_check") noteEffectItems(obj.onFail);
+      }
+    }
+  }
+  for (const quest of registries.quests.values()) {
+    for (const branch of quest.branches) {
+      for (const obj of branch.objectives) {
+        if (obj.kind === "retrieve" && !obtainableItems.has(obj.itemId)) {
+          warnings.push(
+            `${quest.id}.branches.${branch.id}: retrieve target "${obj.itemId}" is granted by no give_item effect or quest reward — the objective can never be completed.`,
+          );
+        }
+      }
     }
   }
 

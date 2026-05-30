@@ -58,8 +58,13 @@ export function drawScene(
   for (const entity of Object.values(world.entities)) {
     if (entity.locationId !== world.locationId) continue;
     const isPlayer = entity.id === world.player.entityId;
+    // Honor the NPC's authored appearance (SPEC-74): a living NPC is filled with its bodyColor and ringed
+    // with its accentColor, so the distinct authored looks actually show. Player gold; downed grey.
+    const npc = isPlayer ? undefined : registries.npcs.get(entity.defId as never);
+    const fill = isPlayer ? "#ffd166" : !entity.alive ? "#555555" : (npc?.appearance.bodyColor ?? "#2bd1ff");
     renderer.drawCircle(entity.pos, isPlayer ? 8 : 7, {
-      fill: isPlayer ? "#ffd166" : entity.alive ? "#2bd1ff" : "#555555",
+      fill,
+      ...(npc && entity.alive ? { stroke: npc.appearance.accentColor } : {}),
     });
   }
   renderer.end();

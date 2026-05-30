@@ -240,4 +240,87 @@ describe("canon assertion graph (CONTENT_PIPELINE.md §6)", () => {
       expect(serializeAssertion(a4)).toBe("faction.a allied with faction.b");
     });
   });
+
+  describe("hardened semantic + serialization coverage (SPEC-40)", () => {
+    it("exclusive-status governs SOLVENCY too: broke and wealthy in one epoch contradict", () => {
+      // The life group (alive/dead) is covered above; this pins the second STATUS_GROUP arm.
+      const pack = assertingPack([
+        { predicate: "status", subject: "npc.varga", state: "broke" },
+        { predicate: "status", subject: "npc.varga", state: "wealthy" },
+      ]);
+      const found = findCanonContradictions(buildCanonGraph([pack]));
+      expect(found).toHaveLength(1);
+      expect(found[0]?.rule).toBe("exclusive-status");
+      expect(found[0]?.subjects).toEqual(["npc.varga"]);
+    });
+
+    it("placement via npcSpawns implies alive — a dead spawned NPC is caught (distinct from homeLocationId)", () => {
+      // The homeLocationId⟹alive path is tested above; this exercises the npcSpawns⟹alive arm.
+      const pack = ContentPack.parse({
+        id: "pack.spawned",
+        version: "0",
+        title: "t",
+        provenance: { authoredBy: "human" },
+        locations: [
+          {
+            id: "location.plaza",
+            name: "Plaza",
+            mood: "tense",
+            bounds: { w: 10, h: 10 },
+            art: [],
+            npcSpawns: [{ npcId: "npc.kaine", at: { x: 1, y: 1 } }],
+          },
+        ],
+        assertions: [{ predicate: "status", subject: "npc.kaine", state: "dead" }],
+      });
+      const found = findCanonContradictions(buildCanonGraph([pack]));
+      expect(found.map((c) => c.rule)).toContain("exclusive-status");
+    });
+
+    it("serializeAssertion renders the remaining predicates (enemy_of / funds / located_in)", () => {
+      expect(
+        serializeAssertion({ predicate: "enemy_of", subject: "faction.a", object: "faction.b" }),
+      ).toBe("faction.a enemy of faction.b");
+      expect(
+        serializeAssertion({ predicate: "funds", subject: "npc.varga", object: "faction.crew" }),
+      ).toBe("npc.varga funds faction.crew");
+      expect(
+        serializeAssertion({ predicate: "located_in", subject: "npc.varga", object: "location.docks" }),
+      ).toBe("npc.varga located in location.docks");
+    });
+
+    it("dangling assertion refs are caught per reachable entity kind (faction via funds, location via located_in)", () => {
+      // refExists' npc arm is covered above; funds/located_in are the only predicates that can
+      // reference a faction/location, so these are the remaining *reachable* arms.
+      const base = {
+        version: "0",
+        title: "t",
+        provenance: { authoredBy: "human" as const },
+        npcs: [npc({ id: "npc.real" })],
+        factions: [{ id: "faction.real", name: "R", ethos: "e" }],
+      };
+      const cases = [
+        {
+          pack: ContentPack.parse({
+            ...base,
+            id: "pack.fg",
+            assertions: [{ predicate: "funds", subject: "npc.real", object: "faction.ghost" }],
+          }),
+          ghost: "faction.ghost",
+        },
+        {
+          pack: ContentPack.parse({
+            ...base,
+            id: "pack.lg",
+            assertions: [{ predicate: "located_in", subject: "npc.real", object: "location.ghost" }],
+          }),
+          ghost: "location.ghost",
+        },
+      ];
+      for (const { pack, ghost } of cases) {
+        const dangling = findDanglingAssertionRefs(buildCanonGraph([pack]), buildRegistries([pack]));
+        expect(dangling.map((d) => d.subjects[0]), ghost).toContain(ghost);
+      }
+    });
+  });
 });

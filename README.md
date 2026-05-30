@@ -27,6 +27,7 @@ without it a deterministic demo stub runs. See [.env.example](.env.example).
 - [GOAL.md](GOAL.md) — operational state for working on the repo · [ROADMAP.md](ROADMAP.md) — phases + tickets
 - [AGENTS.md](AGENTS.md) — agent operating manual · [tickets/](tickets/) — atomic work items
 - [docs/ai/REPO_MAP.md](docs/ai/REPO_MAP.md) — where code/tests/config live · [STRUCTURE.md](STRUCTURE.md) — repo tree
+- [content/PACKS.md](content/PACKS.md) — default browser content pack catalog
 
 ---
 
@@ -69,9 +70,10 @@ They meet only at [docs/SCHEMA.md](docs/SCHEMA.md). As long as content validates
 ## Status
 
 The engine is built (tickets T-00…T-16 plus the ULTRA hardening pass) and browser-playable; the
-10-minute slice in [docs/VERTICAL_SLICE.md](docs/VERTICAL_SLICE.md) is the demo target. `pnpm verify`
-is green. To work on the repo, follow [AGENTS.md](AGENTS.md); for the current state and next steps,
-see [GOAL.md](GOAL.md) and [ROADMAP.md](ROADMAP.md).
+10-minute slice in [docs/VERTICAL_SLICE.md](docs/VERTICAL_SLICE.md) is the demo target. The default
+browser content set is cataloged in [content/PACKS.md](content/PACKS.md). `pnpm verify` is green. To
+work on the repo, follow [AGENTS.md](AGENTS.md); for the current state and next steps, see
+[GOAL.md](GOAL.md) and [ROADMAP.md](ROADMAP.md).
 
 ---
 

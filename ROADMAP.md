@@ -17,6 +17,7 @@ The repo is healthy enough to stop treating “build the engine” as the main p
 - CI runs `pnpm agent:doctor`, `pnpm verify`, coverage, and non-blocking Playwright e2e.
 - Architecture boundaries are strong: pure `engine-core`, schema/content separation, replay determinism,
   vendor isolation, and agent workflow docs.
+- This pass added a root PR checklist and a first manual content pack catalog.
 
 The next gap is **proof quality**: make First Light clear, playable, replayable, content-rich, and easy for an
 agent to extend without broad context.
@@ -27,7 +28,7 @@ agent to extend without broad context.
 
 | Risk | Response |
 |---|---|
-| Pack inventory drift across docs/runtime imports | Create one pack catalog and sync docs to it before adding packs. |
+| Pack inventory can still drift because the catalog is manual | Add a docs/runtime pack-sync check before adding more default packs. |
 | Browser smoke is non-blocking and artifacts are thin | Store traces/screenshots/video on failure; later decide whether a tiny smoke becomes blocking. |
 | First Light may be technically playable but unclear to first-time players | Add journal/affordance/UI feedback and run actual branch audits. |
 | Content pipeline can generate, but curation proof is thin | Make proposal/critique/curation bundles reviewable before bake. |
@@ -44,12 +45,11 @@ remain optional and pipeline-only.
 
 Goal: make the repo’s state and evidence hard to misread.
 
-1. **Pack catalog** — authoritative list of all content packs, versions, dependencies, provenance, and whether
-   they are loaded by default.
-2. **Docs sync** — fail or warn on stale doc paths and stale pack references.
-3. **Golden replay** — commit a short First Light replay fixture and assert its hash.
-4. **E2E artifacts** — upload Playwright trace/screenshot/video on browser smoke failure.
-5. **PR template** — require commands run, artifacts, scope exceptions, and follow-up tickets.
+1. **Pack sync check** — derive or verify the default pack list against `packages/app-web/src/main.ts` and `content/PACKS.md`.
+2. **Golden replay** — commit a short First Light replay fixture and assert its hash.
+3. **E2E artifacts** — upload Playwright trace/screenshot/video on browser smoke failure.
+4. **Docs sync** — fail or warn on stale doc paths and stale pack references.
+5. **Cloud-agent notes** — reconcile Cursor Cloud PR #1 into one concise location.
 
 ### Lane B — First Light player clarity
 
@@ -95,8 +95,7 @@ replay check.
 
 | ID | Priority | Title | Acceptance gate |
 |---|---:|---|---|
-| REPO-001 | P0 | Build authoritative content pack catalog | Catalog matches `app-web` runtime imports; `pnpm content:validate` green. |
-| REPO-002 | P0 | Add PR template | New PRs require checks, artifacts, scope exceptions, and follow-ups. |
+| REPO-001 | P0 | Add pack catalog sync check | Script/CI confirms `content/PACKS.md` matches `app-web` default imports. |
 | TEST-001 | P0 | Add First Light golden replay fixture | `pnpm replay:verify` asserts fixture hash. |
 | UI-001 | P0 | Add/improve quest journal surface | Active quest/branch/objective state visible in browser; e2e/manual evidence. |
 | UI-002 | P0 | Add interaction and exit affordances | Nearby usable entities/exits and blockers are legible; e2e/manual evidence. |
@@ -106,7 +105,10 @@ replay check.
 | PIPE-001 | P1 | Add proposal/critique/curation bundle | `pnpm pipeline:cycle` produces reviewable artifacts before bake. |
 | GAME-002 | P1 | Add Varga/Syndicate reaction matrix | Reactions differ by route and pass content verification. |
 | PIPE-002 | P1 | Add content diff/blast-radius report | Candidate pack review shows new/changed IDs and canon assertion impact. |
-| REPO-003 | P2 | Add docs sync check | Stale paths/pack references are caught by a script or CI step. |
+| REPO-002 | P2 | Add stale-doc reference check | Stale paths/pack references are caught by a script or CI step. |
+| REPO-003 | P2 | Reconcile Cursor Cloud PR #1 | Cloud instructions live in one concise place and do not bloat root docs. |
+
+Completed this pass: a manual `content/PACKS.md` catalog and `.github/pull_request_template.md`.
 
 ---
 

@@ -163,6 +163,20 @@ gate. The discrete checks (flag/item) are the sound, clean family; stop there.
   uses each only when a genuine beat demands it (GOAL §3) — e.g. a fetch quest (`retrieve`), a quest that
   unlocks a locked door (`unlock_exit`), a quest that triggers another (`start_quest`). Not speculative churn.
 
+## Mutation scope (2026-05-30, SPEC-106 audit) — content-loader not in the permanent Stryker mutate scope
+`stryker.config.json` `mutate` is **engine-core only** (SPEC-30 decision: the pure logic core). The
+**content-loader** — the safety boundary (`integrity.ts`/`canon-graph.ts`/`playability.ts`/`storylet-check.ts`,
+"AI content can't break the game") — is mutation-tested only **ad-hoc** (SPEC-39/40 measured integrity+canon;
+SPEC-106 measured playability.ts at 75.00%→78.49% via a one-off `--mutate`). So the safety gate's mutation
+coverage is not part of the repeatable `pnpm mutation`. **Considered extending the scope** to add
+`packages/content-loader/src/**/*.ts`: genuine value (the gate's self-verification becomes repeatable), but
+(a) report-only (not in `verify`), (b) ~doubles mutation runtime, (c) current content-loader score ~63%
+(integrity.ts 45%, canon-graph 58%) is dominated by low-value message-string/where-string survivors already
+triaged as not-worth-chasing (SPEC-39/40). **Defer** a config change until either a content-loader regression
+slips past the tests (a real forcing function) or a "ratchet the gate's mutation score" spec is warranted;
+meanwhile a focused `stryker run --mutate <file>` is the tool when touching a gate file (as SPEC-106 did).
+The 3 genuine SPEC-104/105 survivors found this way are killed; the rest are the known low-value class.
+
 ## a11y follow-up
 - **~~Announce quest-status changes~~ → DONE (SPEC-82).** Consequence-flag announcements DONE (SPEC-83). The a11y announcer now covers location+quest+consequences. SPEC-81 announces location changes via the polite #announcer; extend the same deduped pattern to quest activations/completions and new consequence flags (the HUD shows them visually but they are not spoken). Keep it deduped (announce each change once, not per frame).
 

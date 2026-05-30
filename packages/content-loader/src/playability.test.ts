@@ -139,6 +139,34 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
     expect(warnings.some((w) => w.includes("dialogue.used"))).toBe(false); // the referenced one is fine
   });
 
+  // SPEC-60 — unspawnable-NPC hygiene: an NPC with no home and in no npcSpawns can never be reached.
+  it("warns (non-fatal) on an unspawnable NPC — no homeLocationId and in no npcSpawns", () => {
+    const { errors, warnings } = check({
+      npcs: [npc({ dialogueId: "dialogue.used" })], // no homeLocationId; baseLocation has empty npcSpawns
+      dialogues: [dialogue("dialogue.used")],
+    });
+    expect(errors).toEqual([]);
+    expect(warnings.some((w) => w.includes("npc.t") && w.includes("unspawnable NPC"))).toBe(true);
+  });
+
+  it("does NOT warn on an NPC that has a homeLocationId", () => {
+    const { warnings } = check({
+      npcs: [npc({ homeLocationId: "location.start" })],
+      dialogues: [dialogue("dialogue.used")],
+    });
+    expect(warnings.filter((w) => w.includes("unspawnable NPC"))).toEqual([]);
+  });
+
+  it("does NOT warn on an NPC placed via a location's npcSpawns", () => {
+    const spawnLoc = { ...baseLocation, npcSpawns: [{ npcId: "npc.t", at: { x: 1, y: 1 } }] };
+    const { warnings } = check({
+      locations: [spawnLoc],
+      npcs: [npc({})], // no homeLocationId, but listed in npcSpawns
+      dialogues: [dialogue("dialogue.used")],
+    });
+    expect(warnings.filter((w) => w.includes("unspawnable NPC"))).toEqual([]);
+  });
+
   it("does NOT warn when every dialogue is reached via NPC / reaction / storylet / set_npc_dialogue", () => {
     const { errors, warnings } = check({
       npcs: [

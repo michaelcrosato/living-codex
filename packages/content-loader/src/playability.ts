@@ -17,7 +17,8 @@ export interface PlayabilityReport {
  *     checks the location id exists, but NOT that the index is in range);
  *   - no quest has directly contradictory `flag_is` gates in `offerWhen` (it could never be offered);
  *   - no storylet has unsatisfiable preconditions (it could never fire); always-on noise is warned;
- *   - no dialogue is orphaned (defined but referenced by nothing — warned, SPEC-53).
+ *   - no dialogue is orphaned (defined but referenced by nothing — warned, SPEC-53);
+ *   - no NPC is unspawnable (no homeLocationId and in no location's npcSpawns — warned, SPEC-60).
  *
  * Pure over `registries` so it is unit-testable; the `content:verify` script is the thin CLI that
  * loads packs, runs this plus `auditCanon`, and reports (errors → exit 1).
@@ -166,6 +167,21 @@ export function staticPlayabilityCheck(registries: Registries): PlayabilityRepor
     if (storylet.preconditions.length === 0 && storylet.salience === 0) {
       warnings.push(
         `${storylet.id}: no preconditions and salience 0 — always-on ambient noise; gate it or raise salience.`,
+      );
+    }
+  }
+
+  // Unspawnable NPCs (SPEC-60, generalizing SPEC-59): the app spawns an NPC only via its `homeLocationId`
+  // or a location's `npcSpawns`. An NPC with neither is loaded but placed nowhere — unreachable in play.
+  // Warn (not error): on a subset load a location in a not-yet-loaded pack could carry the spawn.
+  const spawnedByLocation = new Set<string>();
+  for (const loc of registries.locations.values()) {
+    for (const spawn of loc.npcSpawns) spawnedByLocation.add(spawn.npcId);
+  }
+  for (const npc of registries.npcs.values()) {
+    if (!npc.homeLocationId && !spawnedByLocation.has(npc.id)) {
+      warnings.push(
+        `${npc.id}: unspawnable NPC — no homeLocationId and no location npcSpawns entry; it can never be reached in play.`,
       );
     }
   }

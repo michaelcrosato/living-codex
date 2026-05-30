@@ -1,7 +1,9 @@
 # /plan/ROADMAP.md — The Living Codex Transformation Roadmap
 
 > **Status:** Cycle 1 authored 2026-05-29 (SPEC-01…15 **Done**, SPEC-16 carryover).
-> **Cycle 2 (v2026.05) authored 2026-05-29** — see [§7 below](#7-cycle-2-v202605--the-next-wave).
+> **Cycle 2 (v2026.05) authored AND EXECUTED 2026-05-29** — SPEC-16…26 all **Done** (one local
+> commit each, `pnpm verify` green throughout; final: 185 tests / 40 files, audit clean, HEAD 499c77c).
+> See [§7 below](#7-cycle-2-v202605--the-next-wave).
 > Source-of-truth for this initiative is the `/plan/` folder. Subordinate to [docs/GOAL.md](../docs/GOAL.md).
 > Every item honors the **locked decisions** (GOAL §3) and **engineering invariants** (GOAL §5). If any
 > spec conflicts with GOAL.md, GOAL.md wins.

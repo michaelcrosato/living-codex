@@ -1,5 +1,6 @@
 import { Application, Container, Graphics, Text } from "pixi.js";
 import type { Camera, Renderer, ShapeStyle, TextStyle, Vec2 } from "@codex/engine-core";
+import { cameraTransform } from "./camera";
 
 /**
  * The ONLY package that imports pixi.js (vendor isolation, AGENTS.md). Implements engine-core's
@@ -28,11 +29,9 @@ export class PixiRenderer implements Renderer {
   begin(camera: Camera): void {
     this.gfx.clear();
     this.textLayer.removeChildren();
-    this.worldLayer.scale.set(camera.zoom);
-    this.worldLayer.position.set(
-      camera.viewport.w / 2 - camera.center.x * camera.zoom,
-      camera.viewport.h / 2 - camera.center.y * camera.zoom,
-    );
+    const t = cameraTransform(camera);
+    this.worldLayer.scale.set(t.scale);
+    this.worldLayer.position.set(t.x, t.y);
   }
 
   drawPath(points: readonly Vec2[], style: ShapeStyle): void {

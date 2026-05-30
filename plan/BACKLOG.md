@@ -134,6 +134,19 @@ Re-run `pnpm mutation` after adding tests; consider a score *ratchet* spec once 
   by removing the branch) — promote to a spec then. Parallels the orphan-dialogue (SPEC-53) / unspawnable-NPC
   (SPEC-60) guards.
 
+## Loader robustness: unbounded condition-nesting depth (deferred — fail-safe, no real case)
+The `Condition` schema is recursive (`z.lazy`, `not`/`all`/`any`) with **no depth bound**, and every walker
+(engine `conditions.ts` evaluator, `integrity.ts` collectConditionRefs, `playability.ts` noteConditionFlags/
+Items) recurses unboundedly — so a pathologically deep generated condition (`{all:[{all:[…10⁵…]}]}`) would
+stack-overflow the gate (RangeError). **Considered + deferred:** the threat model makes this **fail-safe**,
+not a hole — the gate runs BEFORE content ships, so a crash *prevents* the bad pack from loading (it never
+reaches the game); the content is trusted/offline/curated; and the only real downside is a stack-trace vs a
+clean "condition nested too deep (>N)" message — a diagnostics nit, not a break-the-game vector. **No real
+occurrence** (no content nests beyond depth ~3). Per the SPEC-68 rule (guard a real case, not speculatively)
+and to avoid a false-rejection risk from a too-low bound, defer. Promote only if a generated pack actually
+trips it OR a "clean rejection messages for adversarial content" hardening spec is warranted; the fix would
+be a shared depth-bounded walk (or a Zod `superRefine` depth check) emitting a clear error.
+
 ## Playability-gate: numeric-threshold gate guards (deferred — harder + false-positive-prone)
 After SPEC-104/105 the **discrete-presence** unobtainability family is uniform: a `flag_is` gate needs a
 flag something sets (SPEC-70), a `has_item` gate + `retrieve` objective need an item something grants

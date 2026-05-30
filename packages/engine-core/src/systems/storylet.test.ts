@@ -1,12 +1,23 @@
 import { describe, it, expect } from "vitest";
-import { Storylet, StoryletId, FlagId, LocationId } from "@codex/content-schema";
+import { Storylet, StoryletId, FlagId, LocationId, FactionId } from "@codex/content-schema";
 import { createWorld } from "../state/world";
 import { applyEvent } from "../events/apply";
-import { storyletSystem } from "./storylet";
+import { storyletSystem, waypointBonus } from "./storylet";
 
 const START = LocationId.parse("location.start");
 const MET_VARGA = FlagId.parse("flag.met_varga");
 const FRIEND = FlagId.parse("flag.friend");
+const VARGA_CREW = FactionId.parse("faction.varga_crew");
+
+/** Helper: pull the TriggerStorylet candidates a system emits for a world. */
+function candidates(
+  reg: Map<StoryletId, Storylet>,
+  world: ReturnType<typeof createWorld>,
+): Storylet[] {
+  const ev = storyletSystem(reg)(world, 0)[0];
+  if (!ev || ev.type !== "TriggerStorylet") throw new Error("Expected TriggerStorylet");
+  return ev.candidates;
+}
 
 const storylet1 = Storylet.parse({
   id: "storylet.low_salience",
@@ -135,5 +146,80 @@ describe("storyletSystem & TriggerStorylet", () => {
     const result4 = applyEvent(world4, ev4);
 
     expect(result3.rngState).toBe(result4.rngState);
+  });
+});
+
+const aligned = Storylet.parse({
+  id: "storylet.aligned",
+  preconditions: [],
+  salience: 5,
+  tags: ["faction.varga_crew"], // a faction-id tag → eligible for waypoint steering
+  content: { ambient: "Varga's people nod as you pass." },
+  effects: [],
+});
+const plain = Storylet.parse({
+  id: "storylet.plain",
+  preconditions: [],
+  salience: 5,
+  tags: ["ambient"],
+  content: { ambient: "Rain on the awnings." },
+  effects: [],
+});
+const mainTagged = Storylet.parse({
+  id: "storylet.main_beat",
+  preconditions: [],
+  salience: 5,
+  tags: ["faction.varga_crew", "main"], // has the faction tag BUT is main-plot → never steered
+  content: { ambient: "This should never be salience-boosted." },
+  effects: [],
+});
+
+describe("drama-manager waypoint steering (SPEC-32)", () => {
+  it("with no aligned faction, effective salience == base salience (SPEC-11 baseline)", () => {
+    const world = createWorld({ seed: "s", startLocationId: START });
+    // equal base salience, no reputation → both tie as candidates (unchanged from baseline)
+    const reg = new Map<StoryletId, Storylet>([
+      [aligned.id, aligned],
+      [plain.id, plain],
+    ]);
+    expect(candidates(reg, world).map((c) => c.id).sort()).toEqual([
+      "storylet.aligned",
+      "storylet.plain",
+    ]);
+  });
+
+  it("promotes the aligned-faction storylet once the player is rising with that faction", () => {
+    let world = createWorld({ seed: "s", startLocationId: START });
+    world = applyEvent(world, { type: "AdjustReputation", factionId: VARGA_CREW, delta: 10 });
+    const reg = new Map<StoryletId, Storylet>([
+      [aligned.id, aligned],
+      [plain.id, plain],
+    ]);
+    const cands = candidates(reg, world);
+    expect(cands).toHaveLength(1);
+    expect(cands[0]?.id).toBe("storylet.aligned"); // +1 waypoint bonus breaks the tie deterministically
+  });
+
+  it("never steers a 'main'-tagged storylet (guardrail)", () => {
+    let world = createWorld({ seed: "s", startLocationId: START });
+    world = applyEvent(world, { type: "AdjustReputation", factionId: VARGA_CREW, delta: 50 });
+    const reg = new Map<StoryletId, Storylet>([
+      [mainTagged.id, mainTagged],
+      [plain.id, plain],
+    ]);
+    // mainTagged has the faction tag but is "main" → bonus 0 → still ties with plain (no promotion)
+    expect(candidates(reg, world).map((c) => c.id).sort()).toEqual([
+      "storylet.main_beat",
+      "storylet.plain",
+    ]);
+  });
+
+  it("waypointBonus is pure, integer, and bounded", () => {
+    let world = createWorld({ seed: "s", startLocationId: START });
+    expect(waypointBonus(world, aligned)).toBe(0); // no reputation yet
+    world = applyEvent(world, { type: "AdjustReputation", factionId: VARGA_CREW, delta: 10 });
+    expect(waypointBonus(world, aligned)).toBe(1);
+    expect(waypointBonus(world, mainTagged)).toBe(0); // main excluded even with the faction tag
+    expect(waypointBonus(world, plain)).toBe(0); // no faction-id tag
   });
 });

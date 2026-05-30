@@ -18,6 +18,16 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
   would catch what the current single-pass `auditCanon` misses. Pays off mainly with real generation;
   until then the deterministic `auditCanon` + SPEC-25 reference checks are the offline substitute.
   (Research: [MAGIC arxiv 2507.21544](https://arxiv.org/pdf/2507.21544).)
+  - _2026 best-practice scan (validation):_ the field's recommended stack is **knowledge-graph grounding +
+    contradiction/consistency detection + a faithfulness judge attached to every generate span** — which
+    this repo **already implements** for the deterministic-feasible parts (the canon-graph IS the KG;
+    `relevantSubgraph` grounding = SPEC-14; the rubric judge = SPEC-15; `auditCanon` = contradiction pass).
+    Concrete technique anchors for the real-model enhancement when unblocked: **entailment-style grounding
+    checks** (verify the output is entailed by its grounding facts — TruLens/Ragas-style), and **MetaQA
+    metamorphic prompt mutations** (detect inconsistency in *closed-source* models via prompt variants, no
+    token-probs/activations needed — fits the OpenRouter closed-API constraint). All real-model-gated.
+    (Research: [LLM hallucination best-practices 2026 (Lakera)](https://www.lakera.ai/blog/guide-to-hallucinations-in-large-language-models),
+    [Microsoft: mitigating LLM hallucinations](https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/best-practices-for-mitigating-hallucinations-in-large-language-models-llms/4403129).)
 
 ## Gated on a profile or a real demand (don't pre-optimize / don't add speculative verbs — GOAL §3, ARCH §8)
 - **Render perf: `GraphicsContext` reuse + app-level culling** in `render-pixi`/`scene`. ARCH §8 requires

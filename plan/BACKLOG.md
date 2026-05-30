@@ -71,6 +71,19 @@ Doc-sync SCHEMA §3 (NPC) — added `combat`/`homeLocationId` to §3, the missin
 _(Resolved 2026-05-29: e2e port robustness — Playwright preview moved to a dedicated port 4319 so a
 foreign server on Vite's default 4173/5173 can't be silently reused. See `playwright.config.ts`.)_
 
+## Test gaps — SPEC-30 mutation survivors (triage; do NOT bulk-fix)
+Baseline mutation score **73.31%** (2026-05-30, engine-core, 108 survivors). Surviving mutants = behavior a
+test didn't catch. Address opportunistically with **targeted** tests where correctness matters; never write
+tests just to chase the number. Hotspots (lowest score first):
+- **`events/effects.ts` (0%)** — likely all mutants type-error or are exercised only indirectly; verify
+  effects.test.ts asserts each effect→event mapping's *values*, not just shape.
+- **`state/snapshot.ts` (43.75%)** — hashing/serialization; survivors here are low-risk (hash collisions
+  improbable) but a few targeted assertions on snapshot determinism would help.
+- **`systems/combat.ts` (50%)** — damage/HP-clamp edges; add cases for 0/over-kill and the alive flag.
+- **`state/world.ts` (60%)**, **`time/rng.ts` (64%)**, **`systems/quests.ts` (65%)** — branch/objective
+  transitions and RNG bounds; the highest-value targeted tests live here (quests is the biggest surface).
+Re-run `pnpm mutation` after adding tests; consider a score *ratchet* spec once the baseline stabilizes.
+
 ## Notes
 Every item above was considered and *deliberately deferred* during the 2026-05-29 planning pass. The
 reasons (paid/blocked, profile-gated, redesign-scale, or convenience-only) are why they are **not** in

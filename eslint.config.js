@@ -25,6 +25,8 @@ export default tseslint.config(
       "**/*.config.ts",
       "**/e2e/**",
       ".dependency-cruiser.cjs",
+      ".stryker-tmp/**", // SPEC-30: Stryker's mutation sandbox (a full project copy); never lint it.
+      "reports/**", // Stryker HTML/JSON reports.
     ],
   },
   js.configs.recommended,

@@ -8,6 +8,9 @@ schema/generated/
 test-results/
 playwright-report/
 playwright/.cache/
+.stryker-tmp/
+reports/
+stryker-incremental.json
 
 # Claude Code: commit the project AFK permission policy, ignore runtime/session files.
 .claude/*

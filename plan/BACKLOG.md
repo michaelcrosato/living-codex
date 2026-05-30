@@ -143,6 +143,14 @@ Re-run `pnpm mutation` after adding tests; consider a score *ratchet* spec once 
   hud.spec case; e2e-safe since the cold-open assertions are substring-based). Low-risk, genuine UX. The new
   clinic's ambientText was added for consistency in the meantime (commit 8f44626).
 
+## Content/verb coverage (2026-05-30 audit — exercise when content demands)
+- **Unexercised schema verbs** (implemented + engine-tested, no curated content uses them yet): effects
+  `start_quest` (quest-chaining via effect, vs flag-gating), `unlock_exit` (open a new path), `set_npc_dialogue`
+  (swap dialogue via a quest effect); objectives `retrieve` (collect N of an item), `set_flag`; condition
+  `any` (OR gate), `has_item` (now used — SPEC-77). `modify_skill` now exercised (SPEC-77). Add content that
+  uses each only when a genuine beat demands it (GOAL §3) — e.g. a fetch quest (`retrieve`), a quest that
+  unlocks a locked door (`unlock_exit`), a quest that triggers another (`start_quest`). Not speculative churn.
+
 ## Notes
 Every item above was considered and *deliberately deferred* during the 2026-05-29 planning pass. The
 reasons (paid/blocked, profile-gated, redesign-scale, or convenience-only) are why they are **not** in

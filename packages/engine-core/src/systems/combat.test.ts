@@ -43,6 +43,25 @@ describe("minimal combat", () => {
     expect(w.entities["entity.guard"]?.hp).toBe(0);
   });
 
+  it("never drives HP below 0, even under overkill / post-mortem attacks (GOAL §5.8 invariant)", () => {
+    // hp 3 vs a strong attacker: the first hit may exceed remaining HP, and we keep striking
+    // well past death — HP must clamp at exactly 0 and `alive` must track `hp > 0`.
+    let w = withGuard(3, 4);
+    const ev = {
+      type: "ResolveAttack",
+      attackerEntityId: "entity.player",
+      targetEntityId: "entity.guard",
+    } as const;
+    for (let i = 0; i < 12; i++) {
+      w = applyEvent(w, ev);
+      const guard = w.entities["entity.guard"];
+      expect(guard?.hp ?? 0).toBeGreaterThanOrEqual(0); // never negative at any step
+    }
+    const guard = w.entities["entity.guard"];
+    expect(guard?.hp).toBe(0); // clamped at the floor, not below
+    expect(guard?.alive).toBe(false); // alive === hp > 0 (0 is dead, not "alive at 0")
+  });
+
   it("ResolveAttack is deterministic under a fixed seed", () => {
     const w = withGuard(12);
     const ev = {

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { loadPacks, hashValue } from "@codex/content-loader";
+import { loadPacks, hashValue, staticPlayabilityCheck, auditCanon } from "@codex/content-loader";
 import { ContentPack } from "@codex/content-schema";
 import { makeBrief } from "./brief";
 import { demoProvider, DEMO_RESPONSES } from "./demo-fixture";
@@ -54,6 +54,17 @@ describe("runCycle — full decomposition + curation bundle (P2)", () => {
     expect(bundle.candidate.provenance.authoredBy).toBe("pipeline");
     // it really is treaty-valid (re-parse through the schema)
     expect(ContentPack.safeParse(bundle.candidate).success).toBe(true);
+  });
+
+  it("SPEC-96: the generated candidate passes the full content-safety gate (playability + canon), not just the schema", async () => {
+    const bundle = await run();
+    // Load the candidate together with its base (pack.opening) so cross-pack refs resolve, then run the
+    // SAME gate hand-authored content passes: integrity (loadPacks) + playability + canon. The pipeline's
+    // output must be PLAYABLE, not merely schema-valid (the thesis: "AI content can't break the game").
+    const loaded = loadPacks([bundle.candidate as unknown, raw]);
+    const { errors } = staticPlayabilityCheck(loaded.registries);
+    expect(errors).toEqual([]); // solvable, no branch-shadowing/unsatisfiable-gate/etc.
+    expect(auditCanon([bundle.candidate as never, raw as never], loaded.registries)).toEqual([]); // canon-consistent
   });
 
   it("golden master: a fixed brief + stubbed ensemble => a byte-stable candidate pack", async () => {

@@ -27,6 +27,8 @@ export function renderHud(
     if (!rt || rt.status === "unoffered") continue;
     const branch = rt.completedBranchId ? ` (${rt.completedBranchId})` : "";
     lines.push(`✦ ${quest.title}: ${rt.status}${branch}`);
+    // Surface the authored quest summary while it's active so the player knows what it's about (SPEC-75).
+    if (rt.status === "active" && quest.summary) lines.push(`   ${quest.summary}`);
   }
   const flag = (key: string): boolean =>
     Object.entries(world.flags).some(([k, v]) => k === key && v === true);

@@ -98,3 +98,29 @@ describe("renderHud surfaces location ambientText (SPEC-71)", () => {
     expect(text).not.toContain("~ ");
   });
 });
+
+/**
+ * SPEC-75 — the HUD shows an ACTIVE quest's authored summary (the "what to do" text), previously unsurfaced.
+ */
+import { QuestId } from "@codex/content-schema";
+describe("renderHud surfaces active quest summary (SPEC-75)", () => {
+  const QID = QuestId.parse("quest.demo");
+  const questObj = { id: "quest.demo", title: "Demo Quest", summary: "Find the thing and decide its fate.", branches: [], offerWhen: [], onAnyComplete: [], rewards: { credits: 0, items: [], reputation: [] } };
+  const regs: Registries = { ...emptyRegistries, quests: new Map([[QID, questObj as never]]) };
+
+  it("shows the summary while the quest is active", () => {
+    let world: World = createWorld({ seed: "q", startLocationId: START });
+    world = applyEvent(world, { type: "ActivateQuest", questId: QID, branchIds: ["b"] });
+    const el = { textContent: "" } as unknown as HTMLElement;
+    renderHud(el, world, regs);
+    expect(el.textContent ?? "").toContain("Demo Quest: active");
+    expect(el.textContent ?? "").toContain("Find the thing and decide its fate.");
+  });
+
+  it("does not show the summary for an unoffered quest", () => {
+    const world: World = createWorld({ seed: "q", startLocationId: START }); // quest never activated
+    const el = { textContent: "" } as unknown as HTMLElement;
+    renderHud(el, world, regs);
+    expect(el.textContent ?? "").not.toContain("Find the thing and decide its fate.");
+  });
+});

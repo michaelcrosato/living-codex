@@ -96,3 +96,17 @@ A browser top-down 2D RPG. **You build and evolve the engine.** The world's cont
 A unit of work is done when **every** holds: `pnpm verify` green; new behavior has colocated tests;
 the replay invariant holds; public API reflected in the package `index.ts`; the ticket + affected
 docs updated; changes committed locally; no unexplained failures (absent gates recorded as `not found`).
+
+## Cursor Cloud specific instructions
+
+**No external services.** The playable app is client-only (Vite + static content packs). There is no API server, database daemon, or Docker Compose stack. IndexedDB is in-browser only.
+
+**Install / refresh:** `pnpm install` (or `pnpm agent:bootstrap`). Node **≥ 20**; repo pins **pnpm@11.1.2**. Run `pnpm agent:doctor` if something looks wrong.
+
+**Manual play:** `pnpm dev` → default **http://localhost:5173**. **Do not** point Playwright at 5173 for `pnpm e2e` — the e2e config uses preview on **4319** with `--strictPort` so a stray dev server cannot satisfy the webServer hook with the wrong build.
+
+**Automated browser smoke:** `pnpm exec playwright install chromium` once per VM, then `pnpm e2e` (builds `app-web`, serves preview on **4319**, runs `packages/app-web/e2e/`). Not part of `pnpm verify`.
+
+**Full gate (no browser):** `pnpm verify` — typecheck, lint, deps, Vitest, content validate/verify, replay invariant.
+
+**Optional:** `OPENROUTER_API_KEY` only for offline pipeline generation (`pnpm pipeline:cycle`); play and `pnpm verify` work without it.

@@ -8,6 +8,7 @@ import {
   createWorld,
   dialogueSystem,
   interactionSystem,
+  loadSave,
   movementSystem,
   questSystem,
   reactionsSystem,
@@ -19,6 +20,7 @@ import {
   type InputEvent,
   type Narrative,
   type ReplayLog,
+  type SaveEnvelope,
   type System,
   type World,
 } from "@codex/engine-core";
@@ -26,6 +28,12 @@ import {
 export interface GameSessionOptions extends CreateWorldOptions {
   /** Optional events applied (and logged) at construction — e.g. initial story flags. */
   seedEvents?: readonly GameEvent[];
+  /**
+   * Restore from a loaded save (SPEC-78): when present, the session starts from this already-reconstructed
+   * World (e.g. `loadSave(envelope)`) instead of a fresh `createWorld` — no seed events, no re-spawn (the
+   * restored World already carries its entities). Use `GameSession.restore()` to build one from a save.
+   */
+  restoreWorld?: World;
 }
 
 /**
@@ -46,10 +54,35 @@ export class GameSession {
     private readonly narrative: Narrative,
     options: GameSessionOptions,
   ) {
-    this.world = createWorld(options);
     this.log = createLog(options.seed, fingerprint);
-    if (options.seedEvents) this.applyAndLog(options.seedEvents);
-    this.spawnNpcsAt(options.startLocationId);
+    if (options.restoreWorld) {
+      // Restored save: the World already has its entities + current location. Don't re-create or re-spawn;
+      // mark the current location spawned so re-entry doesn't redundantly scan it (spawnNpc guards dupes anyway).
+      this.world = options.restoreWorld;
+      this.spawnedLocations.add(this.world.locationId);
+    } else {
+      this.world = createWorld(options);
+      if (options.seedEvents) this.applyAndLog(options.seedEvents);
+      this.spawnNpcsAt(options.startLocationId);
+    }
+  }
+
+  /**
+   * Build a session from a loaded save (SPEC-78): reconstructs the World via `loadSave` and starts from it.
+   * The session's seed/startLocationId derive from the restored World, so the loaded game continues exactly.
+   */
+  static restore(
+    registries: Registries,
+    fingerprint: ContentFingerprint,
+    narrative: Narrative,
+    save: SaveEnvelope,
+  ): GameSession {
+    const world = loadSave(save);
+    return new GameSession(registries, fingerprint, narrative, {
+      seed: world.seed,
+      startLocationId: world.locationId,
+      restoreWorld: world,
+    });
   }
 
   private applyAndLog(events: readonly GameEvent[]): void {

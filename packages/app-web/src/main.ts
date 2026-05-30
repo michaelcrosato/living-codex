@@ -3,7 +3,7 @@ import { FlagId, LocationId } from "@codex/content-schema";
 import { accumulate, makeSave } from "@codex/engine-core";
 import { createPixiRenderer } from "@codex/render-pixi";
 import { InkNarrative } from "@codex/narrative-ink";
-import { exportSave, saveGame, requestPersistentStorage } from "@codex/persistence";
+import { exportSave, saveGame, loadGame, requestPersistentStorage } from "@codex/persistence";
 import openingPack from "../../../content/core/pack.opening/pack.json";
 import districtBarks from "../../../content/core/pack.district_barks/pack.json";
 import dripMarket from "../../../content/core/pack.drip_market/pack.json";
@@ -57,7 +57,8 @@ async function main(): Promise<void> {
   const viewport = { w: canvas.width, h: canvas.height };
   const { renderer } = await createPixiRenderer({ canvas, width: viewport.w, height: viewport.h });
 
-  const session = new GameSession(registries, fingerprint, new InkNarrative(), {
+  // `let` (not const): a load (SPEC-78) swaps in a restored session; the rAF loop reads the current binding.
+  let session = new GameSession(registries, fingerprint, new InkNarrative(), {
     seed: "first-light",
     startLocationId: LocationId.parse("location.ashfall_district"),
     startPos: { x: 400, y: 300 },
@@ -148,6 +149,17 @@ async function main(): Promise<void> {
       saveGame("manual", makeSave(session.world, [], fingerprint)).then(
         () => toast("Saved."),
         (err: unknown) => toast(err instanceof Error ? err.message : "Save failed."),
+      );
+    else if (k === "o")
+      // Load (SPEC-78): restore the last manual save and swap in the reconstructed session.
+      loadGame("manual").then(
+        (save) => {
+          if (!save) return void toast("No save to load.");
+          closeDialogue();
+          session = GameSession.restore(registries, fingerprint, new InkNarrative(), save);
+          toast("Loaded.");
+        },
+        (err: unknown) => toast(err instanceof Error ? err.message : "Load failed."),
       );
     else if (k === "l") {
       // export the current session as a downloadable JSON (replayable bug report / share)

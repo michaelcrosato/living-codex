@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadPacks } from "@codex/content-loader";
 import { QuestId, LocationId, FlagId, FactionId } from "@codex/content-schema";
-import { createWorld, hash, replay, type InputEvent, type SkillId } from "@codex/engine-core";
+import { createWorld, hash, replay, makeSave, type InputEvent, type SkillId } from "@codex/engine-core";
 import { InkNarrative } from "@codex/narrative-ink";
 import { GameSession, type GameSessionOptions } from "../src/session";
 
@@ -77,5 +77,35 @@ describe("GameSession (the playable app's headless heart)", () => {
     // the entire session — seed events, NPC spawns, every tick — replays to the same hash
     const replayed = replay(createWorld(opts), session.log, { against: fingerprint });
     expect(hash(replayed)).toBe(hash(session.world));
+  });
+});
+
+describe("GameSession.restore — load a saved session (SPEC-78)", () => {
+  const opts: GameSessionOptions = {
+    seed: "save",
+    startLocationId: DISTRICT,
+    startPos: { x: 50, y: 50 },
+    seedEvents: [{ type: "SetFlag", flag: MET, to: true }],
+  };
+
+  it("reconstructs a saved session to an identical world, then keeps playing", () => {
+    const session = new GameSession(registries, fingerprint, new InkNarrative(), opts);
+    for (let i = 0; i < 5; i++) session.step([{ type: "Move", dir: { x: 1, y: 0 } }]); // change state
+    const saved = hash(session.world);
+
+    const restored = GameSession.restore(
+      registries,
+      fingerprint,
+      new InkNarrative(),
+      makeSave(session.world, [], fingerprint),
+    );
+    expect(hash(restored.world)).toBe(saved); // restored to the exact saved state
+    expect(restored.world.flags[MET]).toBe(true); // story state survived
+    expect(restored.world.locationId).toBe("location.ashfall_district");
+
+    // the restored session keeps playing (the tick loop runs on it)
+    const tickBefore = restored.world.tick;
+    restored.step([{ type: "Move", dir: { x: 1, y: 0 } }]);
+    expect(restored.world.tick).toBeGreaterThan(tickBefore);
   });
 });

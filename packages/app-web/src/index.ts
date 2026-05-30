@@ -1,3 +1,4 @@
-// Composition root: the only place that wires render + narrative + loader + persistence.
-// The playable shell + fixed-timestep loop land in T-12.
-export const APP_WEB_PENDING = "T-12" as const;
+// Nominal package entry (the `main`/`exports` target). The app's real composition root — wiring
+// render + narrative + loader + persistence + the fixed-timestep loop — lives in `main.ts`, loaded by
+// `index.html`. Nothing imports this module; it exists only to satisfy the package entry field.
+export {};

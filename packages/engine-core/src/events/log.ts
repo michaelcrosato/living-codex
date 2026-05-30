@@ -45,10 +45,6 @@ export function createLog(seed: string, contentFingerprint: ContentFingerprint):
   };
 }
 
-export function appendInput(log: ReplayLog, tick: number, input: InputEvent): void {
-  log.entries.push({ tick, kind: "input", input });
-}
-
 export function appendEvent(log: ReplayLog, tick: number, event: GameEvent): void {
   log.entries.push({ tick, kind: "event", event });
 }

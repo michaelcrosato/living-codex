@@ -14,7 +14,7 @@ export const Provenance = z.object({
   models: z.array(z.string()).default([]),
   promptHash: z.string().optional(),
   curatedBy: z.string().optional(),
-  approvedAt: z.string().datetime().optional(),
+  approvedAt: z.iso.datetime().optional(),
 });
 export type Provenance = z.infer<typeof Provenance>;
 

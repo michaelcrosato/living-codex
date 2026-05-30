@@ -18,7 +18,8 @@ export type Condition =
 
 // Input is `unknown` (content arrives as JSON, ids are plain strings pre-parse); output is
 // the branded `Condition`. The relaxed input param is what makes the recursive brand typecheck.
-export const Condition: z.ZodType<Condition, z.ZodTypeDef, unknown> = z.lazy(() =>
+// Zod 4 dropped the `ZodTypeDef` middle param — `ZodType<Output, Input>` is the v4 signature.
+export const Condition: z.ZodType<Condition, unknown> = z.lazy(() =>
   z.discriminatedUnion("kind", [
     z.object({
       kind: z.literal("flag_is"),

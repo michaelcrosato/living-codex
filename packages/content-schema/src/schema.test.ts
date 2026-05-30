@@ -228,8 +228,15 @@ describe("content-schema", () => {
   });
 
   it("exports a JSON Schema for the offline pipeline", () => {
-    const schema = toJsonSchema();
+    const schema = toJsonSchema() as { type?: string; properties?: Record<string, unknown> };
     expect(schema).toBeTypeOf("object");
-    expect(JSON.stringify(schema)).toContain("ContentPack");
+    // Zod 4's native z.toJSONSchema inlines the ContentPack object (no zod-to-json-schema `name`
+    // wrapper), so assert it semantically describes the pack: a top-level object whose properties
+    // include the content arrays the offline pipeline must emit (SPEC-16).
+    expect(schema.type).toBe("object");
+    expect(schema.properties).toBeTypeOf("object");
+    for (const key of ["npcs", "quests", "locations", "factions", "items", "storylets", "dialogues"]) {
+      expect(schema.properties).toHaveProperty(key);
+    }
   });
 });

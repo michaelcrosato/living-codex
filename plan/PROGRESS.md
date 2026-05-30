@@ -32,7 +32,7 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 | SPEC-11 | Storylet / salience layer | 3 | Done | main | bb10696 | green | minimal additive schema + salience-selected ambient barks system; tie-breaker RNG inside applyEvent fold; +3 tests |
 | SPEC-14 | Retrieval-grounded canon | 3 | Done | main | 816552a | green | subgraph query + cycle prompt grounding + integration spy test |
 | SPEC-15 | Rubric LLM-judge gate | 3 | Done | main | abf39e2 | green | 1-5 integer rubric + rationale CoT prompt + threshold low-score flagging; Html escaping rationales; +3 tests |
-| SPEC-16 | Zod 4 + native JSON Schema | 4/6 | Todo | — | — | — | MED risk; isolate; updates golden hash; HARD-before SPEC-23/26 |
+| SPEC-16 | Zod 4 + native JSON Schema | 4/6 | Done | main | (see log) | green | zod 3.25→4.4.3 (root + content-schema + pipeline pkgs), zod-to-json-schema removed; native z.toJSONSchema at both sites (unrepresentable:"any"); .default({})→.prefault({}) in brief.ts; z.string().datetime()→z.iso.datetime(); Condition annotation → ZodType<C,unknown>; recursive-ref warnings GONE; golden-master byte-stable (no hash change); 174 tests |
 | SPEC-17 | Doc-sync NPC schema | 5 | Done | main | (see log) | green | §3 +combat/+homeLocationId; §8 ContentPack +storylets; +Storylet subsection; docs-only, 174 tests |
 | SPEC-18 | ESLint 10 + ts-eslint | 5 | Done | main | (see log) | green | eslint+@eslint/js 9.39→10, typescript-eslint 8.20→8.60; flat config unchanged (no migration); zero new lint errors; 174 tests |
 | SPEC-19 | depcruise 17 + node types | 5 | Done | main | (see log) | green | dependency-cruiser 16.10→17.4.2, @types/node 22→24.12; config unchanged (v17-compatible); rule-fire re-proven via planted node:fs import (error + exit 1), reverted; 174 tests |
@@ -57,7 +57,7 @@ Status legend: `Todo` · `In progress` · `Blocked` · `Done` · `Dropped` (with
 - [ ] **Wave 4 / 6 — Zod 4 (SPEC-16)** landed in isolation; golden-master updated; recursive-ref warning gone.
 
 ### Cycle-2 wave gates (Waves 5–9)
-- [ ] **Wave 5 complete** — SPEC-17 (docs) + SPEC-19 (depcruise/types) + SPEC-18 (eslint 10); `pnpm verify` green.
+- [x] **Wave 5 complete** (2026-05-29) — SPEC-17 (docs) + SPEC-19 (depcruise 17/@types/node 24) + SPEC-18 (eslint 10); `pnpm verify` green (174 tests) after each. Re-baseline before Wave 6.
 - [ ] **Wave 6 complete** — SPEC-16 (Zod 4) + SPEC-20 (TS 6) isolated, full diff reviewed; purity preserved.
 - [ ] **Wave 7 complete** — SPEC-21 (Vitest 4, coverage re-baselined) + SPEC-22 (fast-check 4); determinism gate green.
 - [ ] **Wave 8 complete** — SPEC-23 (`skill_at_least`) + SPEC-24 (storylet content + barks) + SPEC-25 (verify storylets).

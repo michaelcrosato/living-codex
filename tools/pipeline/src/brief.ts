@@ -11,7 +11,9 @@ export const Brief = z.object({
       quests: z.number().int().nonnegative().default(0),
       locations: z.number().int().nonnegative().default(0),
     })
-    .default({}),
+    // Zod 4: `.default({})` would require {} to match the OUTPUT type; `.prefault({})` applies the
+    // empty object as INPUT so the inner field defaults fill in (the intended v3 behavior). (SPEC-16)
+    .prefault({}),
   tone: z.string().default(""),
 });
 export type Brief = z.infer<typeof Brief>;

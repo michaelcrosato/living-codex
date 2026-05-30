@@ -1,4 +1,3 @@
-import { zodToJsonSchema } from "zod-to-json-schema";
 import { z } from "zod";
 
 /**
@@ -151,7 +150,7 @@ export async function generateStructured<S extends z.ZodTypeAny>(
   schema: S,
   opts: GenerateOptions,
 ): Promise<z.output<S>> {
-  const jsonSchema = zodToJsonSchema(schema, { $refStrategy: "none" });
+  const jsonSchema = z.toJSONSchema(schema, { unrepresentable: "any" });
   const maxAttempts = (opts.repairAttempts ?? 2) + 1;
   let user = opts.user;
   let lastRaw = "";

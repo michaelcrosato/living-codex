@@ -179,6 +179,63 @@ describe("quest runtime", () => {
     expect(final.inventory[CREDITS]).toBe(200);
   });
 
+  it("a multi-objective branch completes only when ALL objectives are done, in order (reach → retrieve)", () => {
+    const HEIST = QuestId.parse("quest.heist");
+    const HUB = LocationId.parse("location.hub");
+    const GADGET = ItemId.parse("item.gadget");
+    const multi = Quest.parse({
+      id: "quest.heist",
+      title: "Heist",
+      summary: "Reach the hub, then grab two gadgets.",
+      offerWhen: [], // vacuously true -> offered immediately
+      branches: [
+        {
+          id: "do_it",
+          label: "Do it",
+          objectives: [
+            { kind: "reach", locationId: "location.hub" },
+            { kind: "retrieve", itemId: "item.gadget", count: 2 },
+          ],
+          onComplete: [{ kind: "set_flag", flag: "flag.heist_done", to: true }],
+        },
+      ],
+      rewards: {},
+    });
+    const map = new Map([[HEIST, multi]]);
+
+    let w = applyEvents(world(), questSystem(map)(world(), 0)); // ActivateQuest
+    expect(w.quests[HEIST]?.status).toBe("active");
+
+    // at START (not the hub), no gadgets -> neither objective resolves
+    w = applyEvents(w, questSystem(map)(w, 0));
+    expect(w.quests[HEIST]?.objectiveProgress["do_it#0"]?.done).toBeFalsy();
+
+    // reach the hub: objective 0 done, but objective 1 (retrieve) is NOT -> branch must stay active
+    w = applyEvent(w, { type: "EnterLocation", locationId: HUB, spawnAt: { x: 0, y: 0 } });
+    w = applyEvents(w, questSystem(map)(w, 0));
+    expect(w.quests[HEIST]?.objectiveProgress["do_it#0"]?.done).toBe(true);
+    expect(w.quests[HEIST]?.objectiveProgress["do_it#1"]?.done).toBeFalsy();
+    expect(w.quests[HEIST]?.status).toBe("active"); // 1/2 objectives must NOT complete the branch
+    expect(w.flags[FlagId.parse("flag.heist_done")]).toBeUndefined();
+
+    // exactly 1 gadget is still short of count:2 -> still not done (guards the >= count threshold)
+    w = applyEvent(w, { type: "GiveItem", itemId: GADGET, count: 1 });
+    w = applyEvents(w, questSystem(map)(w, 0));
+    expect(w.quests[HEIST]?.objectiveProgress["do_it#1"]?.done).toBeFalsy();
+    expect(w.quests[HEIST]?.status).toBe("active");
+
+    // the 2nd gadget completes retrieve; the next tick completes the branch (all objectives done)
+    w = applyEvent(w, { type: "GiveItem", itemId: GADGET, count: 1 });
+    for (let t = 0; t < 4 && w.quests[HEIST]?.status === "active"; t++) {
+      const evs = questSystem(map)(w, 0);
+      if (evs.length === 0) break;
+      w = applyEvents(w, evs);
+    }
+    expect(w.quests[HEIST]?.status).toBe("completed");
+    expect(w.quests[HEIST]?.completedBranchId).toBe("do_it");
+    expect(w.flags[FlagId.parse("flag.heist_done")]).toBe(true);
+  });
+
   it("completes a talk_to objective once the NPC's dialogue has been engaged (SPEC-02)", () => {
     const MEETQ = QuestId.parse("quest.meet");
     const VARGA = NpcId.parse("npc.varga");

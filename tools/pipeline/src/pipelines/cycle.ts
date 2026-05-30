@@ -81,34 +81,34 @@ export async function runCycle(args: RunCycleArgs): Promise<CurationBundle> {
   const canon = buildCanonIndex(args.registries, args.packIds ?? []);
 
   // 1. Build the canon assertion graph from prior packs (or compile from registries if priorPacks is not provided)
-  const priorPacks = args.priorPacks && args.priorPacks.length > 0
-    ? args.priorPacks
-    : [
-        {
-          id: "prior_packs_compiled",
-          version: "0",
-          title: "Compiled Prior Packs",
-          dependsOn: [],
-          provenance: { authoredBy: "human" as const, models: [] },
-          npcs: [...args.registries.npcs.values()],
-          factions: [...args.registries.factions.values()],
-          locations: [...args.registries.locations.values()],
-          items: [...args.registries.items.values()],
-          quests: [...args.registries.quests.values()],
-          assertions: [],
-          dialogues: [],
-          storylets: [],
-        } as ContentPack
-      ];
+  const priorPacks =
+    args.priorPacks && args.priorPacks.length > 0
+      ? args.priorPacks
+      : [
+          {
+            id: "prior_packs_compiled",
+            version: "0",
+            title: "Compiled Prior Packs",
+            dependsOn: [],
+            provenance: { authoredBy: "human" as const, models: [] },
+            npcs: [...args.registries.npcs.values()],
+            factions: [...args.registries.factions.values()],
+            locations: [...args.registries.locations.values()],
+            items: [...args.registries.items.values()],
+            quests: [...args.registries.quests.values()],
+            assertions: [],
+            dialogues: [],
+            storylets: [],
+          } as ContentPack,
+        ];
   const graph = buildCanonGraph(priorPacks);
 
   // 2. Query relevant subgraph for brief's seed IDs
   const sub = relevantSubgraph(graph, args.brief.ground_in);
 
   // 3. Serialize it deterministically
-  const groundingText = sub.records.length > 0
-    ? sub.records.map(renderAssertionRecord).join("\n")
-    : undefined;
+  const groundingText =
+    sub.records.length > 0 ? sub.records.map(renderAssertionRecord).join("\n") : undefined;
 
   const base = buildUserPrompt(args.brief, renderCanon(canon), groundingText);
 
@@ -181,19 +181,29 @@ export async function runCycle(args: RunCycleArgs): Promise<CurationBundle> {
   const rubricFlags: string[] = [];
   const threshold = 3;
   if (scorecard.canonConsistency < threshold) {
-    rubricFlags.push(`[rubric] canonConsistency needs attention (${scorecard.canonConsistency}/5): ${scorecard.canonConsistencyRationale}`);
+    rubricFlags.push(
+      `[rubric] canonConsistency needs attention (${scorecard.canonConsistency}/5): ${scorecard.canonConsistencyRationale}`,
+    );
   }
   if (scorecard.choiceDensity < threshold) {
-    rubricFlags.push(`[rubric] choiceDensity needs attention (${scorecard.choiceDensity}/5): ${scorecard.choiceDensityRationale}`);
+    rubricFlags.push(
+      `[rubric] choiceDensity needs attention (${scorecard.choiceDensity}/5): ${scorecard.choiceDensityRationale}`,
+    );
   }
   if (scorecard.emotionalStakes < threshold) {
-    rubricFlags.push(`[rubric] emotionalStakes needs attention (${scorecard.emotionalStakes}/5): ${scorecard.emotionalStakesRationale}`);
+    rubricFlags.push(
+      `[rubric] emotionalStakes needs attention (${scorecard.emotionalStakes}/5): ${scorecard.emotionalStakesRationale}`,
+    );
   }
   if (scorecard.novelty < threshold) {
-    rubricFlags.push(`[rubric] novelty needs attention (${scorecard.novelty}/5): ${scorecard.noveltyRationale}`);
+    rubricFlags.push(
+      `[rubric] novelty needs attention (${scorecard.novelty}/5): ${scorecard.noveltyRationale}`,
+    );
   }
   if (scorecard.integrationCost < threshold) {
-    rubricFlags.push(`[rubric] integrationCost needs attention (${scorecard.integrationCost}/5): ${scorecard.integrationCostRationale}`);
+    rubricFlags.push(
+      `[rubric] integrationCost needs attention (${scorecard.integrationCost}/5): ${scorecard.integrationCostRationale}`,
+    );
   }
 
   return {

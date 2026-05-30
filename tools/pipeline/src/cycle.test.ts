@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { loadPacks, hashValue } from "@codex/content-loader";
+import { loadPacks, hashValue, staticPlayabilityCheck, auditCanon } from "@codex/content-loader";
 import { ContentPack } from "@codex/content-schema";
 import { makeBrief } from "./brief";
 import { demoProvider, DEMO_RESPONSES } from "./demo-fixture";
@@ -56,6 +56,17 @@ describe("runCycle — full decomposition + curation bundle (P2)", () => {
     expect(ContentPack.safeParse(bundle.candidate).success).toBe(true);
   });
 
+  it("SPEC-96: the generated candidate passes the full content-safety gate (playability + canon), not just the schema", async () => {
+    const bundle = await run();
+    // Load the candidate together with its base (pack.opening) so cross-pack refs resolve, then run the
+    // SAME gate hand-authored content passes: integrity (loadPacks) + playability + canon. The pipeline's
+    // output must be PLAYABLE, not merely schema-valid (the thesis: "AI content can't break the game").
+    const loaded = loadPacks([bundle.candidate as unknown, raw]);
+    const { errors } = staticPlayabilityCheck(loaded.registries);
+    expect(errors).toEqual([]); // solvable, no branch-shadowing/unsatisfiable-gate/etc.
+    expect(auditCanon([bundle.candidate as never, raw as never], loaded.registries)).toEqual([]); // canon-consistent
+  });
+
   it("golden master: a fixed brief + stubbed ensemble => a byte-stable candidate pack", async () => {
     const a = await run();
     const b = await run();
@@ -76,6 +87,15 @@ describe("runCycle — full decomposition + curation bundle (P2)", () => {
     expect(hashValue(a.candidate)).toBe(GOLDEN_HASH_STORYLETS);
   });
 
+  it("SPEC-97: the storylet-budget candidate also passes the full gate (generated storylet is satisfiable)", async () => {
+    const bundle = await runWithStorylets();
+    expect(bundle.candidate.storylets.length).toBeGreaterThan(0); // it generated a storylet
+    const loaded = loadPacks([bundle.candidate as unknown, raw]);
+    const { errors } = staticPlayabilityCheck(loaded.registries);
+    expect(errors).toEqual([]); // generated storylet is satisfiable; no unsatisfiable/dead-content errors
+    expect(auditCanon([bundle.candidate as never, raw as never], loaded.registries)).toEqual([]);
+  });
+
   it("default brief (budget.storylets=0) still produces NO storylets (golden unchanged)", async () => {
     const bundle = await run();
     expect(bundle.candidate.storylets).toEqual([]);
@@ -85,10 +105,10 @@ describe("runCycle — full decomposition + curation bundle (P2)", () => {
     const bundle = await run();
     expect(bundle.scorecard.canonConsistency).toBe(4);
     expect(Array.isArray(bundle.flagged)).toBe(true);
-    
+
     // Assert that the low score (integrationCost = 2 < 3) triggers a low score flag
     expect(bundle.flagged).toContain(
-      "[rubric] integrationCost needs attention (2/5): Stub implementation lacks complex variables."
+      "[rubric] integrationCost needs attention (2/5): Stub implementation lacks complex variables.",
     );
 
     const md = renderBundleMarkdown(bundle);
@@ -130,6 +150,8 @@ describe("runCycle — full decomposition + curation bundle (P2)", () => {
     expect(arcReq).toBeDefined();
     // User prompt should contain the Grounding facts section
     expect(arcReq!.user).toContain("# Grounding facts");
-    expect(arcReq!.user).toContain("npc.varga is member of faction.varga_crew (from prior_packs_compiled [derived])");
+    expect(arcReq!.user).toContain(
+      "npc.varga is member of faction.varga_crew (from prior_packs_compiled [derived])",
+    );
   });
 });

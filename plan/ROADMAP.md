@@ -412,3 +412,77 @@ models at a known cost.
 One **capped, single-pack** real cycle (e.g., a new patron via `pipeline:cycle`), reviewed through the
 curation bundle, **not baked until human-approved**. Validates the real-model path end-to-end at minimal
 cost/risk. Only then promote 10.5 to executable specs + a Cycle-7 execution wave.
+
+## 11. CYCLE 7 (v2026.05-afk cont.) — unblocked product depth (real-model frontier still human-gated)
+
+Cycle-6 closed with the conclusion that the *hardening* frontier is exhausted and the *highest-value* leap
+(real multi-model generation + persona critics + multi-hop contradiction detection) is **BLOCKED on a paid
+`OPENROUTER_API_KEY` + human spend authorization** (§10, BLOCKED.md). The perpetual loop does not stop on
+that — it continues on genuine, **non-churn, unblocked** value. An incremental Phase-A audit confirmed the
+"vendor glue" packages (narrative-ink, persistence) have no hidden logic gap (the replay-critical Ink-state
+capture/restore is already tested; persistence's migration lives in the 100%-mutation-tested engine-core).
+So Cycle 7 turns to **the product itself** — curated content depth, the ROADMAP's stated "core lever",
+which needs no API key and exercises the full engine through real play.
+
+### 11.1 What shipped (SPEC-50…)
+- **SPEC-50 — pack.syndicate_offer ("The City's Cut").** Gave `faction.ashfall_syndicate` (the established
+  "runs the city" power) its first NPC face — a broker at the existing `location.the_drip` — and made the
+  warehouse drive *matter*: a 3-branch quest (sell / decrypt / leverage) gated on `flag.has_drive`, chaining
+  off `quest.the_warehouse`, each branch a distinct `skill_check` with a distinct faction consequence. Plus a
+  faction-tagged ambient storylet + canon assertions. Authored with existing verbs only (no engine/schema
+  change); wired live; same-path load+play tested; `pnpm verify` green (242), e2e 4 passed, audit clean.
+
+### 11.2 The line we hold
+Per SPEC-30 / GOAL §3 the loop will **not** manufacture churn (mutation-number chasing, speculative verbs,
+network telemetry that breaks offline-first). Cycle-7 work is genuine product/canon depth and any real
+correctness gap an audit surfaces. The real-model enhancements (§10.5) promote to specs only once a human
+unblocks the key and run #1 validates the baseline.
+
+### 11.3 Cycle-7 REPLENISH research pass (2026-05-30) — frontier scan results
+Per the loop's REPLENISH mandate (re-run A+B for the next frontier), a fresh audit + web-research pass:
+- **Dependencies (AUDIT):** `pnpm audit` clean; `pnpm outdated` showed two majors behind. **Vite 7→8 was the
+  one genuine, now-unblocked win** → shipped as **SPEC-61** (Vite 8.0 stable + Rolldown + Vitest 4.1.7 support;
+  the forcing function BLOCKED.md awaited). `@types/node` 24→25 stays deferred (deliberately pinned to the
+  Node-24 runtime — bumping types ahead of the runtime risks typing APIs that don't exist at run time).
+- **Offline / PWA (RESEARCH):** the app has no service worker / manifest. **Confirmed NOT a gap:** GOAL §3
+  mandates "instant access, **no install**, no login" (×2) and "offline-*capable*" = no runtime network calls
+  — already satisfied (no fetch/LLM at runtime; the static SPA is HTTP-cached on revisit). An installable PWA
+  would *contradict* the "no install" pillar → deliberately out of scope (GOAL §3, no speculative features).
+- **AI-content validation (RESEARCH):** the 2026 best-practice stack (schema-governed generation + knowledge
+  grounding + normalization repair + contradiction detection + LLM-judge) is **already implemented for every
+  deterministic-feasible part** (Zod→JSON Schema; `relevantSubgraph` SPEC-14; `tolerantParse` SPEC-12;
+  `auditCanon`/canon-graph SPEC-40; rubric judge SPEC-15). The remaining pieces (LLM-judge narrative-
+  consistency *at scale*, fact-list alignment, iterative refinement) are **real-model-gated** (already in
+  BACKLOG / §10.5). The repo is at the unblocked 2026 frontier here.
+
+**Net:** after SPEC-61 the unblocked frontier is again thin — deps current, offline-capable confirmed,
+content-validation at-frontier. The next high-value leap stays human-gated (real-model generation, §10). The
+loop continues by harvesting genuine product depth (curated content — the thesis's core lever) and any real
+gap a future audit surfaces; it does not manufacture churn (SPEC-30 / GOAL §3).
+
+## 12. CYCLE 8 (v2026.05-afk cont.) — content depth + unsurfaced-content + save/load
+
+Ran under the perpetual loop (re-issued goal: never stop until human interrupt). Shipped **SPEC-71…79 (9 specs)**:
+- **New content threads / depth:** SPEC-73 the amnesia/identity thread ("What You Forgot" — pays off the
+  cold-open hook via npc.stranger); SPEC-77 clinic training quest (skill progression — exercises modify_skill
+  + has_item, both previously unexercised by content).
+- **"Authored but unsurfaced" UX fixes** (a productive audit class): SPEC-71 location ambientText in the HUD;
+  SPEC-74 NPC bodyColor/accentColor in the scene; SPEC-75 active-quest summary; SPEC-76 the player skill sheet.
+- **Save story completed:** SPEC-78 in-app load (GameSession.restore — was save-without-load, a real defect);
+  SPEC-79 file import (export/import symmetry). Now: K save / O load / L export / I import.
+- **Playability guard:** SPEC-72 defeat-requires-combat (tightened objectiveSatisfiable — a defeat on a
+  non-combat NPC is unwinnable). Brings the playability gate to 5 guards (53/60/68/70/72).
+
+State at Cycle-8 progress: `pnpm verify` green **299 tests / 48 files** (Vite 8), e2e 4 passed, audit + peers
+clean, content:verify 10 packs / 19 NPCs / 10 quests / 10 storylets / 8 locations · 0 hygiene warnings,
+coverage ~80%, golden untouched. ~72 commits ahead of origin/main (unpushed, human-gated).
+
+### 12.1 Next wave (candidates — execute when reached; promote from BACKLOG)
+- **Amnesia-payoff destination:** a new location (the player's old safehouse) reachable from the hub via an
+  exit gated by `requires:[flag_is learned_origin]` (exercises conditional `exit.requires`), with evocative
+  (now-surfaced) ambientText + a small reveal — a place the SPEC-73 thread leads to. NOT speculative: the
+  amnesia thread genuinely demands a destination.
+- **Unused-verb content** (GOAL §3 — only as a genuine beat demands): `retrieve` (a fetch quest),
+  `unlock_exit` (a quest that opens a locked path), `start_quest` (a quest that triggers another),
+  `set_npc_dialogue` (a quest that permanently changes an NPC's line). Each validates the verb end-to-end.
+- **Real-model generation (human-gated):** still the highest-value leap (ROADMAP §10).

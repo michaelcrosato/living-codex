@@ -235,7 +235,15 @@ describe("content-schema", () => {
     // include the content arrays the offline pipeline must emit (SPEC-16).
     expect(schema.type).toBe("object");
     expect(schema.properties).toBeTypeOf("object");
-    for (const key of ["npcs", "quests", "locations", "factions", "items", "storylets", "dialogues"]) {
+    for (const key of [
+      "npcs",
+      "quests",
+      "locations",
+      "factions",
+      "items",
+      "storylets",
+      "dialogues",
+    ]) {
       expect(schema.properties).toHaveProperty(key);
     }
   });

@@ -127,6 +127,38 @@
           },
           "label": "down to the undermarket",
           "requires": []
+        },
+        {
+          "at": {
+            "x": 50,
+            "y": 50
+          },
+          "toLocationId": "location.ashfall_clinic",
+          "spawnAt": {
+            "x": 60,
+            "y": 240
+          },
+          "label": "the patch-up clinic",
+          "requires": []
+        },
+        {
+          "at": {
+            "x": 50,
+            "y": 50
+          },
+          "toLocationId": "location.old_safehouse",
+          "spawnAt": {
+            "x": 60,
+            "y": 240
+          },
+          "label": "a door you suddenly remember",
+          "requires": [
+            {
+              "kind": "flag_is",
+              "flag": "flag.learned_origin",
+              "equals": true
+            }
+          ]
         }
       ],
       "npcSpawns": [
@@ -449,6 +481,129 @@
       "ambientText": [
         "The drip doesn't reach here."
       ]
+    },
+    {
+      "id": "location.ashfall_clinic",
+      "name": "The Patch-Up",
+      "mood": "Bleach over old blood. A cot, a tray of instruments that have seen too much, and a medic who does not ask how you got hurt.",
+      "bounds": {
+        "w": 400,
+        "h": 300
+      },
+      "art": [
+        {
+          "kind": "rect",
+          "at": {
+            "x": 0,
+            "y": 0
+          },
+          "w": 400,
+          "h": 300,
+          "fill": "#0c1012"
+        },
+        {
+          "kind": "rect",
+          "at": {
+            "x": 30,
+            "y": 200
+          },
+          "w": 340,
+          "h": 60,
+          "fill": "#13201f",
+          "stroke": "#5ad0c0"
+        },
+        {
+          "kind": "circle",
+          "at": {
+            "x": 200,
+            "y": 120
+          },
+          "r": 70,
+          "fill": "#101a1c"
+        }
+      ],
+      "exits": [
+        {
+          "at": {
+            "x": 60,
+            "y": 240
+          },
+          "toLocationId": "location.ashfall_district",
+          "spawnAt": {
+            "x": 50,
+            "y": 50
+          },
+          "label": "back to the street",
+          "requires": []
+        }
+      ],
+      "npcSpawns": [],
+      "ambientText": [
+        "An autoclave hisses and clicks.",
+        "Someone left blood on the cot. Not yours. Not yet."
+      ]
+    },
+    {
+      "id": "location.old_safehouse",
+      "name": "The Old Safehouse",
+      "mood": "A room you have never seen and somehow know. A cot, a dead terminal, a coat that fits you hanging by the door.",
+      "bounds": {
+        "w": 400,
+        "h": 300
+      },
+      "art": [
+        {
+          "kind": "rect",
+          "at": {
+            "x": 0,
+            "y": 0
+          },
+          "w": 400,
+          "h": 300,
+          "fill": "#0b0d14"
+        },
+        {
+          "kind": "rect",
+          "at": {
+            "x": 40,
+            "y": 210
+          },
+          "w": 320,
+          "h": 50,
+          "fill": "#161b2a",
+          "stroke": "#8a7bd8"
+        },
+        {
+          "kind": "circle",
+          "at": {
+            "x": 200,
+            "y": 120
+          },
+          "r": 64,
+          "fill": "#10131c"
+        }
+      ],
+      "exits": [
+        {
+          "at": {
+            "x": 60,
+            "y": 240
+          },
+          "toLocationId": "location.ashfall_district",
+          "spawnAt": {
+            "x": 50,
+            "y": 50
+          },
+          "label": "back to the street",
+          "requires": []
+        }
+      ],
+      "npcSpawns": [],
+      "ambientText": [
+        "The coat by the door fits you. Of course it does.",
+        "There is dust on everything but the terminal, wiped clean by a hand that knew it mattered.",
+        "For the length of one breath, you remember being someone who had a key to this place."
+      ]
     }
   ],
   "npcs": [
@@ -532,6 +687,23 @@
             }
           ],
           "overrideDialogueId": "dialogue.varga_force"
+        },
+        {
+          "when": [
+            {
+              "kind": "flag_is",
+              "flag": "flag.sold_drive",
+              "equals": true
+            }
+          ],
+          "setsFlags": [
+            {
+              "kind": "set_flag",
+              "flag": "flag.varga_knows_betrayal",
+              "to": true
+            }
+          ],
+          "overrideDialogueId": "dialogue.varga_betrayed"
         }
       ]
     },
@@ -577,7 +749,19 @@
         ]
       },
       "dialogueId": "dialogue.stranger",
-      "reactsTo": []
+      "reactsTo": [
+        {
+          "when": [
+            {
+              "kind": "flag_is",
+              "flag": "flag.has_drive",
+              "equals": true
+            }
+          ],
+          "setsFlags": [],
+          "overrideDialogueId": "dialogue.stranger_truth"
+        }
+      ]
     }
   ],
   "dialogues": [
@@ -1079,6 +1263,160 @@
         "listDefs": {}
       },
       "declaredVars": []
+    },
+    {
+      "id": "dialogue.varga_betrayed",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "0297b1d6e8dad7",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "^Varga doesn't get up. She just looks at you for a long moment, the way you look at a debt you've written off. \"You sold it. To the Syndicate. My drive, the one I sent you for.\" A thin, tired smile. \"I'd ask if it was worth it, but you already counted the money. We're done — but the city's small, and I remember.\"",
+            "\n",
+            "ev",
+            "str",
+            "^It was business.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^Say nothing.",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-1",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "^\"It always is. That's what makes it hurt less. Go on.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-1": [
+                "\n",
+                "^\"No. I didn't think you would.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          null
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": []
+    },
+    {
+      "id": "dialogue.stranger_truth",
+      "format": "ink-json",
+      "inkVersion": "21",
+      "sourceHash": "10cda6811ae803",
+      "compiled": {
+        "inkVersion": 21,
+        "root": [
+          [
+            "ev",
+            true,
+            "/ev",
+            {
+              "VAR=": "stranger_opened",
+              "re": true
+            },
+            "^The stranger doesn't melt back into the crowd this time. They look at you like a debt that grew teeth. \"You weren't supposed to last a week. Pull a name off the street, point it at Varga, walk away — that was the job.\" A long pause. \"But you went and got *interesting*. So now you want to know who you were before Ashfall ate the rest.\" They almost smile. \"It'll cost you. Everything worth knowing does.\"",
+            "\n",
+            "ev",
+            "str",
+            "^Who am I?",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-0",
+              "flg": 20
+            },
+            "ev",
+            "str",
+            "^Who sent you?",
+            "/str",
+            "/ev",
+            {
+              "*": "0.c-1",
+              "flg": 20
+            },
+            {
+              "c-0": [
+                "\n",
+                "^\"Not here. Not for free. Press me, or pay me — your call. But know that some doors don't close behind you.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "c-1": [
+                "\n",
+                "^\"Wrong question. The right one is who paid to make you forget. Ask me that properly and we'll talk.\"",
+                "\n",
+                "end",
+                {
+                  "->": "0.g-0"
+                },
+                {
+                  "#f": 5
+                }
+              ],
+              "g-0": [
+                "done",
+                null
+              ]
+            }
+          ],
+          "done",
+          {
+            "global decl": [
+              "ev",
+              false,
+              {
+                "VAR=": "stranger_opened"
+              },
+              "/ev",
+              "end",
+              null
+            ]
+          }
+        ],
+        "listDefs": {}
+      },
+      "declaredVars": [
+        "stranger_opened"
+      ]
     }
   ],
   "quests": [
@@ -1209,10 +1547,30 @@
     }
   ],
   "assertions": [
-    { "predicate": "member_of", "subject": "npc.varga", "object": "faction.varga_crew" },
-    { "predicate": "funds", "subject": "npc.varga", "object": "faction.varga_crew" },
-    { "predicate": "status", "subject": "npc.varga", "state": "solvent" },
-    { "predicate": "status", "subject": "faction.ashfall_syndicate", "state": "wealthy" },
-    { "predicate": "fact", "subject": "npc.stranger", "note": "Identity withheld until the player earns it." }
+    {
+      "predicate": "member_of",
+      "subject": "npc.varga",
+      "object": "faction.varga_crew"
+    },
+    {
+      "predicate": "funds",
+      "subject": "npc.varga",
+      "object": "faction.varga_crew"
+    },
+    {
+      "predicate": "status",
+      "subject": "npc.varga",
+      "state": "solvent"
+    },
+    {
+      "predicate": "status",
+      "subject": "faction.ashfall_syndicate",
+      "state": "wealthy"
+    },
+    {
+      "predicate": "fact",
+      "subject": "npc.stranger",
+      "note": "Identity withheld until the player earns it."
+    }
   ]
 }

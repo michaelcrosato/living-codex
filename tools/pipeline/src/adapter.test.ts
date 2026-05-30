@@ -64,7 +64,7 @@ describe("tolerantParse (recover JSON without a repair round)", () => {
     });
   });
   it("recovers fenced JSON", () => {
-    expect(tolerantParse("```json\n{\"a\":1}\n```")).toEqual({ a: 1 });
+    expect(tolerantParse('```json\n{"a":1}\n```')).toEqual({ a: 1 });
   });
   it("recovers JSON with trailing commas", () => {
     expect(tolerantParse('{"a":1,"b":[1,2,],}')).toEqual({ a: 1, b: [1, 2] });

@@ -2,8 +2,9 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadPacks } from "@codex/content-loader";
-import { ContentPack, NpcId, DialogueId } from "@codex/content-schema";
+import { ContentPack, NpcId, DialogueId, LocationId } from "@codex/content-schema";
 import { InkNarrative } from "@codex/narrative-ink";
+import { GameSession } from "../src/session";
 
 /**
  * P3 (T-14c) — the GOAL.md §4 milestone, proven. The pipeline-generated pack and the
@@ -15,7 +16,7 @@ const opening = read("content/core/pack.opening/pack.json");
 const patrons = read("content/generated/pack.the_drip_patrons/pack.json");
 
 // Loaded together through the SAME loadPacks — order-independent (patrons dependsOn pack.opening).
-const { registries } = loadPacks([patrons, opening]);
+const { registries, fingerprint } = loadPacks([patrons, opening]);
 
 describe("generated content loads through the same path (GOAL §4 milestone)", () => {
   it("hand-authored and pipeline-generated NPCs share one registry, indistinguishably", () => {
@@ -61,5 +62,53 @@ describe("generated content loads through the same path (GOAL §4 milestone)", (
     session.current();
     expect(session.getVar("heard_warehouse_rumor")).toBe(true);
     expect(asset?.declaredVars).toContain("heard_warehouse_rumor");
+  });
+});
+
+/**
+ * SPEC-59 — the generated patrons are PLACED in the world, not just loaded. They home at
+ * location.the_drip; a session started there spawns all 10 (deterministically scattered in-bounds),
+ * so a player who enters the Drip finds it populated by the generated cast — proving reachability,
+ * the gap generated-content's load+dialogue tests didn't cover (the kestrel-class blind spot).
+ */
+const PATRONS = [
+  "npc.drip_bartender",
+  "npc.drip_rumor",
+  "npc.drip_pell",
+  "npc.drip_wren",
+  "npc.drip_bex",
+  "npc.drip_sull",
+  "npc.drip_yi",
+  "npc.drip_halo",
+  "npc.drip_grin",
+  "npc.the_archivist",
+];
+
+describe("generated patrons are reachable — spawned at the Drip (SPEC-59)", () => {
+  const THE_DRIP = LocationId.parse("location.the_drip");
+  const session = new GameSession(registries, fingerprint, new InkNarrative(), {
+    seed: "patrons",
+    startLocationId: THE_DRIP,
+    startPos: { x: 50, y: 50 },
+  });
+  const bounds = registries.locations.get(THE_DRIP)!.bounds;
+
+  it("spawns all 10 generated patrons at the Drip, alive and in-bounds", () => {
+    for (const id of PATRONS) {
+      const e = session.world.entities[`entity.${id}`];
+      expect(e, `${id} should be spawned at the Drip`).toBeDefined();
+      expect(e!.locationId).toBe("location.the_drip");
+      expect(e!.alive).toBe(true);
+      expect(e!.pos.x).toBeGreaterThanOrEqual(0);
+      expect(e!.pos.x).toBeLessThan(bounds.w);
+      expect(e!.pos.y).toBeGreaterThanOrEqual(0);
+      expect(e!.pos.y).toBeLessThan(bounds.h);
+    }
+  });
+
+  it("every patron declares the Drip as home (so any pack that loads them places them)", () => {
+    for (const id of PATRONS) {
+      expect(registries.npcs.get(NpcId.parse(id))?.homeLocationId).toBe("location.the_drip");
+    }
   });
 });

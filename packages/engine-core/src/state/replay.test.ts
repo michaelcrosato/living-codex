@@ -127,7 +127,10 @@ describe("replay", () => {
 
     // an identical replay never diverges
     expect(
-      firstDivergence(traceA, replayTrace(createWorld({ seed: SEED, startLocationId: START }), log)),
+      firstDivergence(
+        traceA,
+        replayTrace(createWorld({ seed: SEED, startLocationId: START }), log),
+      ),
     ).toBeNull();
 
     // perturb the 2nd event (count 2 -> 99): the trace must diverge exactly at that step (tick 1)

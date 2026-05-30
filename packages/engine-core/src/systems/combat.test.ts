@@ -95,16 +95,22 @@ describe("combat target selection (SPEC-44 — every arm of the selection predic
   });
 
   it("does not target a dead entity", () => {
-    expect(combatSystem([{ type: "Attack" }])(withEntity({ id: "entity.corpse", alive: false }), 0)).toEqual(
-      [],
-    );
+    expect(
+      combatSystem([{ type: "Attack" }])(withEntity({ id: "entity.corpse", alive: false }), 0),
+    ).toEqual([]);
   });
 
   it("does not target a non-combatant (an entity with no hp)", () => {
     // hp is OMITTED (not undefined) — exactOptionalPropertyTypes — so it is genuinely a no-hp entity.
     const w = applyEvent(world(), {
       type: "SpawnEntity",
-      entity: { id: "entity.civilian", defId: "npc.x", locationId: START, pos: { x: 0, y: 0 }, alive: true },
+      entity: {
+        id: "entity.civilian",
+        defId: "npc.x",
+        locationId: START,
+        pos: { x: 0, y: 0 },
+        alive: true,
+      },
     });
     expect(combatSystem([{ type: "Attack" }])(w, 0)).toEqual([]);
   });
@@ -112,7 +118,10 @@ describe("combat target selection (SPEC-44 — every arm of the selection predic
   it("does not target an entity in a different location", () => {
     const elsewhere = LocationId.parse("location.elsewhere");
     expect(
-      combatSystem([{ type: "Attack" }])(withEntity({ id: "entity.faraway", locationId: elsewhere }), 0),
+      combatSystem([{ type: "Attack" }])(
+        withEntity({ id: "entity.faraway", locationId: elsewhere }),
+        0,
+      ),
     ).toEqual([]);
   });
 
@@ -120,7 +129,14 @@ describe("combat target selection (SPEC-44 — every arm of the selection predic
     // Overwrite the player entity so it satisfies every arm EXCEPT identity; it must still be skipped.
     const w = applyEvent(world(), {
       type: "SpawnEntity",
-      entity: { id: PLAYER, defId: "player", locationId: START, pos: { x: 0, y: 0 }, hp: 10, alive: true },
+      entity: {
+        id: PLAYER,
+        defId: "player",
+        locationId: START,
+        pos: { x: 0, y: 0 },
+        hp: 10,
+        alive: true,
+      },
     });
     expect(combatSystem([{ type: "Attack" }])(w, 0)).toEqual([]);
   });

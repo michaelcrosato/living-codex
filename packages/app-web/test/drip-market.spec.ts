@@ -82,7 +82,12 @@ describe("Drip Market pack: same-path load + play (SPEC-33)", () => {
     let w = createWorld({ seed: "drip", startLocationId: MARKET, skills: { persuade: 6 } });
     w = applyEvent(w, { type: "SetFlag", flag: MET_MARROW, to: true }); // offerWhen
     // "talk the collector down" = engaging the enforcer's dialogue (the talk_to signal)
-    w = applyEvent(w, { type: "DialogueAdvanced", dialogueId: ENFORCER_DLG, inkState: "{}", flags: {} });
+    w = applyEvent(w, {
+      type: "DialogueAdvanced",
+      dialogueId: ENFORCER_DLG,
+      inkState: "{}",
+      flags: {},
+    });
 
     const attempt = [{ type: "Attempt" as const, questId: QID, branchId: "settle_talk" }];
     for (let t = 0; t < 8 && w.quests[QID]?.status !== "completed"; t++) {
@@ -132,9 +137,11 @@ describe("Drip Market pack: same-path load + play (SPEC-33)", () => {
     expect(ink.getVar("met_marrow")).toBe(true);
 
     const offers = (w: ReturnType<typeof createWorld>): boolean =>
-      questSystem(registries.quests, [], registries.npcs)(w, 0).some(
-        (e) => e.type === "ActivateQuest" && e.questId === QID,
-      );
+      questSystem(
+        registries.quests,
+        [],
+        registries.npcs,
+      )(w, 0).some((e) => e.type === "ActivateQuest" && e.questId === QID);
 
     // before talking, the quest is NOT offered (offerWhen needs flag.met_marrow)
     let w = createWorld({ seed: "marrow", startLocationId: MARKET });

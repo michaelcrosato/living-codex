@@ -51,4 +51,22 @@ describe("reactive payoff: Varga's follow-up changes by how you got in (S2.4)", 
     const world = createWorld({ seed: "s", startLocationId: DISTRICT });
     expect(controller.openFor(world, "npc.varga")!.dialogueId).toBe("dialogue.varga_intro");
   });
+
+  // SPEC-52: selling the drive to the Syndicate (SPEC-50) is a betrayal Varga remembers.
+  it("sold the drive to the Syndicate -> the betrayed follow-up + a persistent consequence flag", () => {
+    const { world, open } = afterCompletion(["flag.has_drive", "flag.sold_drive"]);
+    expect(open.dialogueId).toBe("dialogue.varga_betrayed");
+    expect(open.frame.text.toLowerCase()).toContain("sold it");
+    expect(world.flags[FlagId.parse("flag.varga_knows_betrayal")]).toBe(true);
+  });
+
+  it("the betrayal override wins over the entry-method follow-up (reaction ordering)", () => {
+    // entered peacefully AND later sold the drive: the more recent betrayal beat dominates
+    const { open } = afterCompletion([
+      "flag.has_drive",
+      "flag.entered_peacefully",
+      "flag.sold_drive",
+    ]);
+    expect(open.dialogueId).toBe("dialogue.varga_betrayed");
+  });
 });

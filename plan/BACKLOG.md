@@ -37,14 +37,23 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
   below the item's own >500-entity trigger. Sim throughput is fine too: replay-fuzz runs 200×≤80-event
   sequences fast, and saves replay only a snapshot+tail (not from dawn). Revisit only if a future content
   batch pushes a location toward ~500 concurrent entities._
-- **Bundle-size baseline (measured 2026-05-30):** `pnpm --filter @codex/app-web build` is healthy (877
-  modules, 2.5s); main chunk **679 kB / 190 kB gzip**, Pixi renderers already code-split (WebGL/WebGPU/Canvas
-  separate chunks). Vite flags the one >500 kB chunk — **informational, not a defect**: 190 kB gzip for a
-  cache-once offline-first Pixi game is reasonable, and manual-chunk splitting is perf-motivated complexity
-  gated by ARCH §8 (needs a cited load-time profile). **Do not chase** absent a measured cold-load problem.
+- **Bundle-size baseline + Rolldown chunking (re-measured 2026-05-30, post-SPEC-61 Vite 8):** under Vite 7
+  the build split the Pixi renderer backends (WebGL/WebGPU/Canvas) into separate chunks (main 190 kB gzip +
+  per-backend chunks loaded on demand). **Vite 8 / Rolldown changed the default**: it emits one ~280 kB-gzip
+  `index` chunk (the renderer backends are no longer split out), and builds ~10× faster (230ms vs 2.5s). The
+  app is correct + e2e-green either way. The size shift is a **perf/size consideration, not a defect**:
+  ~280 kB gzip for a cache-once offline-first Pixi game is still reasonable, and restoring the split now
+  requires explicit `build.rolldownOptions.output` chunking config — **perf-motivated complexity gated by
+  ARCH §8** (needs a cited cold-load profile). **Do not chase** absent a measured cold-load problem; revisit
+  with `rolldownOptions.output.advancedChunks`/`codeSplitting` only if a profile shows the larger initial
+  chunk (or shipping all 3 renderer backends) actually hurts load time.
 - **New engine verbs** (lockpicking, time-of-day/`wait`, trade/economy, status effects, a magic system).
   GOAL §3 + SCHEMA §5: add a verb **only when curated content demands it** (the bribe pattern). Each is a
   clean Recipe-1/Recipe-5 ticket *when the demand is real* — not before.
+- **NPC `silhouette` shape variation (SPEC-74 follow-up).** `appearance.silhouette` (tall/stocky/cloaked/
+  mech/beast) is authored but the scene draws all NPCs as circles (colors now honored — SPEC-74). Varying the
+  drawn SHAPE by silhouette needs new `Renderer` primitives / per-silhouette vector shapes. Defer until it's
+  worth the renderer work — cosmetic; bodyColor/accentColor already differentiate NPCs visually.
 - **WebGPU renderer** behind the existing `Renderer` port. Pixi recommends WebGL2 for production in 2026;
   revisit only if a batch-break-heavy scene profiles badly. The port already makes this a swap, not a rewrite.
 - **OPFS / Storage Buckets persistence.** Beats IndexedDB only for *large blobs*; relevant when AI-generated
@@ -72,9 +81,7 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
 - **~~TS 7 / `tsgo` accelerator~~ → PROMOTED to [SPEC-29] (Cycle 3).** Mid-2026 research confirms tsgo is
   production-ready for `--noEmit` (this repo's only tsc use) — de-risked from MED-HIGH to LOW-MED; tsc stays
   authoritative.
-- **Vite 7 → 8** — major; do *after* any 7.x patch line is exhausted. Rolldown not yet 1.0. (Vitest 4 runs
-  fine on Vite 7, so no forcing function.) Still deferred. _(Re-checked 2026-05-30 Cycle-6: installed 7.3.3 IS
-  the latest 7.x — patch line exhausted; only v8 is newer, still deferred.)_
+- **~~Vite 7 → 8~~ → DONE (SPEC-61, 2026-05-30).** Vite 8.0 stable + Vitest 4.1.7 support = the forcing function; upgraded (Rolldown, ~10× faster builds), no breaking-config surfaces used. Bundle-chunking shift noted above.
 - **`@types/node` 24 → 25** — major; types-only, no forcing function (no API we use changed; runtime is
   Node ≥20, and installed 24.12.4 is the latest 24.x). Defer until the runtime Node major actually moves —
   bumping ahead of the runtime risks typing APIs that don't exist at run time. (Considered 2026-05-30 Cycle-6.)
@@ -113,6 +120,39 @@ Re-run `pnpm mutation` after adding tests; consider a score *ratchet* spec once 
   both 2026-05-30. The Drip Market is now fully playable: reachable from the opening district (geography
   layered into pack.opening) and `quest.market_debt` offers once the player talks to Marrow (her Ink sets
   `met_marrow` → `flag.met_marrow`). No open content follow-ups for this district.
+
+## UX (deferred — not over-engineering, GOAL §3)
+- **Data-driven HUD consequence journal.** `hud.ts` renders consequence lines from a hardcoded flag→line list (extended for the arc in SPEC-56). If the list keeps growing, promote it to content metadata (a flag→journal-line map authored in packs) so new content surfaces in the HUD without an app edit. Only worth it once the list is long enough to be a maintenance burden; today the curated list is fine.
+
+## Playability-gate guards (extend staticPlayabilityCheck when a real case warrants)
+- **~~Auto-completing branch shadows siblings~~ → PROMOTED to SPEC-68 (built the guard).** `questSystem` completes any active branch
+  whose objectives are ALL done; a branch whose objectives are all trivially/immediately satisfiable (e.g.
+  only a `talk_to` on the giver, which the offer interaction already satisfies) will auto-complete and make
+  its sibling branches unselectable. A static check could flag a multi-branch quest where some branch's
+  objectives are a strict subset of (or weaker than) another's, or contains no player-gated objective
+  (skill_check/reach/defeat/retrieve). Deferred until a 2nd real case appears (one occurrence fixed in-content
+  by removing the branch) — promote to a spec then. Parallels the orphan-dialogue (SPEC-53) / unspawnable-NPC
+  (SPEC-60) guards.
+
+## UX finding (2026-05-30, SPEC-70 audit) — surface authored ambientText
+- **~~Location `ambientText` is authored but unsurfaced~~ → DONE (SPEC-71).** Surfaced in renderHud (slow deterministic rotation by tick). 6 of 8 locations carry atmospheric lines (e.g.
+  ashfall_district "A drone coughs past overhead."), but `ambientText` is referenced ONLY in content-schema —
+  nothing in app-web/render/scene displays it. Authored atmosphere players never see (parallel to the
+  patrons-unspawned / consequence-HUD gaps). **Next-cycle spec:** surface it in the HUD on location entry
+  (extend `renderHud` like SPEC-56/24 — show the current location's ambientText deterministically; add a
+  hud.spec case; e2e-safe since the cold-open assertions are substring-based). Low-risk, genuine UX. The new
+  clinic's ambientText was added for consistency in the meantime (commit 8f44626).
+
+## Content/verb coverage (2026-05-30 audit — exercise when content demands)
+- **Unexercised schema verbs** (implemented + engine-tested, no curated content uses them yet): effects
+  `start_quest` (quest-chaining via effect, vs flag-gating), `unlock_exit` (open a new path), `set_npc_dialogue`
+  (swap dialogue via a quest effect); objectives `retrieve` (collect N of an item), `set_flag`; condition
+  `any` (OR gate), `has_item` (now used — SPEC-77). `modify_skill` now exercised (SPEC-77). Add content that
+  uses each only when a genuine beat demands it (GOAL §3) — e.g. a fetch quest (`retrieve`), a quest that
+  unlocks a locked door (`unlock_exit`), a quest that triggers another (`start_quest`). Not speculative churn.
+
+## a11y follow-up
+- **~~Announce quest-status changes~~ → DONE (SPEC-82).** Consequence-flag announcements DONE (SPEC-83). The a11y announcer now covers location+quest+consequences. SPEC-81 announces location changes via the polite #announcer; extend the same deduped pattern to quest activations/completions and new consequence flags (the HUD shows them visually but they are not spoken). Keep it deduped (announce each change once, not per frame).
 
 ## Notes
 Every item above was considered and *deliberately deferred* during the 2026-05-29 planning pass. The

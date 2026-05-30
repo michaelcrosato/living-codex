@@ -128,13 +128,27 @@ describe("applyEvent (the chokepoint)", () => {
   it("ResolveAttack: the player's force adds to damage; a non-player attacker gets no bonus", () => {
     const base = createWorld({ seed: "atk", startLocationId: START, skills: { force: 5 } });
     const spawn = (id: string) =>
-      ({ type: "SpawnEntity", entity: { id, defId: "npc.t", locationId: START, pos: { x: 0, y: 0 }, hp: 100, alive: true } }) as const;
+      ({
+        type: "SpawnEntity",
+        entity: {
+          id,
+          defId: "npc.t",
+          locationId: START,
+          pos: { x: 0, y: 0 },
+          hp: 100,
+          alive: true,
+        },
+      }) as const;
     let w = applyEvent(base, spawn("entity.target"));
     w = applyEvent(w, spawn("entity.thug"));
     // Both attacks branch from the SAME rngState, so the d6 roll is identical — the only
     // difference is the attacker's force bonus (player +5 vs non-player +0).
     const dmg = (attackerEntityId: string): number => {
-      const after = applyEvent(w, { type: "ResolveAttack", attackerEntityId, targetEntityId: "entity.target" });
+      const after = applyEvent(w, {
+        type: "ResolveAttack",
+        attackerEntityId,
+        targetEntityId: "entity.target",
+      });
       return 100 - (after.entities["entity.target"]?.hp ?? 0);
     };
     expect(dmg("entity.player") - dmg("entity.thug")).toBe(5);

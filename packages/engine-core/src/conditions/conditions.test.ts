@@ -58,9 +58,9 @@ describe("evaluate (condition language)", () => {
     // an unset skill defaults to 0
     expect(evaluate(ws, { kind: "skill_at_least", skill: "sneak", value: 1 })).toBe(false);
     // composes under not/all/any
-    expect(evaluate(ws, { kind: "not", of: { kind: "skill_at_least", skill: "force", value: 1 } })).toBe(
-      true,
-    );
+    expect(
+      evaluate(ws, { kind: "not", of: { kind: "skill_at_least", skill: "force", value: 1 } }),
+    ).toBe(true);
     expect(
       evaluate(ws, {
         kind: "all",

@@ -6,10 +6,7 @@
   "testRunner": "vitest",
   "checkers": ["typescript"],
   "tsconfigFile": "tsconfig.json",
-  "mutate": [
-    "packages/engine-core/src/**/*.ts",
-    "!packages/engine-core/src/**/*.test.ts"
-  ],
+  "mutate": ["packages/engine-core/src/**/*.ts", "!packages/engine-core/src/**/*.test.ts"],
   "reporters": ["clear-text", "progress"],
   "coverageAnalysis": "perTest",
   "incremental": true,

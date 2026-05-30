@@ -181,11 +181,14 @@ describe("canon assertion graph (CONTENT_PIPELINE.md §6)", () => {
         title: "Pack Two",
         provenance: { authoredBy: "human" },
         factions: [
-          { id: "faction.varga_crew", name: "Varga Crew", ethos: "Docks", allies: ["faction.smugglers"] },
+          {
+            id: "faction.varga_crew",
+            name: "Varga Crew",
+            ethos: "Docks",
+            allies: ["faction.smugglers"],
+          },
         ],
-        assertions: [
-          { predicate: "status", subject: "faction.varga_crew", state: "solvent" },
-        ],
+        assertions: [{ predicate: "status", subject: "faction.varga_crew", state: "solvent" }],
       });
 
       const pUnrelated = ContentPack.parse({
@@ -193,9 +196,7 @@ describe("canon assertion graph (CONTENT_PIPELINE.md §6)", () => {
         version: "0",
         title: "Pack Unrelated",
         provenance: { authoredBy: "human" },
-        assertions: [
-          { predicate: "status", subject: "npc.unrelated", state: "alive" },
-        ],
+        assertions: [{ predicate: "status", subject: "npc.unrelated", state: "alive" }],
       });
 
       const graph = buildCanonGraph([p1, p2, pUnrelated]);
@@ -208,10 +209,29 @@ describe("canon assertion graph (CONTENT_PIPELINE.md §6)", () => {
       // Should include npc.varga's status, fact, member_of, faction.varga_crew's status, allied_with
       // Should NOT include npc.unrelated's status
       const assertions = sub.records.map((r) => r.assertion);
-      
-      expect(assertions.some((a) => a.predicate === "member_of" && a.subject === "npc.varga" && a.object === "faction.varga_crew")).toBe(true);
-      expect(assertions.some((a) => a.predicate === "status" && a.subject === "faction.varga_crew" && a.state === "solvent")).toBe(true);
-      expect(assertions.some((a) => a.predicate === "allied_with" && a.subject === "faction.varga_crew" && a.object === "faction.smugglers")).toBe(true);
+
+      expect(
+        assertions.some(
+          (a) =>
+            a.predicate === "member_of" &&
+            a.subject === "npc.varga" &&
+            a.object === "faction.varga_crew",
+        ),
+      ).toBe(true);
+      expect(
+        assertions.some(
+          (a) =>
+            a.predicate === "status" && a.subject === "faction.varga_crew" && a.state === "solvent",
+        ),
+      ).toBe(true);
+      expect(
+        assertions.some(
+          (a) =>
+            a.predicate === "allied_with" &&
+            a.subject === "faction.varga_crew" &&
+            a.object === "faction.smugglers",
+        ),
+      ).toBe(true);
 
       // Excludes npc.unrelated
       expect(assertions.some((a) => a.subject === "npc.unrelated")).toBe(false);
@@ -219,7 +239,9 @@ describe("canon assertion graph (CONTENT_PIPELINE.md §6)", () => {
       // Verify renderAssertionRecord and serializeAssertion
       const memberRec = sub.records.find((r) => r.assertion.predicate === "member_of");
       expect(memberRec).toBeDefined();
-      expect(renderAssertionRecord(memberRec!)).toBe("- npc.varga is member of faction.varga_crew (from pack.one [derived])");
+      expect(renderAssertionRecord(memberRec!)).toBe(
+        "- npc.varga is member of faction.varga_crew (from pack.one [derived])",
+      );
 
       // Determinism test (stable sorting: deterministic across runs)
       const sub2 = relevantSubgraph(graph, ["npc.varga"]);
@@ -227,16 +249,29 @@ describe("canon assertion graph (CONTENT_PIPELINE.md §6)", () => {
     });
 
     it("serializeAssertion matches schema correctly", () => {
-      const a1: CanonAssertion = { predicate: "status", subject: "npc.varga", state: "alive", since: 3 };
+      const a1: CanonAssertion = {
+        predicate: "status",
+        subject: "npc.varga",
+        state: "alive",
+        since: 3,
+      };
       expect(serializeAssertion(a1)).toBe("npc.varga is alive since epoch 3");
 
       const a2: CanonAssertion = { predicate: "fact", subject: "npc.varga", note: "hello" };
       expect(serializeAssertion(a2)).toBe("npc.varga: hello");
 
-      const a3: CanonAssertion = { predicate: "member_of", subject: "npc.varga", object: "faction.crew" };
+      const a3: CanonAssertion = {
+        predicate: "member_of",
+        subject: "npc.varga",
+        object: "faction.crew",
+      };
       expect(serializeAssertion(a3)).toBe("npc.varga is member of faction.crew");
 
-      const a4: CanonAssertion = { predicate: "allied_with", subject: "faction.a", object: "faction.b" };
+      const a4: CanonAssertion = {
+        predicate: "allied_with",
+        subject: "faction.a",
+        object: "faction.b",
+      };
       expect(serializeAssertion(a4)).toBe("faction.a allied with faction.b");
     });
   });
@@ -285,7 +320,11 @@ describe("canon assertion graph (CONTENT_PIPELINE.md §6)", () => {
         serializeAssertion({ predicate: "funds", subject: "npc.varga", object: "faction.crew" }),
       ).toBe("npc.varga funds faction.crew");
       expect(
-        serializeAssertion({ predicate: "located_in", subject: "npc.varga", object: "location.docks" }),
+        serializeAssertion({
+          predicate: "located_in",
+          subject: "npc.varga",
+          object: "location.docks",
+        }),
       ).toBe("npc.varga located in location.docks");
     });
 
@@ -312,14 +351,22 @@ describe("canon assertion graph (CONTENT_PIPELINE.md §6)", () => {
           pack: ContentPack.parse({
             ...base,
             id: "pack.lg",
-            assertions: [{ predicate: "located_in", subject: "npc.real", object: "location.ghost" }],
+            assertions: [
+              { predicate: "located_in", subject: "npc.real", object: "location.ghost" },
+            ],
           }),
           ghost: "location.ghost",
         },
       ];
       for (const { pack, ghost } of cases) {
-        const dangling = findDanglingAssertionRefs(buildCanonGraph([pack]), buildRegistries([pack]));
-        expect(dangling.map((d) => d.subjects[0]), ghost).toContain(ghost);
+        const dangling = findDanglingAssertionRefs(
+          buildCanonGraph([pack]),
+          buildRegistries([pack]),
+        );
+        expect(
+          dangling.map((d) => d.subjects[0]),
+          ghost,
+        ).toContain(ghost);
       }
     });
   });

@@ -216,7 +216,12 @@ describe("content-loader", () => {
         ghost: /location\.ghost/,
         mut: (p) =>
           ((p.locations as { exits?: unknown[] }[])[0]!.exits = [
-            { at: { x: 0, y: 0 }, toLocationId: "location.ghost", spawnAt: { x: 0, y: 0 }, label: "x" },
+            {
+              at: { x: 0, y: 0 },
+              toLocationId: "location.ghost",
+              spawnAt: { x: 0, y: 0 },
+              label: "x",
+            },
           ]),
       },
       {
@@ -309,7 +314,7 @@ describe("content-loader", () => {
         name: "storylet content.dialogueId",
         ghost: /dialogue\.ghost/,
         mut: (p) =>
-          ((p.storylets = [
+          (p.storylets = [
             {
               id: "storylet.x",
               preconditions: [],
@@ -318,7 +323,7 @@ describe("content-loader", () => {
               content: { dialogueId: "dialogue.ghost" },
               effects: [],
             },
-          ]) as unknown as void),
+          ]) as unknown as void,
       },
     ];
     for (const c of cases) {

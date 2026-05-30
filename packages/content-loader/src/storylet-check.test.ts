@@ -17,7 +17,9 @@ describe("unsatisfiablePreconditions (SPEC-25 storylet static check)", () => {
   });
 
   it("flags a flag required to equal two different values", () => {
-    expect(unsatisfiablePreconditions([flagTrue("flag.a"), flagFalse("flag.a")])).toMatch(/flag\.a/);
+    expect(unsatisfiablePreconditions([flagTrue("flag.a"), flagFalse("flag.a")])).toMatch(
+      /flag\.a/,
+    );
   });
 
   it("flags a condition together with its direct negation (both orders)", () => {

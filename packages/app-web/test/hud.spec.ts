@@ -62,6 +62,12 @@ describe("renderHud consequence journal (SPEC-56)", () => {
     expect(hud(["flag.refused_kestrel"])).toContain("You stayed loyal to Varga.");
   });
 
+  it("renders the other threads' headline consequences too (SPEC-91)", () => {
+    expect(hud(["flag.learned_origin"])).toContain("You know who you were before Ashfall.");
+    expect(hud(["flag.clinic_debt_resolved"])).toContain("You settled the clinic's debt.");
+    expect(hud(["flag.told_the_kid"])).toContain("You told the kid the truth");
+  });
+
   it("still renders the pre-existing warehouse-entry consequence lines", () => {
     expect(hud(["flag.has_drive"])).toContain("You have the drive.");
     expect(hud(["flag.entered_peacefully"])).toContain("You talked your way in.");

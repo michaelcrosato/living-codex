@@ -1,7 +1,19 @@
 import { describe, it, expect } from "vitest";
 import { FactionId, ItemId, FlagId, LocationId, QuestId } from "@codex/content-schema";
+import type { Storylet } from "@codex/content-schema";
 import { createWorld } from "../state/world";
 import { applyEvent } from "./apply";
+
+/** A storylet whose only effect grants one of `item`, so selection is observable via inventory. */
+const grantStorylet = (id: string, item: string): Storylet =>
+  ({
+    id,
+    preconditions: [],
+    salience: 1,
+    tags: [],
+    content: { ambient: "…" },
+    effects: [{ kind: "give_item", itemId: item, count: 1 }],
+  }) as unknown as Storylet;
 
 const START = LocationId.parse("location.start");
 const world0 = () => createWorld({ seed: "seed", startLocationId: START });
@@ -139,5 +151,35 @@ describe("applyEvent (the chokepoint)", () => {
     const w2 = applyEvent(w, { type: "BribeFaction", factionId: faction, cost: 10, standing: 20 });
     expect(w2.reputation[faction]).toBe(20);
     expect(w2.inventory[credits]).toBe(4);
+  });
+
+  it("TriggerStorylet with no candidates is a no-op", () => {
+    const w0 = world0();
+    expect(applyEvent(w0, { type: "TriggerStorylet", candidates: [] })).toEqual(w0);
+  });
+
+  it("TriggerStorylet with a single candidate selects it WITHOUT consuming randomness", () => {
+    const w0 = world0();
+    const gold = ItemId.parse("item.gold");
+    const after = applyEvent(w0, {
+      type: "TriggerStorylet",
+      candidates: [grantStorylet("storylet.s1", gold)],
+    });
+    expect(after.inventory[gold]).toBe(1); // the lone storylet's effect applied
+    expect(after.rngState).toBe(w0.rngState); // single-candidate path rolls no dice
+  });
+
+  it("TriggerStorylet with multiple candidates picks exactly one (seeded) and advances the RNG", () => {
+    const w0 = world0();
+    const gold = ItemId.parse("item.gold");
+    const silver = ItemId.parse("item.silver");
+    const after = applyEvent(w0, {
+      type: "TriggerStorylet",
+      candidates: [grantStorylet("storylet.s1", gold), grantStorylet("storylet.s2", silver)],
+    });
+    const g = after.inventory[gold] ?? 0;
+    const s = after.inventory[silver] ?? 0;
+    expect(g + s).toBe(1); // exactly one selected, deterministically
+    expect(after.rngState).not.toBe(w0.rngState); // tie-break consumed randomness
   });
 });

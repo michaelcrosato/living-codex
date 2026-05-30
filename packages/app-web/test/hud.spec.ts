@@ -60,6 +60,7 @@ describe("renderHud consequence journal (SPEC-56)", () => {
     expect(hud(["flag.leveraged_syndicate"])).toContain("holding the drive over the Syndicate.");
     expect(hud(["flag.sided_with_kestrel"])).toContain("You threw in with Kestrel.");
     expect(hud(["flag.refused_kestrel"])).toContain("You stayed loyal to Varga.");
+    expect(hud(["flag.played_both"])).toContain("You played Kestrel and Varga against each other.");
   });
 
   it("renders the other threads' headline consequences too (SPEC-91)", () => {

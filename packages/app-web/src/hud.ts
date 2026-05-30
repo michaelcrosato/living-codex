@@ -21,6 +21,7 @@ const CONSEQUENCE_LINES: ReadonlyArray<{ flag: string; icon: string; text: strin
   { flag: "flag.leveraged_syndicate", icon: "⚠", text: "You're holding the drive over the Syndicate." },
   { flag: "flag.sided_with_kestrel", icon: "·", text: "You threw in with Kestrel." },
   { flag: "flag.refused_kestrel", icon: "·", text: "You stayed loyal to Varga." },
+  { flag: "flag.played_both", icon: "·", text: "You played Kestrel and Varga against each other." },
   // The other threads' headline outcomes (SPEC-91), so the journal covers the whole slice, not just the drive.
   { flag: "flag.learned_origin", icon: "✓", text: "You know who you were before Ashfall." },
   { flag: "flag.clinic_debt_resolved", icon: "·", text: "You settled the clinic's debt." },

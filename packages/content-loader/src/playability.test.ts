@@ -157,6 +157,67 @@ describe("staticPlayabilityCheck (the schema-valid≠playable gate, SPEC-43)", (
     expect(warnings.filter((w) => w.includes("unspawnable NPC"))).toEqual([]);
   });
 
+  // SPEC-68 — branch-shadowing: a multi-branch quest branch that is all talk_to-the-giver auto-completes.
+  it("warns on a multi-branch quest branch whose objectives are all talk_to the giver", () => {
+    const { errors, warnings } = check({
+      npcs: [npc({ homeLocationId: "location.start" })],
+      dialogues: [dialogue("dialogue.used")],
+      quests: [
+        quest({
+          giverNpcId: "npc.t",
+          branches: [
+            { id: "gated", label: "g", objectives: [{ kind: "skill_check", skill: "force", dc: 10 }] },
+            { id: "shadow", label: "s", objectives: [{ kind: "talk_to", npcId: "npc.t" }] }, // talk_to the GIVER
+          ],
+        }),
+      ],
+    });
+    expect(errors).toEqual([]);
+    expect(warnings.some((w) => w.includes("quest.t.branches.shadow") && w.includes("auto-completes when the offer is taken"))).toBe(true);
+    expect(warnings.some((w) => w.includes("branches.gated"))).toBe(false);
+  });
+
+  it("does NOT warn on a talk_to to a NON-giver NPC (a legitimate choice mechanic — the market_debt shape)", () => {
+    const { warnings } = check({
+      npcs: [npc({ id: "npc.giver", dialogueId: "dialogue.used", homeLocationId: "location.start" })],
+      dialogues: [dialogue("dialogue.used")],
+      quests: [
+        quest({
+          giverNpcId: "npc.giver",
+          branches: [
+            { id: "talk", label: "t", objectives: [{ kind: "talk_to", npcId: "npc.other" }] }, // a DIFFERENT npc
+            { id: "muscle", label: "m", objectives: [{ kind: "skill_check", skill: "force", dc: 10 }] },
+          ],
+        }),
+      ],
+    });
+    expect(warnings.filter((w) => w.includes("auto-completes when the offer is taken"))).toEqual([]);
+  });
+
+  it("does NOT warn when every branch has a player-gated objective", () => {
+    const { warnings } = check({
+      quests: [
+        quest({
+          giverNpcId: "npc.t",
+          branches: [
+            { id: "a", label: "a", objectives: [{ kind: "reach", locationId: "location.start" }] },
+            { id: "b", label: "b", objectives: [{ kind: "skill_check", skill: "sneak", dc: 12 }] },
+          ],
+        }),
+      ],
+    });
+    expect(warnings.filter((w) => w.includes("auto-completes when the offer is taken"))).toEqual([]);
+  });
+
+  it("does NOT warn on a single-branch talk_to-giver quest (no siblings to shadow)", () => {
+    const { warnings } = check({
+      npcs: [npc({ homeLocationId: "location.start" })],
+      dialogues: [dialogue("dialogue.used")],
+      quests: [quest({ giverNpcId: "npc.t", branches: [{ id: "only", label: "o", objectives: [{ kind: "talk_to", npcId: "npc.t" }] }] })],
+    });
+    expect(warnings.filter((w) => w.includes("auto-completes when the offer is taken"))).toEqual([]);
+  });
+
   it("does NOT warn on an NPC placed via a location's npcSpawns", () => {
     const spawnLoc = { ...baseLocation, npcSpawns: [{ npcId: "npc.t", at: { x: 1, y: 1 } }] };
     const { warnings } = check({

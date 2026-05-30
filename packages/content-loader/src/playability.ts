@@ -18,7 +18,9 @@ export interface PlayabilityReport {
  *   - no quest has directly contradictory `flag_is` gates in `offerWhen` (it could never be offered);
  *   - no storylet has unsatisfiable preconditions (it could never fire); always-on noise is warned;
  *   - no dialogue is orphaned (defined but referenced by nothing — warned, SPEC-53);
- *   - no NPC is unspawnable (no homeLocationId and in no location's npcSpawns — warned, SPEC-60).
+ *   - no NPC is unspawnable (no homeLocationId and in no location's npcSpawns — warned, SPEC-60);
+ *   - no multi-branch quest has a branch whose objectives are all `talk_to` the giver (it auto-completes at
+ *     offer and shadows siblings — warned, SPEC-68).
  *
  * Pure over `registries` so it is unit-testable; the `content:verify` script is the thin CLI that
  * loads packs, runs this plus `auditCanon`, and reports (errors → exit 1).
@@ -183,6 +185,26 @@ export function staticPlayabilityCheck(registries: Registries): PlayabilityRepor
       warnings.push(
         `${npc.id}: unspawnable NPC — no homeLocationId and no location npcSpawns entry; it can never be reached in play.`,
       );
+    }
+  }
+
+  // Branch shadowing (SPEC-68, generalizing SPEC-67): questSystem completes ANY active branch whose
+  // objectives are all done. Taking a quest's offer means talking to its GIVER, so a branch whose objectives
+  // are ALL `talk_to` the giver is already satisfied the instant the quest activates — it auto-completes and
+  // shadows its siblings (the intended choices become unreachable). This is the precise, statically-decidable
+  // harmful case: `talk_to` a NON-giver NPC is a legitimate choice mechanic (the player must seek that NPC),
+  // so it is NOT flagged. Warn (not error); single-branch quests have no siblings to shadow.
+  for (const quest of registries.quests.values()) {
+    if (quest.branches.length < 2 || !quest.giverNpcId) continue;
+    for (const branch of quest.branches) {
+      const autoAtOffer =
+        branch.objectives.length > 0 &&
+        branch.objectives.every((o) => o.kind === "talk_to" && o.npcId === quest.giverNpcId);
+      if (autoAtOffer) {
+        warnings.push(
+          `${quest.id}.branches.${branch.id}: every objective is talk_to the quest giver — it auto-completes when the offer is taken and shadows the other branches; add a skill_check/reach/defeat/retrieve.`,
+        );
+      }
     }
   }
 

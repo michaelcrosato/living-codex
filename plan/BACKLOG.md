@@ -77,9 +77,7 @@ turned into a spec.** This protects against scope creep (RISK_REGISTER R3).
 - **~~TS 7 / `tsgo` accelerator~~ → PROMOTED to [SPEC-29] (Cycle 3).** Mid-2026 research confirms tsgo is
   production-ready for `--noEmit` (this repo's only tsc use) — de-risked from MED-HIGH to LOW-MED; tsc stays
   authoritative.
-- **Vite 7 → 8** — major; do *after* any 7.x patch line is exhausted. Rolldown not yet 1.0. (Vitest 4 runs
-  fine on Vite 7, so no forcing function.) Still deferred. _(Re-checked 2026-05-30 Cycle-6: installed 7.3.3 IS
-  the latest 7.x — patch line exhausted; only v8 is newer, still deferred.)_
+- **~~Vite 7 → 8~~ → DONE (SPEC-61, 2026-05-30).** Vite 8.0 stable + Vitest 4.1.7 support = the forcing function; upgraded (Rolldown, ~10× faster builds), no breaking-config surfaces used. Bundle-chunking shift noted above.
 - **`@types/node` 24 → 25** — major; types-only, no forcing function (no API we use changed; runtime is
   Node ≥20, and installed 24.12.4 is the latest 24.x). Defer until the runtime Node major actually moves —
   bumping ahead of the runtime risks typing APIs that don't exist at run time. (Considered 2026-05-30 Cycle-6.)
@@ -123,7 +121,7 @@ Re-run `pnpm mutation` after adding tests; consider a score *ratchet* spec once 
 - **Data-driven HUD consequence journal.** `hud.ts` renders consequence lines from a hardcoded flag→line list (extended for the arc in SPEC-56). If the list keeps growing, promote it to content metadata (a flag→journal-line map authored in packs) so new content surfaces in the HUD without an app edit. Only worth it once the list is long enough to be a maintenance burden; today the curated list is fine.
 
 ## Playability-gate guards (extend staticPlayabilityCheck when a real case warrants)
-- **Auto-completing branch shadows siblings (found in SPEC-67).** `questSystem` completes any active branch
+- **~~Auto-completing branch shadows siblings~~ → PROMOTED to SPEC-68 (built the guard).** `questSystem` completes any active branch
   whose objectives are ALL done; a branch whose objectives are all trivially/immediately satisfiable (e.g.
   only a `talk_to` on the giver, which the offer interaction already satisfies) will auto-complete and make
   its sibling branches unselectable. A static check could flag a multi-branch quest where some branch's

@@ -130,6 +130,15 @@ Re-run `pnpm mutation` after adding tests; consider a score *ratchet* spec once 
   by removing the branch) — promote to a spec then. Parallels the orphan-dialogue (SPEC-53) / unspawnable-NPC
   (SPEC-60) guards.
 
+## UX finding (2026-05-30, SPEC-70 audit) — surface authored ambientText
+- **Location `ambientText` is authored but unsurfaced.** 6 of 8 locations carry atmospheric lines (e.g.
+  ashfall_district "A drone coughs past overhead."), but `ambientText` is referenced ONLY in content-schema —
+  nothing in app-web/render/scene displays it. Authored atmosphere players never see (parallel to the
+  patrons-unspawned / consequence-HUD gaps). **Next-cycle spec:** surface it in the HUD on location entry
+  (extend `renderHud` like SPEC-56/24 — show the current location's ambientText deterministically; add a
+  hud.spec case; e2e-safe since the cold-open assertions are substring-based). Low-risk, genuine UX. The new
+  clinic's ambientText was added for consistency in the meantime (commit 8f44626).
+
 ## Notes
 Every item above was considered and *deliberately deferred* during the 2026-05-29 planning pass. The
 reasons (paid/blocked, profile-gated, redesign-scale, or convenience-only) are why they are **not** in

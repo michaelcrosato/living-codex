@@ -140,6 +140,25 @@
           },
           "label": "the patch-up clinic",
           "requires": []
+        },
+        {
+          "at": {
+            "x": 50,
+            "y": 50
+          },
+          "toLocationId": "location.old_safehouse",
+          "spawnAt": {
+            "x": 60,
+            "y": 240
+          },
+          "label": "a door you suddenly remember",
+          "requires": [
+            {
+              "kind": "flag_is",
+              "flag": "flag.learned_origin",
+              "equals": true
+            }
+          ]
         }
       ],
       "npcSpawns": [
@@ -522,6 +541,68 @@
       "ambientText": [
         "An autoclave hisses and clicks.",
         "Someone left blood on the cot. Not yours. Not yet."
+      ]
+    },
+    {
+      "id": "location.old_safehouse",
+      "name": "The Old Safehouse",
+      "mood": "A room you have never seen and somehow know. A cot, a dead terminal, a coat that fits you hanging by the door.",
+      "bounds": {
+        "w": 400,
+        "h": 300
+      },
+      "art": [
+        {
+          "kind": "rect",
+          "at": {
+            "x": 0,
+            "y": 0
+          },
+          "w": 400,
+          "h": 300,
+          "fill": "#0b0d14"
+        },
+        {
+          "kind": "rect",
+          "at": {
+            "x": 40,
+            "y": 210
+          },
+          "w": 320,
+          "h": 50,
+          "fill": "#161b2a",
+          "stroke": "#8a7bd8"
+        },
+        {
+          "kind": "circle",
+          "at": {
+            "x": 200,
+            "y": 120
+          },
+          "r": 64,
+          "fill": "#10131c"
+        }
+      ],
+      "exits": [
+        {
+          "at": {
+            "x": 60,
+            "y": 240
+          },
+          "toLocationId": "location.ashfall_district",
+          "spawnAt": {
+            "x": 50,
+            "y": 50
+          },
+          "label": "back to the street",
+          "requires": []
+        }
+      ],
+      "npcSpawns": [],
+      "ambientText": [
+        "The coat by the door fits you. Of course it does.",
+        "There is dust on everything but the terminal, wiped clean by a hand that knew it mattered.",
+        "For the length of one breath, you remember being someone who had a key to this place."
       ]
     }
   ],

@@ -324,4 +324,49 @@ describe("quest runtime", () => {
     expect(w.quests[SIGQ]?.status).toBe("completed");
     expect(w.flags[FlagId.parse("flag.signal_ack")]).toBe(true);
   });
+
+  it("re-rolls a FAILED retryable skill_check on the next attempt (SPEC-119), never soft-locks", () => {
+    const RQID = QuestId.parse("quest.retry");
+    // One branch, one RETRYABLE skill_check: dc 30 vs force 0 is unbeatable, so the roll fails
+    // deterministically regardless of seed.
+    const rq = Quest.parse({
+      id: "quest.retry",
+      title: "Retry",
+      summary: "A retryable check.",
+      offerWhen: [], // vacuously true → offered immediately
+      branches: [
+        {
+          id: "try",
+          label: "Try",
+          objectives: [{ kind: "skill_check", skill: "force", dc: 30, retryable: true, onFail: [] }],
+        },
+      ],
+      rewards: {},
+    });
+    const map = new Map([[RQID, rq]]);
+    const attempt: InputEvent[] = [{ type: "Attempt", questId: RQID, branchId: "try" }];
+
+    const base = world({ skills: { force: 0 } });
+    let w = applyEvents(base, questSystem(map)(base, 0)); // ActivateQuest
+    expect(w.quests[RQID]?.status).toBe("active");
+
+    // First attempt rolls the check; it fails (attempts → 1, failed: true).
+    const first = questSystem(map, attempt)(w, 0);
+    expect(first.some((e) => e.type === "ResolveSkillCheck")).toBe(true);
+    w = applyEvents(w, first);
+    expect(w.quests[RQID]?.objectiveProgress["try#0"]).toMatchObject({
+      failed: true,
+      attempts: 1,
+    });
+
+    // Agency (S1.3): with NO attempt this tick, a failed retryable check neither re-rolls nor forecloses.
+    expect(questSystem(map, [])(w, 0)).toHaveLength(0);
+
+    // The bug (SPEC-119): BEFORE the fix this second attempt emitted nothing — a permanent soft-lock
+    // (attempts !== 0 blocked the re-roll; `retryable` skipped the only foreclosure exit). AFTER: it
+    // re-rolls on the explicit attempt and still never forecloses a retryable branch.
+    const second = questSystem(map, attempt)(w, 0);
+    expect(second.some((e) => e.type === "ResolveSkillCheck")).toBe(true);
+    expect(second.some((e) => e.type === "ForecloseBranch")).toBe(false);
+  });
 });

@@ -133,7 +133,14 @@ export function questSystem(
             // Honest agency (S1.3): a check resolves only when the player explicitly attempts
             // THIS branch — not auto-fired for every active branch. Pursuing "force" never
             // rolls "talk"'s persuade check.
-            if (attempted(quest.id, branchId) && (!progress || progress.attempts === 0)) {
+            // Re-roll when the player explicitly attempts THIS branch and either the check hasn't
+            // been rolled yet (attempts 0 / no progress) OR it's a retryable check that previously
+            // failed (SPEC-119 — without the retryable arm a failed retryable check soft-locks: the
+            // foreclose guard above skips it, and `attempts !== 0` blocks the retry it promises).
+            if (
+              attempted(quest.id, branchId) &&
+              (!progress || progress.attempts === 0 || (retryable && progress.failed))
+            ) {
               events.push({
                 type: "ResolveSkillCheck",
                 questId: quest.id,

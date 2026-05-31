@@ -85,6 +85,7 @@ export interface CreateWorldOptions {
   startLocationId: LocationId;
   playerEntityId?: EntityId;
   skills?: Partial<Record<SkillId, number>>;
+  conditionMods?: Partial<Record<SkillId, number>>;
   startPos?: { x: number; y: number };
 }
 
@@ -104,7 +105,7 @@ export function createWorld(opts: CreateWorldOptions): World {
     player: {
       entityId: playerEntityId,
       skills: { ...zeroedSkills(), ...opts.skills },
-      conditionMods: zeroedSkills(),
+      conditionMods: { ...zeroedSkills(), ...opts.conditionMods },
     },
     locationId: opts.startLocationId,
     entities: {

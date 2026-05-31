@@ -327,8 +327,9 @@ describe("quest runtime", () => {
 
   it("re-rolls a FAILED retryable skill_check on the next attempt (SPEC-119), never soft-locks", () => {
     const RQID = QuestId.parse("quest.retry");
-    // One branch, one RETRYABLE skill_check: dc 30 vs force 0 is unbeatable, so the roll fails
-    // deterministically regardless of seed.
+    // One branch, one RETRYABLE skill_check. dc is schema-capped at 20; with force 0 and a -1
+    // conditionMod the effective total maxes at 20 + 0 - 1 = 19 < 20, so the roll fails
+    // deterministically regardless of seed (every attempt → failed).
     const rq = Quest.parse({
       id: "quest.retry",
       title: "Retry",
@@ -339,7 +340,7 @@ describe("quest runtime", () => {
           id: "try",
           label: "Try",
           objectives: [
-            { kind: "skill_check", skill: "force", dc: 30, retryable: true, onFail: [] },
+            { kind: "skill_check", skill: "force", dc: 20, retryable: true, onFail: [] },
           ],
         },
       ],
@@ -348,7 +349,7 @@ describe("quest runtime", () => {
     const map = new Map([[RQID, rq]]);
     const attempt: InputEvent[] = [{ type: "Attempt", questId: RQID, branchId: "try" }];
 
-    const base = world({ skills: { force: 0 } });
+    const base = world({ skills: { force: 0 }, conditionMods: { force: -1 } });
     let w = applyEvents(base, questSystem(map)(base, 0)); // ActivateQuest
     expect(w.quests[RQID]?.status).toBe("active");
 

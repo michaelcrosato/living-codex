@@ -535,7 +535,7 @@ Every agent-auditable dimension is now exhausted or deferred with rationale. The
 The loop continues from /plan/: re-confirm green, act on the next external trigger (human unblock, content
 demand, or a future forcing function — CVE/dep major), and never manufacture churn.
 
-### 13.4 Cycle 11 (SPEC-112…116) — automated quality/security gates + code health
+### 13.4 Cycle 11 (SPEC-112…117) — automated quality/security gates + code health
 Theme: **automate manually-maintained postures + tighten code health.** All shipped green by exit code.
 - **Automated a11y (axe-core):** SPEC-112 added `@axe-core/playwright` + an axe WCAG 2.1 A/AA scan of the
   main game view (0 serious/critical — the manual a11y work, SPEC-09/81–85, confirmed comprehensively);
@@ -547,8 +547,14 @@ Theme: **automate manually-maintained postures + tighten code health.** All ship
   candidates were in-file/test usages); removed the 2 genuine items (dead `appendInput`, a stale `T-12`
   placeholder), kept the deliberate Audio port seam. SPEC-116 — synced AGENTS.md's verify-chain description
   (it omitted the `format`/prettier step added at the merge).
+- **Mutation hardening:** SPEC-117 — focused Stryker on `storylet-check.ts` (the SPEC-25 dead-storylet
+  gate; content-loader is outside the permanent engine-core mutate scope per the SPEC-106 meta-finding, so
+  it had never been measured). Measure-first found the survivors were diagnostic-message detail; exact
+  full-message assertions + a deep-nest flatten case took it **~85%→90.91%**. Test-only (source confirmed
+  clean). Render-layer audit (recorded in JOURNAL): `renderer.ts` is a thin PixiJS delegation boundary with
+  no pure seam left to extract beyond the already-extracted camera transform (SPEC-100) — not re-audited.
 
-State at Cycle-11 progress: `pnpm verify` EXIT 0 **359 tests / 61 files**; `pnpm e2e` **6 passed** (incl. 2
+State at Cycle-11 progress: `pnpm verify` EXIT 0 **361 tests / 61 files** (SPEC-117 +2); `pnpm e2e` **6 passed** (incl. 2
 axe scans); `pnpm audit`(+`--prod`) clean; content:verify 11 packs/21 NPCs/12 quests/12 storylets/9 loc · 0
 hygiene warnings; golden untouched; ~38 commits ahead of main (unpushed, human-gated). New dev dep:
 @axe-core/playwright (audit-clean, --frozen-lockfile reproducible).

@@ -16,24 +16,35 @@ describe("unsatisfiablePreconditions (SPEC-25 storylet static check)", () => {
     ).toBeNull();
   });
 
-  it("flags a flag required to equal two different values", () => {
-    expect(unsatisfiablePreconditions([flagTrue("flag.a"), flagFalse("flag.a")])).toMatch(
-      /flag\.a/,
+  it("flags a flag required to equal two different values (exact reason)", () => {
+    // Assert the FULL reason — the flag, BOTH conflicting values, and the phrasing — so the
+    // JSON.stringify(value) interpolations and explanatory fragments are pinned, not just the name.
+    expect(unsatisfiablePreconditions([flagTrue("flag.a"), flagFalse("flag.a")])).toBe(
+      'flag "flag.a" must equal both false and true — never satisfiable',
     );
   });
 
-  it("flags a condition together with its direct negation (both orders)", () => {
-    expect(unsatisfiablePreconditions([flagTrue("flag.x"), not(flagTrue("flag.x"))])).toMatch(
-      /flag\.x/,
+  it("flags a condition together with its direct negation (both orders, exact reason)", () => {
+    expect(unsatisfiablePreconditions([flagTrue("flag.x"), not(flagTrue("flag.x"))])).toBe(
+      'flag "flag.x" must equal true and also NOT equal it — never satisfiable',
     );
-    expect(unsatisfiablePreconditions([not(flagTrue("flag.y")), flagTrue("flag.y")])).toMatch(
-      /flag\.y/,
+    expect(unsatisfiablePreconditions([not(flagTrue("flag.y")), flagTrue("flag.y")])).toBe(
+      'flag "flag.y" must equal true and also NOT equal it — never satisfiable',
     );
   });
 
-  it("flattens nested `all` conjunctions", () => {
+  it("flattens nested `all` conjunctions (exact reason)", () => {
     const nested: Condition = { kind: "all", of: [flagFalse("flag.a")] };
-    expect(unsatisfiablePreconditions([flagTrue("flag.a"), nested])).toMatch(/flag\.a/);
+    expect(unsatisfiablePreconditions([flagTrue("flag.a"), nested])).toBe(
+      'flag "flag.a" must equal both false and true — never satisfiable',
+    );
+  });
+
+  it("flattens DEEPLY nested `all` conjunctions (stack recursion through two levels)", () => {
+    const deep: Condition = { kind: "all", of: [{ kind: "all", of: [flagFalse("flag.a")] }] };
+    expect(unsatisfiablePreconditions([flagTrue("flag.a"), deep])).toBe(
+      'flag "flag.a" must equal both false and true — never satisfiable',
+    );
   });
 
   it("does not false-positive across `any` (deliberately out of scope)", () => {

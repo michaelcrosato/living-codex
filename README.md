@@ -15,7 +15,7 @@ Requirements: **Node ≥ 20** and **pnpm** (this repo pins `pnpm@11.1.2`; CI use
 pnpm install            # install dependencies
 pnpm dev                # run the app-web dev server (Vite)
 pnpm test               # run the test suite (Vitest)
-pnpm verify             # full gate: typecheck + lint + deps + tests + content + replay
+pnpm verify             # full gate: typecheck + lint + format + deps + tests + content + replay
 pnpm e2e                # browser smoke test (needs: pnpm exec playwright install chromium)
 ```
 

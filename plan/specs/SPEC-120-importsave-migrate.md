@@ -1,6 +1,6 @@
 # SPEC-120 — Fix: `importSave` skips world migration (save-import crashes on old saves)
 
-**Wave:** Cycle-11 P0 (persistence correctness) · **Risk:** LOW · **Status:** Todo (READY — execute FIRST next cycle)
+**Wave:** Cycle-11 P0 (persistence correctness) · **Risk:** LOW · **Status:** Done (TDD: new `json.test.ts` red→green; 3-line `importSave` migration mirror; `pnpm verify` EXIT 0).
 
 ## Description + Impact
 

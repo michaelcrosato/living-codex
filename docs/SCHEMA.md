@@ -2,7 +2,7 @@
 
 This is the **single most important contract in the project.** It is the only place the AI-coded engine (Pipeline A) and the AI-authored world (Pipeline B) meet (`GOAL.md §6`). If content validates against these schemas, the engine runs it — no matter who wrote it.
 
-These are written as **Zod** schemas (runtime validation + inferred TS types). The same definitions export to **JSON Schema** (via `zod-to-json-schema`) to constrain LLM structured output in the offline pipeline. **Define once, use on both sides.**
+These are written as **Zod** schemas (runtime validation + inferred TS types). The same definitions export to **JSON Schema** (via Zod 4's native `z.toJSONSchema`, in `content-schema/src/json-schema.ts` — the unmaintained `zod-to-json-schema` dep it replaced was removed in SPEC-16) to constrain LLM structured output in the offline pipeline. **Define once, use on both sides.**
 
 Location: `packages/content-schema/src/`.
 

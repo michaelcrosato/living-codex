@@ -338,7 +338,9 @@ describe("quest runtime", () => {
         {
           id: "try",
           label: "Try",
-          objectives: [{ kind: "skill_check", skill: "force", dc: 30, retryable: true, onFail: [] }],
+          objectives: [
+            { kind: "skill_check", skill: "force", dc: 30, retryable: true, onFail: [] },
+          ],
         },
       ],
       rewards: {},
